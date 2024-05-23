@@ -1,0 +1,41 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="viewModels:TabsViewModel"
+             x:Class="WaifuGallery.Controls.TabsControl"
+             Name="TabsUserControl">
+    <Grid RowDefinitions="Auto,*">
+        <ListBox Grid.Row="0" Name="ImagesTabControl"
+                 ItemsSource="{Binding  OpenTabs}"
+                 MaxHeight="35"
+                 PointerReleased="InputElement_OnPointerReleased"
+                 ZIndex="9"
+                 SelectedItem="{Binding SelectedTab}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"
+                                PointerEntered="TabHeader_OnPointerEntered_ToggleCloseButton"
+                                PointerExited="TabHeader_OnPointerExited_ToggleCloseButton" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Header}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <!-- Image Tab -->
+        <Grid Grid.Row="1" IsVisible="{Binding !IsSelectedTabSettingsTab}"
+              Background="Red"
+              PointerWheelChanged="ImageInTab_OnPointerWheelChanged">
+            <Image Name="ImageTabContent" Margin="5" />
+        </Grid>
+        <!-- Settings Tab -->
+        <Grid Grid.Row="1" IsVisible="{Binding IsSelectedTabSettingsTab}">
+            <TextBlock Text="This is the settings tab" />
+        </Grid>
+    </Grid>
+</UserControl>

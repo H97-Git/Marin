@@ -1,0 +1,77 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+             xmlns:controls="clr-namespace:WaifuGallery.Controls"
+             xmlns:icons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             x:Class="WaifuGallery.Controls.FileExplorer"
+             x:DataType="viewModels:FileExplorerViewModel"
+             Name="FileExplorerControl"
+             Margin="10,50,10,10">
+    <Expander Name="FileExplorerExpander"
+              IsVisible="{Binding IsFileExplorerVisible}"
+              IsExpanded="{Binding IsFileExplorerExpanded}"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Bottom"
+              Opacity="1">
+        <Expander.Header>
+            <Panel Name="FileExplorerToolbar" Opacity="1">
+                <!-- Expander.IsExpanded = false -->
+                <TextBlock Text="File Explorer" IsVisible="{Binding !IsFileExplorerExpanded}" />
+                <!-- Expander.IsExpanded = true -->
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,0"
+                      IsVisible="{Binding IsFileExplorerExpanded}">
+                    <Button Grid.Column="0" Command="{Binding OpenFileCommand}">
+                        <icons:HeroIcon Foreground="White" Type="FolderOpen" Width="20" Height="20" />
+                        <!-- <PathIcon Data="{StaticResource FolderOpenVerticalRegular}" /> -->
+                    </Button>
+                    <TextBox Grid.Column="1" Text="{Binding CurrentPath}"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Center" Margin="5,0"
+                             IsFocused="{Binding IsSearchFocused,Mode=OneWayToSource}" />
+                    <Button Grid.Column="2" Command="{Binding GotoParentFolderCommand}" Margin="0,0"
+                            MaxWidth="45">
+                        <icons:HeroIcon Foreground="White" Type="ArrowUturnUp" Width="20" Height="20" />
+                        <!-- <PathIcon Data="{StaticResource ArrowCurveUpRightRegular}" /> -->
+                    </Button>
+                </Grid>
+            </Panel>
+        </Expander.Header>
+        <Grid Name="FileExplorerContent"
+              MinHeight="500"
+              MinWidth="500">
+            <controls:ImagePreview Name="ImagePreviewControl" DataContext="{Binding PreviewImageViewModel}" ZIndex="99" />
+            <!-- ListBox -->
+            <!-- <ScrollViewer Name="FileExplorerScrollViewer" AllowAutoHide="False" -->
+            <!-- VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"> -->
+            <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding FilesInDir}"
+                     Margin="0,0,20,0"
+                     SelectedIndex="{Binding SelectedIndex}"
+                     SelectedItems="{Binding SelectedItem}"
+                     Name="FileExplorerListBox"
+                     SelectionMode="Multiple">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <controls:File DataContext="{Binding}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.Styles>
+                    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                        <Setter Property="CornerRadius" Value="5" />
+                    </Style>
+                    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                        <Setter Property="CornerRadius" Value="5" />
+                    </Style>
+                </ListBox.Styles>
+            </ListBox>
+            <!-- </ScrollViewer> -->
+        </Grid>
+    </Expander>
+</UserControl>

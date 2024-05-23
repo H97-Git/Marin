@@ -1,0 +1,70 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Tabalonia.Controls;assembly=Tabalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+             x:Class="WaifuGallery.Controls.TabaloniaControl"
+             x:DataType="viewModels:TabsViewModel"
+             Name="TabsUserControl">
+    <controls:TabsControl Name="ImagesTabControl" TabStripPlacement="Bottom" ItemsSource="{Binding OpenTabs}"
+                          SelectedItem="{Binding SelectedTab}"
+                          FixedHeaderCount="1" 
+                          ShowDefaultAddButton="False"
+                          LastTabClosedAction="{Binding PreventLastTabCloseWindow}">
+    
+        <TabControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type viewModels:ImageTabViewModel}">
+                <StackPanel Orientation="Horizontal"
+                            PointerEntered="TabHeader_OnPointerEntered_ToggleCloseButton"
+                            PointerExited="TabHeader_OnPointerExited_ToggleCloseButton">
+                    <TextBlock Text="{Binding TabHeaderContent}" Margin="5,0" Foreground="GhostWhite"/>
+                </StackPanel>
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+            <DataTemplate DataType="{x:Type viewModels:ImageTabViewModel}">
+                <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}"
+                      PointerWheelChanged="ImageInTab_OnPointerWheelChanged" ColumnDefinitions="*"
+                      RowDefinitions="*" ClipToBounds="True">
+                    <Image
+                        Width="{Binding CurrentImageWidth}"
+                        Height="{Binding CurrentImageHeight}"
+                        Source="{Binding CurrentBitmapImage}" Margin="5" />
+                </Grid>
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </controls:TabsControl>
+    <!-- <TabControl Name="ImagesTabControl" -->
+    <!--             ItemsSource="{Binding OpenTabs}" -->
+    <!--             SelectedItem="{Binding SelectedTab}" -->
+    <!--             TabStripPlacement="Top" -->
+    <!--             Margin="5"> -->
+    <!--     ~1~ PointerReleased="ImagesTabControl_OnPointerReleased" @1@ -->
+    <!--     <TabControl.ItemTemplate> -->
+    <!--         ~1~ Header @1@ -->
+    <!--         <DataTemplate DataType="{x:Type viewModels:ImageTabViewModel}"> -->
+    <!--             <StackPanel Orientation="Horizontal" -->
+    <!--                         PointerEntered="TabHeader_OnPointerEntered_ToggleCloseButton" -->
+    <!--                         PointerExited="TabHeader_OnPointerExited_ToggleCloseButton"> -->
+    <!--                 <TextBlock Text="{Binding TabHeaderContent}" Margin="5,0" /> -->
+    <!--                 <Button Content="T" Click="ButtonT_OnClick" /> -->
+    <!--                 <Button Content="S" Click="ButtonS_OnClick" /> -->
+    <!--             </StackPanel> -->
+    <!--         </DataTemplate> -->
+    <!--     </TabControl.ItemTemplate> -->
+    <!--     <TabControl.ContentTemplate> -->
+    <!--         ~1~ Content @1@ -->
+    <!--         <DataTemplate DataType="{x:Type viewModels:ImageTabViewModel}"> -->
+    <!--             <Grid PointerWheelChanged="ImageInTab_OnPointerWheelChanged" ColumnDefinitions="*" -->
+    <!--                   RowDefinitions="*"> -->
+    <!--                 <Image -->
+    <!--                     Width="{Binding CurrentImageWidth}" -->
+    <!--                     Height="{Binding CurrentImageHeight}" -->
+    <!--                     Source="{Binding CurrentBitmapImage}" Margin="5" /> -->
+    <!--             </Grid> -->
+    <!--         </DataTemplate> -->
+    <!--     </TabControl.ContentTemplate> -->
+    <!-- </TabControl> -->
+</UserControl>

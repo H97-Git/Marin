@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ActiproSoftware.Controls.Avalonia" Version="24.1.0" />
+        <PackageReference Include="Avalonia" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+        <PackageReference Include="HeroIcons.Avalonia" Version="1.0.2" />
+        <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.8.0" />
+        <PackageReference Include="Magick.NET.Core" Version="13.8.0" />
+        <PackageReference Include="Tabalonia" Version="0.10.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="MainWindow.axaml.cs">
+        <DependentUpon>MainWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Controls\FileExplorerControl.axaml" />
+      <UpToDateCheckInput Remove="Controls\MenuTemplatedControl.axaml" />
+      <UpToDateCheckInput Remove="Controls\ImagePreview.axaml" />
+    </ItemGroup>
+</Project>

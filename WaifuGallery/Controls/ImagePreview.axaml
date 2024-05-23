@@ -1,0 +1,24 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="WaifuGallery.Controls.ImagePreview"
+             x:DataType="viewModels:PreviewImageViewModel">
+    <Canvas Name="PreviewCanvas" ClipToBounds="True">
+        <Border Canvas.Left="{Binding PreviewImagePosition.X}"
+                Canvas.Top="{Binding PreviewImagePosition.Y}"
+                CornerRadius="5"
+                ClipToBounds="True"
+                BorderBrush="Gray"
+                BorderThickness="3"
+                IsVisible="{Binding IsPreviewImageVisible}">
+            <Image Name="PreviewImage"
+                   Stretch="UniformToFill"
+                   Source="{Binding PreviewImage}"
+                   Width="{Binding PreviewImageWidth}"
+                   Height="{Binding PreviewImageHeight}" />
+        </Border>
+    </Canvas>
+</UserControl>
