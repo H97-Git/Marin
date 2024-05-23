@@ -1,39 +1,43 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
-             xmlns:icons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
-             x:Class="WaifuGallery.Controls.File"
-             x:DataType="viewModels:FileViewModel"
-             Name="FileControl">
-    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*"
-          MinWidth="150">
-        <!-- Image -->
+﻿<UserControl
+    Name="FileControl"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="WaifuGallery.Controls.File"
+    x:DataType="viewModels:FileViewModel"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns="https://github.com/avaloniaui">
+    <Grid ColumnDefinitions="*" RowDefinitions="*,Auto" MinWidth="150">
+        <!-- Image Thumbnail -->
         <Border Grid.Row="0"
-                CornerRadius="5"
                 ClipToBounds="True"
+                CornerRadius="5"
                 IsVisible="{Binding IsImage}">
-            <Image Height="{Binding ImageHeight}"
-                   Width="{Binding ImageWidth}"
-                   Stretch="UniformToFill"
-                   Source="{Binding Image}" />
+            <Image
+                Height="{Binding ImageHeight}"
+                Width="{Binding ImageWidth}"
+                Source="{Binding Image}"
+                Stretch="UniformToFill" />
         </Border>
         <!-- Folder Icon -->
         <Border Grid.Row="0"
-                Height="100"
                 Background="#3A3AFF"
-                IsVisible="{Binding !IsImage}"
-                CornerRadius="5">
+                CornerRadius="5"
+                Height="100"
+                IsVisible="{Binding !IsImage}">
             <!-- <PathIcon Height="100" Width="100" Data="{StaticResource FolderRegular}" /> -->
             <icons:HeroIcon Foreground="White" Type="Folder" Width="90" Height="90" />
         </Border>
         <!-- File Name -->
         <TextBlock Grid.Row="1"
                    HorizontalAlignment="Center"
-                   VerticalAlignment="Bottom"
-                   Text="{Binding FileNameTrimmed}"
-                   Margin="0,5,0,0" />
+                   Margin="0,5,0,0"
+                   MaxWidth="170"
+                   Text="{Binding FileName}"
+                   TextTrimming="CharacterEllipsis"
+                   VerticalAlignment="Bottom" />
+
     </Grid>
 </UserControl>

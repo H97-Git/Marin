@@ -21,16 +21,16 @@ public partial class File : UserControl
 
     public File()
     {
-        InitializeComponent();
-        FileControl.DoubleTapped += OnFolderDoubleClick_ChangePath;
-        // FileControl.PointerExited += OnPointerExited_ClosePreview;
-        FileControl.PointerPressed += OnPointerPressed_StartTimerTickPreview;
-        FileControl.PointerReleased += OnPointerReleased_OpenInNewTab;
         _previewTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(.5),
         };
         _previewTimer.Tick += OnPreviewTimerTick;
+        InitializeComponent();
+        FileControl.DoubleTapped += OnFolderDoubleClick_ChangePath;
+        // FileControl.PointerExited += OnPointerExited_ClosePreview;
+        FileControl.PointerPressed += OnPointerPressed_StartTimerTickPreview;
+        FileControl.PointerReleased += OnPointerReleased_OpenInNewTab;
     }
 
     #endregion
@@ -39,8 +39,7 @@ public partial class File : UserControl
 
     private void OnFolderDoubleClick_ChangePath(object? sender, TappedEventArgs e)
     {
-        if (_previewTimer.IsEnabled)
-            _previewTimer.Stop();
+        StopTimer();
         var command = new Command(CommandType.ChangePath, path: FileViewModel?.FullPath);
         FileViewModel?.SendCommandToFileExplorer(command);
     }
@@ -62,8 +61,8 @@ public partial class File : UserControl
         if (DataContext is not FileViewModel fileViewModel) return;
         var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(fileViewModel);
         if (imagesInPath is {Length: 0}) return;
-        _previewTimer.Stop();
         var command = new Command(CommandType.StartPreview, path: FileViewModel?.FullPath, imagesInPath: imagesInPath);
+        _previewTimer.Stop();
         FileViewModel?.SendCommandToFileExplorer(command);
     }
 
@@ -72,8 +71,7 @@ public partial class File : UserControl
 
     private void OnPointerReleased_OpenInNewTab(object? sender, PointerReleasedEventArgs e)
     {
-        if (_previewTimer.IsEnabled)
-            _previewTimer.Stop();
+        StopTimer();
         if (e.InitialPressMouseButton is not MouseButton.Middle) return;
         if (DataContext is not FileViewModel fileViewModel) return;
 
@@ -92,6 +90,12 @@ public partial class File : UserControl
             command = new Command(CommandType.OpenFolderInNewTab, imagesInPath);
             FileViewModel?.SendCommandToFileExplorer(command);
         }
+    }
+
+    private void StopTimer()
+    {
+        if (_previewTimer.IsEnabled)
+            _previewTimer.Stop();
     }
 
     #endregion

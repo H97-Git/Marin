@@ -51,25 +51,16 @@ public sealed class FileViewModel : ViewModelBase
 
     public string FullPath => ParentDirPath + "\\" + FileName;
 
-    private string FileName
+    public string FileName
     {
         get => _fileName;
-        init => this.RaiseAndSetIfChanged(ref _fileName, value);
+        private init => this.RaiseAndSetIfChanged(ref _fileName, value);
     }
 
     public string ParentDirPath
     {
         get => _parentDirPath;
         private init => this.RaiseAndSetIfChanged(ref _parentDirPath, value);
-    }
-
-    public string FileNameTrimmed
-    {
-        get
-        {
-            const int maxLength = 16;
-            return FileName.Length > maxLength ? FileName[..maxLength] + "..." : FileName;
-        }
     }
 
     #endregion
@@ -91,11 +82,9 @@ public sealed class FileViewModel : ViewModelBase
     {
         ParentDirPath = parentDirPath;
         FileName = fileName;
+        if (image is null) return;
         Image = image;
-        if (Image is not null)
-        {
-            IsImage = true;
-        }
+        IsImage = true;
     }
 
     #endregion
@@ -105,7 +94,7 @@ public sealed class FileViewModel : ViewModelBase
     private void ResizeThumbnail()
     {
         if (Image == null) return;
-        Console.WriteLine($"ResizeThumbnail: {Image.Size.Width}x{Image.Size.Height}");
+        // Console.WriteLine($"ResizeThumbnail: {Image.Size.Width}x{Image.Size.Height}");
         var imageSize = Image.Size.Width < Image.Size.Height
             ?
             // Image is vertical
