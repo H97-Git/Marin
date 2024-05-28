@@ -11,11 +11,22 @@ public class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
+            var splash = new SplashScreenWindow();
+
+            desktop.MainWindow = splash;
+            splash.Show();
+
+            await splash.InitApp();
+
+            var main = new MainWindow();
+            desktop.MainWindow = main;
+            main.Show();
+
+            splash.Close();
         }
 
         base.OnFrameworkInitializationCompleted();
