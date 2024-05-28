@@ -44,6 +44,11 @@ public class TabsViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isSelectedTabSettingsTab, value);
     }
 
+    public TabSettingsViewModel? TabSettingsViewModel =>
+        OpenTabs
+            .OfType<TabSettingsViewModel>()
+            .FirstOrDefault();
+
     #endregion
 
     #region CTOR

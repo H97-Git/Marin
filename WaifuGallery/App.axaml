@@ -3,6 +3,7 @@
              xmlns:themes="clr-namespace:Tabalonia.Themes.Custom;assembly=Tabalonia"
              xmlns:local="using:WaifuGallery"
              xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
+             xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
              x:Class="WaifuGallery.App"
              RequestedThemeVariant="Dark">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
@@ -14,7 +15,8 @@
     <Application.Styles>
         <themes:CustomTheme />
         <!-- <FluentTheme /> -->
-        <actipro:ModernTheme />
+        <!-- <actipro:ModernTheme /> -->
+        <styling:FluentAvaloniaTheme />
     </Application.Styles>
 
     <Application.Resources>
