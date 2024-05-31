@@ -4,7 +4,7 @@ using ReactiveUI;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
-namespace WaifuGallery.ViewModels;
+namespace WaifuGallery.ViewModels.FileExplorer;
 
 public sealed class FileViewModel : ViewModelBase
 {
@@ -14,8 +14,8 @@ public sealed class FileViewModel : ViewModelBase
     private bool _isImage;
     private int _imageHeight;
     private int _imageWidth;
-    private readonly string _fileName = "";
-    private readonly string _parentDirPath = "";
+    private readonly string _fileName = string.Empty;
+    private readonly string _parentDirPath = string.Empty;
 
     #endregion
 

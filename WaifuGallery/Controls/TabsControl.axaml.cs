@@ -1,9 +1,8 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using WaifuGallery.ViewModels;
+using WaifuGallery.ViewModels.Tabs;
 
 namespace WaifuGallery.Controls;
 
@@ -14,70 +13,32 @@ public partial class TabsControl : UserControl
     public TabsControl()
     {
         InitializeComponent();
-        ImagesTabControl.KeyDown += ImagesTabControl_OnKeyDown_SwitchTab;
         ImagesTabControl.SelectionChanged += ImagesTabControl_OnSelectionChanged;
-        TabsUserControl.KeyDown += ImagesTabControl_OnKeyDown_SwitchTab;
     }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         // Find which tab is clicked
-        var listBox = (ListBox) sender!;
-        var index = listBox.SelectedIndex;
-        if (index < 0) return;
-        if (listBox.Items[index] is not ImageTabViewModel tab) return;
+        if (sender is not ListBox listBox) return;
+        if (listBox.SelectedIndex < 0) return;
+        if (listBox.Items[listBox.SelectedIndex] is not ImageTabViewModel imageTabViewModel) return;
         // Set the content of the tab
-        var image = new Bitmap(tab.CurrentImagePath);
-        ImageTabContent.Source = image;
-    }
+        if (TabsViewModel is null) return;
 
-    private void ImagesTabControl_OnKeyDown_SwitchTab(object? sender, KeyEventArgs e)
-    {
-        if (e.Key == Key.Tab && (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control)
-        {
-            SwitchTab();
-        }
+        TabsViewModel.ImageTabViewModel = imageTabViewModel;
+        // var image = new Bitmap(tab.CurrentImagePath);
+        // ImageTabContent.Source = image;
     }
 
 
-    private void ImagesTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        var t = TabsUserControl.Bounds.Size.Height;
-        var s = ImagesTabControl.Bounds.Size.Height;
-        TabsViewModel?.FitToHeight(t);
-    }
+    private void ImagesTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) =>
+        TabsViewModel?.FitToHeight(TabsUserControl.Bounds.Size.Height);
 
-    private void TabHeader_OnPointerEntered_ToggleCloseButton(object? sender, PointerEventArgs e)
-    {
-        if (sender is not StackPanel stackPanel) return;
-        if (stackPanel.DataContext is not ImageTabViewModel tabViewModel) return;
-        tabViewModel.IsCloseButtonVisible = true;
-    }
-
-    private void TabHeader_OnPointerExited_ToggleCloseButton(object? sender, PointerEventArgs e)
-    {
-        if (sender is not StackPanel stackPanel) return;
-        if (stackPanel.DataContext is not ImageTabViewModel tabViewModel) return;
-        tabViewModel.IsCloseButtonVisible = false;
-    }
-
-    private void SwitchTab()
-    {
-        if (ImagesTabControl == null) return;
-        var selectedIndex = ImagesTabControl.SelectedIndex;
-        var itemCount = ImagesTabControl.Items.Count;
-
-        // Calculate the index of the next tab
-        var nextIndex = (selectedIndex + 1) % itemCount;
-
-        // Set the selected tab
-        ImagesTabControl.SelectedIndex = nextIndex;
-    }
 
     private void ImageInTab_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
-        if (sender is not Panel panel) return;
-        if (panel.DataContext is not ImageTabViewModel tabViewModel) return;
-        tabViewModel.ZoomImage(e.Delta.Y);
+        if (sender is not Grid grid) return;
+        if (grid.DataContext is not TabsViewModel tabViewModel) return;
+        tabViewModel.ImageTabViewModel?.ZoomImage(e.Delta.Y);
     }
 }

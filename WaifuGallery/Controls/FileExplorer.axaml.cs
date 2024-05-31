@@ -5,6 +5,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media;
 using WaifuGallery.ViewModels;
+using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Controls;
 
@@ -21,8 +22,6 @@ public partial class FileExplorer : UserControl
         FileExplorerListBox.KeyDown += FileExplorer_OnKeyDown;
         ImagePreviewControl.PointerWheelChanged += InputElement_OnPointerWheelChanged;
         FileExplorerContent.PointerMoved += OnPointerMoved_ChangePreviewPosition;
-
-        ScrollViewer.SetHorizontalScrollBarVisibility(FileExplorerListBox, ScrollBarVisibility.Disabled);
     }
 
     private void FileExplorer_OnKeyDown(object? sender, KeyEventArgs e)
@@ -58,20 +57,25 @@ public partial class FileExplorer : UserControl
     {
         // if (e.KeyModifiers is not KeyModifiers.Control) return;
         if (sender is not Grid grid) return;
+        if (FileExplorerViewModel?.PreviewImageViewModel == null) return;
         var point = e.GetPosition(grid);
-        var size = grid.Bounds.Size;
-        var previewImageWidth = (double) FileExplorerViewModel?.PreviewImageViewModel.PreviewImageWidth;
-        var previewImageHeight = (double) FileExplorerViewModel?.PreviewImageViewModel.PreviewImageHeight;
-        const int offset = 20;
-        var xClamp = size.Width - previewImageWidth;
-        var yClamp = size.Height - previewImageHeight;
-        if (xClamp < 0) xClamp = 0;
-        if (yClamp < 0) yClamp = 0;
-        var x = Math.Clamp(point.X, 0, xClamp);
-        var y = Math.Clamp(point.Y, 0, yClamp);
-        var newPoint = new Point(x - offset, y - offset);
-        FileExplorerViewModel?.SendMessageToStatusBar(
-            $"PointerMoved: X:{point.X}, Y:{point.Y} - Width:{size.Width}, Height:{size.Height}");
+        var newPoint = CalcNewPoint(grid.Bounds.Size, point,
+            FileExplorerViewModel.PreviewImageViewModel.PreviewImageSize);
+
+        // FileExplorerViewModel?.SendMessageToStatusBar(
+        //     $"PointerMoved: X:{point.X}, Y:{point.Y} - Width:{size.Width}, Height:{size.Height}");
         FileExplorerViewModel?.PreviewImageViewModel.ChangePreviewPosition(newPoint);
+    }
+
+    private static Point CalcNewPoint(Size gridSize, Point pointerPosition, Size previewImageSize)
+    {
+        const int offset = 20;
+        var x = gridSize.Width - previewImageSize.Width;
+        var y = gridSize.Height - previewImageSize.Height;
+        if (x < 0) x = 0;
+        if (y < 0) y = 0;
+        var xClamp = Math.Clamp(pointerPosition.X, 0, x - offset);
+        var yClamp = Math.Clamp(pointerPosition.Y, 0, y - offset);
+        return new Point(xClamp, yClamp);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -16,7 +15,6 @@ public class NaturalSortComparer : IComparer<string>
 
         var xx = Path.GetFileNameWithoutExtension(x);
         var yy = Path.GetFileNameWithoutExtension(y);
-        Console.WriteLine($"{xx} vs {yy}");
 
         if (xx == null && yy == null) return 0;
         if (xx == null) return -1;

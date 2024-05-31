@@ -17,20 +17,25 @@
     <!-- Main Grid -->
     <Grid RowDefinitions="Auto,*,Auto" Name="MainGrid">
         <!-- Menu Bar-->
-        <controls:MenuBar Grid.Row="0" DataContext="{Binding MenuBarViewModel}" />
-       
+        <controls:MenuBar Grid.Row="0" DataContext="{Binding MenuBarViewModel}" IsVisible="{Binding IsMenuVisible}" />
+
         <!-- Main Area -->
         <Grid Grid.Row="1" Name="MainArea">
             <!-- Tabs -->
-            <!-- <controls:TabaloniaControl DataContext="{Binding TabsViewModel}" /> -->
             <controls:TabsControl DataContext="{Binding TabsViewModel}" />
             <!-- File Explorer -->
-            <controls:FileExplorer DataContext="{Binding FileExplorerViewModel}" />
+            <Panel PointerReleased="InputElement_OnPointerReleased"
+                   Background="{Binding FileExplorerViewModel.FileExplorerBackground}">
+                <controls:FileExplorer DataContext="{Binding FileExplorerViewModel}" Opacity="1" />
+            </Panel>
         </Grid>
         <!-- Status Bar -->
         <Border Grid.Row="2"
                 Background="#3A3AFF"
-                Margin="0,0,0,0">
+                Margin="0,0,0,0"
+                BorderBrush="Red"
+                BorderThickness="1"
+                IsVisible="{Binding IsStatusBarVisible}">
             <Label Content="{Binding StatusBarMessage}" Foreground="White" />
         </Border>
     </Grid>

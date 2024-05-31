@@ -22,7 +22,6 @@
         <PackageReference Include="HeroIcons.Avalonia" Version="1.0.2" />
         <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.8.0" />
         <PackageReference Include="Magick.NET.Core" Version="13.8.0" />
-        <PackageReference Include="Tabalonia" Version="0.10.3" />
     </ItemGroup>
 
     <ItemGroup>

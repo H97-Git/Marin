@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace WaifuGallery.Controls;
 
-public partial class SettingsControl : UserControl
+public partial class ImageTab : UserControl
 {
-    public SettingsControl()
+    public ImageTab()
     {
         InitializeComponent();
     }

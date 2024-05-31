@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using WaifuGallery.ViewModels;
+using WaifuGallery.ViewModels.Tabs;
 
 namespace WaifuGallery.Helpers;
 
-public class TabsComparer : IComparer<TabViewModel>
+public class TabsComparer : IComparer<TabViewModelBase>
 {
-    public int Compare(TabViewModel? x, TabViewModel? y)
+    public int Compare(TabViewModelBase? x, TabViewModelBase? y)
     {
         if (x is ImageTabViewModel && y is ImageTabViewModel)
             // Compare ImageTabViewModel objects

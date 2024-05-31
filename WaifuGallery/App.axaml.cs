@@ -15,18 +15,18 @@ public class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var splash = new SplashScreenWindow();
-
-            desktop.MainWindow = splash;
-            splash.Show();
-
-            await splash.InitApp();
+            // var splash = new SplashScreenWindow();
+            //
+            // desktop.MainWindow = splash;
+            // splash.Show();
+            //
+            // await splash.InitApp();
 
             var main = new MainWindow();
             desktop.MainWindow = main;
             main.Show();
 
-            splash.Close();
+            // splash.Close();
         }
 
         base.OnFrameworkInitializationCompleted();

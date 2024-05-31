@@ -13,9 +13,28 @@ namespace WaifuGallery.ViewModels;
 /// </summary>
 public class MenuBarViewModel : ViewModelBase
 {
-    #region Private Methods
+    #region Private Members
+
+    private bool _isMenuOpen;
+    private bool _isMenuVisible = true;
 
     private Action SendCommandToMainView(Command command) => () => { OnSendCommandToMainView?.Invoke(this, command); };
+
+    #endregion
+
+    #region Public Properties
+
+    public bool IsMenuOpen
+    {
+        get => _isMenuOpen;
+        set => this.RaiseAndSetIfChanged(ref _isMenuOpen, value);
+    }
+    
+    public bool IsMenuVisible
+    {
+        get => _isMenuVisible;
+        set => this.RaiseAndSetIfChanged(ref _isMenuVisible, value);
+    }
 
     #endregion
 

@@ -6,15 +6,18 @@
              xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
              xmlns:controls="clr-namespace:WaifuGallery.Controls"
              xmlns:icons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
              x:Class="WaifuGallery.Controls.FileExplorer"
-             x:DataType="viewModels:FileExplorerViewModel"
+             x:DataType="fileExplorer:FileExplorerViewModel"
              Name="FileExplorerControl"
-             Margin="10,50,10,10">
+             Margin="10">
+    <!-- Margin="10,50,10,10" -->
     <Expander Name="FileExplorerExpander"
               IsVisible="{Binding IsFileExplorerVisible}"
               IsExpanded="{Binding IsFileExplorerExpanded}"
               HorizontalAlignment="Left"
               VerticalAlignment="Bottom"
+              IsPointerOver="{Binding IsPointerOver, Mode=OneWayToSource}"
               Opacity="1">
         <Expander.Header>
             <Panel Name="FileExplorerToolbar" Opacity="1">
@@ -51,7 +54,8 @@
                      SelectedIndex="{Binding SelectedIndex}"
                      SelectedItems="{Binding SelectedItem}"
                      Name="FileExplorerListBox"
-                     SelectionMode="Multiple">
+                     SelectionMode="Multiple"
+                     BorderThickness="0">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />

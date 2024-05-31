@@ -3,7 +3,7 @@ using Avalonia;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 
-namespace WaifuGallery.ViewModels;
+namespace WaifuGallery.ViewModels.FileExplorer;
 
 public class PreviewImageViewModel : ViewModelBase
 {
@@ -12,8 +12,7 @@ public class PreviewImageViewModel : ViewModelBase
     private Bitmap? _previewImage;
     private Point _previewImagePosition;
     private bool _isPreviewImageVisible;
-    private int _previewImageHeight;
-    private int _previewImageWidth;
+    private Size _previewImageSize;
     private int _previewImageIndex;
     private string[] _previewImagePaths = [];
 
@@ -21,7 +20,7 @@ public class PreviewImageViewModel : ViewModelBase
 
     public PreviewImageViewModel()
     {
-        PreviewImageWidth = PreviewImageHeight = 300;
+        PreviewImageSize = new Size(300, 300);
         PreviewImagePosition = new Point(0, 0);
     }
 
@@ -31,6 +30,19 @@ public class PreviewImageViewModel : ViewModelBase
     {
         get => _previewImage;
         set => this.RaiseAndSetIfChanged(ref _previewImage, value);
+    }
+
+    public int PreviewImageIndex
+    {
+        get => _previewImageIndex;
+        set
+        {
+            if (value < 0)
+                value = 0;
+            if (value >= _previewImagePaths.Length)
+                value = _previewImagePaths.Length - 1;
+            this.RaiseAndSetIfChanged(ref _previewImageIndex, value);
+        }
     }
 
     public Point PreviewImagePosition
@@ -45,16 +57,10 @@ public class PreviewImageViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isPreviewImageVisible, value);
     }
 
-    public int PreviewImageHeight
+    public Size PreviewImageSize
     {
-        get => _previewImageHeight;
-        set => this.RaiseAndSetIfChanged(ref _previewImageHeight, value);
-    }
-
-    public int PreviewImageWidth
-    {
-        get => _previewImageWidth;
-        set => this.RaiseAndSetIfChanged(ref _previewImageWidth, value);
+        get => _previewImageSize;
+        set => this.RaiseAndSetIfChanged(ref _previewImageSize, value);
     }
 
     #endregion
@@ -70,21 +76,21 @@ public class PreviewImageViewModel : ViewModelBase
             return;
         }
 
-        _previewImageIndex = 0;
-        PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
+        PreviewImageIndex = 0;
+        PreviewImage = new Bitmap(_previewImagePaths[PreviewImageIndex]);
         IsPreviewImageVisible = true;
     }
 
     public void NextPreview()
     {
-        _previewImageIndex = Math.Min(_previewImagePaths.Length - 1, _previewImageIndex + 1);
-        PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
+        PreviewImageIndex += 1;
+        PreviewImage = new Bitmap(_previewImagePaths[PreviewImageIndex]);
     }
 
     public void PreviousPreview()
     {
-        _previewImageIndex = Math.Max(0, _previewImageIndex - 1);
-        PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
+        PreviewImageIndex -= 1;
+        PreviewImage = new Bitmap(_previewImagePaths[PreviewImageIndex]);
     }
 
     public void ClosePreview()
@@ -105,16 +111,20 @@ public class PreviewImageViewModel : ViewModelBase
     {
         if (!IsPreviewImageVisible) return;
         var newDelta = (int) deltaY * 20;
+        double newWidth;
+        double newHeight;
         if (newDelta < 0)
         {
-            PreviewImageWidth = Math.Max(200, PreviewImageWidth + newDelta);
-            PreviewImageHeight = Math.Max(200, PreviewImageHeight + newDelta);
+            newWidth = Math.Max(200, PreviewImageSize.Width + newDelta);
+            newHeight = Math.Max(200, PreviewImageSize.Height + newDelta);
         }
         else
         {
-            PreviewImageWidth = Math.Min(600, PreviewImageWidth + newDelta);
-            PreviewImageHeight = Math.Min(600, PreviewImageHeight + newDelta);
+            newWidth = Math.Min(600, PreviewImageSize.Width + newDelta);
+            newHeight = Math.Min(600, PreviewImageSize.Height + newDelta);
         }
+
+        PreviewImageSize = new Size(newWidth, newHeight);
     }
 
     #endregion

@@ -3,9 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+             xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="WaifuGallery.Controls.ImagePreview"
-             x:DataType="viewModels:PreviewImageViewModel">
+             x:DataType="fileExplorer:PreviewImageViewModel"
+             PointerPressed="ImagePreview_OnPointerPressed">
     <Canvas Name="PreviewCanvas" ClipToBounds="True">
         <Border Canvas.Left="{Binding PreviewImagePosition.X}"
                 Canvas.Top="{Binding PreviewImagePosition.Y}"
@@ -17,8 +19,8 @@
             <Image Name="PreviewImage"
                    Stretch="UniformToFill"
                    Source="{Binding PreviewImage}"
-                   Width="{Binding PreviewImageWidth}"
-                   Height="{Binding PreviewImageHeight}" />
+                   Width="{Binding PreviewImageSize.Width}"
+                   Height="{Binding PreviewImageSize.Height}" />
         </Border>
     </Canvas>
 </UserControl>

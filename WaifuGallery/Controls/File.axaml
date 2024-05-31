@@ -2,14 +2,15 @@
     Name="FileControl"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="WaifuGallery.Controls.File"
-    x:DataType="viewModels:FileViewModel"
+    x:DataType="fileExplorer:FileViewModel"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns="https://github.com/avaloniaui">
-    <Grid ColumnDefinitions="*" RowDefinitions="*,Auto" MinWidth="150">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer">
+    <Grid ColumnDefinitions="*" RowDefinitions="*,Auto" Width="165">
         <!-- Image Thumbnail -->
         <Border Grid.Row="0"
                 ClipToBounds="True"
@@ -28,7 +29,11 @@
                 Height="100"
                 IsVisible="{Binding !IsImage}">
             <!-- <PathIcon Height="100" Width="100" Data="{StaticResource FolderRegular}" /> -->
-            <icons:HeroIcon Foreground="White" Type="Folder" Width="90" Height="90" />
+            <icons:HeroIcon
+                Foreground="White"
+                Type="Folder"
+                Width="90"
+                Height="90" />
         </Border>
         <!-- File Name -->
         <TextBlock Grid.Row="1"

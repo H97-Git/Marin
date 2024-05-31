@@ -5,6 +5,7 @@ using Avalonia.Threading;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels;
+using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Controls;
 
@@ -58,8 +59,8 @@ public partial class File : UserControl
     private void OnPreviewTimerTick(object? sender, EventArgs e)
     {
         if (!_previewTimer.IsEnabled) return;
-        if (DataContext is not FileViewModel fileViewModel) return;
-        var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(fileViewModel);
+        if (FileViewModel == null) return;
+        var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(FileViewModel);
         if (imagesInPath is {Length: 0}) return;
         var command = new Command(CommandType.StartPreview, path: FileViewModel?.FullPath, imagesInPath: imagesInPath);
         _previewTimer.Stop();
@@ -73,23 +74,23 @@ public partial class File : UserControl
     {
         StopTimer();
         if (e.InitialPressMouseButton is not MouseButton.Middle) return;
-        if (DataContext is not FileViewModel fileViewModel) return;
+        if (FileViewModel == null) return;
 
-        var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(fileViewModel);
+        var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(FileViewModel);
         if (imagesInPath is {Length: 0}) return;
 
         Command command;
-        if (fileViewModel.IsImage)
+        if (FileViewModel.IsImage)
         {
-            var index = Array.IndexOf(imagesInPath, fileViewModel.FullPath);
+            var index = Array.IndexOf(imagesInPath, FileViewModel.FullPath);
             command = new Command(CommandType.OpenImageInNewTab, imagesInPath, index: index);
-            FileViewModel?.SendCommandToFileExplorer(command);
         }
         else
         {
             command = new Command(CommandType.OpenFolderInNewTab, imagesInPath);
-            FileViewModel?.SendCommandToFileExplorer(command);
         }
+
+        FileViewModel?.SendCommandToFileExplorer(command);
     }
 
     private void StopTimer()

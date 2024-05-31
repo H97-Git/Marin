@@ -3,6 +3,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using WaifuGallery.ViewModels;
+using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Helpers;
 

@@ -1,0 +1,65 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="WaifuGallery.Controls.SettingsTab"
+             xmlns:ui="using:FluentAvalonia.UI.Controls"
+             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+             xmlns:tabs="clr-namespace:WaifuGallery.ViewModels.Tabs"
+             x:DataType="tabs:TabSettingsViewModel">
+    <ScrollViewer Padding="{StaticResource SampleAppPageMargin}">
+
+        <StackPanel Spacing="8" Margin="10">
+            <Grid Margin="0 0 0 10">
+
+                <DockPanel HorizontalAlignment="Left">
+                    <Image Source="/Assets/avalonia-logo.ico"
+                           DockPanel.Dock="Left"
+                           Height="80"
+                           RenderOptions.BitmapInterpolationMode="HighQuality" />
+
+                    <StackPanel Spacing="0" Margin="15 0">
+                        <TextBlock Text="Avalonia Guide Application Theme"
+                                   Theme="{StaticResource TitleTextBlockStyle}" />
+
+                        <TextBlock Text="{Binding CurrentVersion}"
+                                   Theme="{StaticResource BodyTextBlockStyle}" />
+
+                        <TextBlock Text="MIT License"
+                                   Theme="{StaticResource CaptionTextBlockStyle}" />
+                    </StackPanel>
+                </DockPanel>
+
+            </Grid>
+
+            <ui:SettingsExpander Header="App Theme"
+                                 IconSource="DarkTheme"
+                                 Description="Change the current app theme">
+
+                <ui:SettingsExpander.Footer>
+                    <ComboBox SelectedItem="{Binding CurrentAppTheme}"
+                              ItemsSource="{Binding AppThemes}"
+                              MinWidth="150" />
+                </ui:SettingsExpander.Footer>
+
+            </ui:SettingsExpander>
+            <ui:SettingsExpander Header="App Accent Color"
+                                 IconSource="ColorLine"
+                                 Description="Set a custom accent color for the App"
+                                 IsExpanded="True">
+                <ui:SettingsExpanderItem Content="Preview">
+                    <ui:SettingsExpanderItem.Footer>
+                        <TextBlock Text="Hello World"/>
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem>
+                   <TextBlock Text="Expander Item"/>
+                    <ui:SettingsExpanderItem.Footer>
+                       <TextBlock Text="Expander Item Footer"/>
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+            </ui:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -2,42 +2,69 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="400"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="300"
              xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
-             xmlns:controls="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:hero="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
              x:Class="WaifuGallery.Controls.MenuBar"
              x:DataType="viewModels:MenuBarViewModel">
-    <Menu>
+    <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}">
         <MenuItem Header="_File">
-            <MenuItem Header="_Open..." Command="{Binding OpenFileCommand}">
+            <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}">
+                <MenuItem.Icon>
+                    <hero:HeroIcon Type="FolderOpen" />
+                </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}" />
+            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}">
+                <MenuItem.Icon>
+                    <hero:HeroIcon Type="XCircle" />
+                </MenuItem.Icon>
+            </MenuItem>
         </MenuItem>
         <MenuItem Header="_View">
-            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}" />
+            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}">
+                <MenuItem.Icon>
+                    <hero:HeroIcon Type="ArrowsPointingOut" />
+                </MenuItem.Icon>
+            </MenuItem>
             <Separator />
-            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}" />
-            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}" />
+            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}">
+                <MenuItem.Icon>
+                    <hero:HeroIcon Type="ArchiveBoxArrowDown" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}">
+                <MenuItem.Icon>
+                    <hero:HeroIcon Type="EyeSlash" />
+                </MenuItem.Icon>
+            </MenuItem>
             <Separator />
-            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}" />
-            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}" />
+            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}">
+                <MenuItem.Icon>
+                    <hero:HeroIcon Type="ArrowsRightLeft" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}">
+                <MenuItem.Icon>
+                    <hero:HeroIcon Type="ArrowsUpDown" />
+                </MenuItem.Icon>
+            </MenuItem>
         </MenuItem>
         <Menu.Styles>
-            <Style Selector="Menu">
-                <Setter Property="Background" Value="#2E2E2E" />
-            </Style>
-            <Style Selector="MenuItem">
-                <Setter Property="Background" Value="#2E2E2E" />
-                <Setter Property="Foreground" Value="WhiteSmoke" />
-            </Style>
-            <Style Selector="MenuItem:selected">
-                <Setter Property="Background" Value="#2E2E2E" />
-                <Setter Property="Foreground" Value="WhiteSmoke" />
-            </Style>
-            <Style Selector=":is(Border)">
-                <Setter Property="Background" Value="Red" />
-            </Style>
+            <!-- <Style Selector="Menu"> -->
+            <!--     <Setter Property="Background" Value="#2E2E2E" /> -->
+            <!-- </Style> -->
+            <!-- <Style Selector="MenuItem"> -->
+            <!--     <Setter Property="Background" Value="#2E2E2E" /> -->
+            <!--     <Setter Property="Foreground" Value="WhiteSmoke" /> -->
+            <!-- </Style> -->
+            <!-- <Style Selector="MenuItem:selected"> -->
+            <!--     <Setter Property="Background" Value="#2E2E2E" /> -->
+            <!--     <Setter Property="Foreground" Value="WhiteSmoke" /> -->
+            <!-- </Style> -->
+            <!-- <Style Selector=":is(Border)"> -->
+            <!--     <Setter Property="Background" Value="Red" /> -->
+            <!-- </Style> -->
         </Menu.Styles>
     </Menu>
 </UserControl>

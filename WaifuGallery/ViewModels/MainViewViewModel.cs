@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Avalonia.Controls;
@@ -7,6 +6,8 @@ using Avalonia.Input;
 using ReactiveUI;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
+using WaifuGallery.ViewModels.FileExplorer;
+using WaifuGallery.ViewModels.Tabs;
 
 namespace WaifuGallery.ViewModels;
 
@@ -16,6 +17,7 @@ public class MainViewViewModel : ViewModelBase
 
     private readonly MainWindow _mainWindow;
     private string _statusBarMessage = "Welcome to WaifuGallery!";
+    private bool _isStatusBarVisible = true;
 
     #endregion
 
@@ -31,6 +33,12 @@ public class MainViewViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _statusBarMessage, $"Information: {value}");
     }
 
+    public bool IsStatusBarVisible
+    {
+        get => _isStatusBarVisible;
+        set => this.RaiseAndSetIfChanged(ref _isStatusBarVisible, value);
+    }
+
     #endregion
 
     #region CTOR
@@ -39,13 +47,13 @@ public class MainViewViewModel : ViewModelBase
     {
         _mainWindow = mainWindow;
         MenuBarViewModel = new MenuBarViewModel();
-        TabsViewModel = new TabsViewModel(_mainWindow);
+        TabsViewModel = new TabsViewModel();
         FileExplorerViewModel = new FileExplorerViewModel()
         {
             StorageProvider = _mainWindow.StorageProvider
         };
         MenuBarViewModel.OnSendCommandToMainView += HandleControls;
-        FileExplorerViewModel.OnSendMessageToMainView += HandleControls;
+        FileExplorerViewModel.OnSendCommandToMainView += HandleControls;
         TabsViewModel.OnSendCommandToMainView += HandleControls;
     }
 
@@ -70,6 +78,7 @@ public class MainViewViewModel : ViewModelBase
         var imagesInPath = command.ImagesInPath;
         string? path;
         string? parentDirName;
+        ImageTabViewModel imageTabViewModel;
         switch (command.Type)
         {
             case CommandType.OpenImageInNewTab:
@@ -77,21 +86,20 @@ public class MainViewViewModel : ViewModelBase
                 path = imagesInPath[command.Index];
                 parentDirName = Directory.GetParent(path)?.Name;
                 if (parentDirName is null) return;
-                var t = new ImageTabViewModel(imagesInPath[command.Index], imagesInPath, command.Index);
-                t.Header = t.TabHeaderContent;
-                AddTabViewModelToOpenTabs(t);
+                imageTabViewModel =
+                    new ImageTabViewModel(imagesInPath[command.Index], imagesInPath, command.Index);
+                AddTabViewModelToOpenTabs(imageTabViewModel);
                 break;
             case CommandType.OpenFolderInNewTab:
                 if (imagesInPath is null) return;
                 path = imagesInPath.First();
                 parentDirName = Directory.GetParent(path)?.Name;
                 if (parentDirName is null) return;
-                var tt = new ImageTabViewModel(parentDirName, imagesInPath, 0);
-                tt.Header = tt.TabHeaderContent;
-                AddTabViewModelToOpenTabs(tt);
+                imageTabViewModel = new ImageTabViewModel(parentDirName, imagesInPath, 0);
+                AddTabViewModelToOpenTabs(imageTabViewModel);
                 break;
             case CommandType.SendMessageToStatusBar:
-                StatusBarMessage = command.Message;
+                if (command.Message != null) StatusBarMessage = command.Message;
                 break;
         }
     }
@@ -167,7 +175,7 @@ public class MainViewViewModel : ViewModelBase
                 }
                 else
                 {
-                    FileExplorerViewModel.SelectedIndex = Math.Max(0, FileExplorerViewModel.SelectedIndex - 1);
+                    FileExplorerViewModel.SelectedIndex -= 1;
                 }
 
                 break;
@@ -187,8 +195,7 @@ public class MainViewViewModel : ViewModelBase
                 }
                 else
                 {
-                    FileExplorerViewModel.SelectedIndex = Math.Min(FileExplorerViewModel.FilesInDir.Count - 1,
-                        FileExplorerViewModel.SelectedIndex + 1);
+                    FileExplorerViewModel.SelectedIndex += 1;
                 }
 
                 break;
@@ -226,21 +233,84 @@ public class MainViewViewModel : ViewModelBase
             case {Key: Key.W, KeyModifiers: KeyModifiers.Shift}:
                 TabsViewModel.FitToWidth(_mainWindow.Bounds.Size.Width - 50);
                 break;
+            case {Key: Key.Tab, KeyModifiers: KeyModifiers.Control}:
+                switch (FileExplorerViewModel)
+                {
+                    case {IsFileExplorerVisible: false}:
+                    case {IsFileExplorerExpanded: false}:
+                        TabsViewModel.SwitchTab();
+                        break;
+                }
+
+                break;
+            case {Key: Key.H}:
+            case {Key: Key.Left}:
+            case {Key: Key.PageUp}:
+                switch (FileExplorerViewModel)
+                {
+                    case {IsFileExplorerVisible: false}:
+                    case {IsFileExplorerExpanded: false}:
+                        TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
+                        break;
+                }
+
+                break;
+            case {Key: Key.L}:
+            case {Key: Key.Right}:
+            case {Key: Key.PageDown}:
+                switch (FileExplorerViewModel)
+                {
+                    case {IsFileExplorerVisible: false}:
+                    case {IsFileExplorerExpanded: false}:
+                        TabsViewModel.ImageTabViewModel?.LoadNextImage();
+                        break;
+                }
+
+                break;
+            case {Key: Key.Home}:
+                switch (FileExplorerViewModel)
+                {
+                    case {IsFileExplorerVisible: false}:
+                    case {IsFileExplorerExpanded: false}:
+                        TabsViewModel.ImageTabViewModel?.LoadFirstImage();
+                        break;
+                }
+
+                break;
+            case {Key: Key.End}:
+                switch (FileExplorerViewModel)
+                {
+                    case {IsFileExplorerVisible: false}:
+                    case {IsFileExplorerExpanded: false}:
+                        TabsViewModel.ImageTabViewModel?.LoadLastImage();
+                        break;
+                }
+
+                break;
         }
     }
 
     private void ToggleFullScreen()
     {
-        _mainWindow.WindowState = _mainWindow.WindowState is WindowState.FullScreen
-            ? WindowState.Normal
-            : WindowState.FullScreen;
+        if (_mainWindow.WindowState is WindowState.Normal)
+        {
+            _mainWindow.WindowState = WindowState.FullScreen;
+            MenuBarViewModel.IsMenuVisible = false;
+            IsStatusBarVisible = false;
+        }
+        else
+        {
+            _mainWindow.WindowState = WindowState.Normal;
+            MenuBarViewModel.IsMenuVisible = true;
+            IsStatusBarVisible = true;
+        }
     }
 
-    private void AddTabViewModelToOpenTabs(TabViewModel tabViewModel)
+    private void AddTabViewModelToOpenTabs(TabViewModelBase tabViewModelBase)
     {
         // var any = OpenTabs.Any(x => x.ImagesInPath.First() == tabViewModel.ImagesInPath.First());
         // if (!any)
 
-        TabsViewModel.AddTab(tabViewModel);
+        TabsViewModel.AddTab(tabViewModelBase);
     }
 }

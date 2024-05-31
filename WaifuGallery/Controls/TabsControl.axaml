@@ -2,24 +2,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
              xmlns:controls="clr-namespace:WaifuGallery.Controls"
+             xmlns:hero="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
+             xmlns:tabs="clr-namespace:WaifuGallery.ViewModels.Tabs"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:DataType="viewModels:TabsViewModel"
+             x:DataType="tabs:TabsViewModel"
              x:Class="WaifuGallery.Controls.TabsControl"
              Name="TabsUserControl">
     <Grid RowDefinitions="Auto,*">
+        <!-- Tab Headers -->
+
         <ListBox Grid.Row="0" Name="ImagesTabControl"
                  ItemsSource="{Binding  OpenTabs}"
                  MaxHeight="35"
                  PointerReleased="InputElement_OnPointerReleased"
                  ZIndex="9"
-                 SelectedItem="{Binding SelectedTab}">
+                 SelectedItem="{Binding SelectedTab}"
+                 SelectedIndex="{Binding SelectedTabIndex}">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"
-                                PointerEntered="TabHeader_OnPointerEntered_ToggleCloseButton"
-                                PointerExited="TabHeader_OnPointerExited_ToggleCloseButton" />
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Close Tab" Command="{Binding CloseTabCommand}">
+                                    <MenuItem.Icon>
+                                        <hero:HeroIcon Type="XMark" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                    </StackPanel>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
@@ -30,13 +42,13 @@
         </ListBox>
         <!-- Image Tab -->
         <Grid Grid.Row="1" IsVisible="{Binding !IsSelectedTabSettingsTab}"
-              Background="Red"
+              Background="Transparent"
               PointerWheelChanged="ImageInTab_OnPointerWheelChanged">
-            <Image Name="ImageTabContent" Margin="5" />
+            <controls:ImageTab DataContext="{Binding ImageTabViewModel}" />
         </Grid>
         <!-- Settings Tab -->
         <Grid Grid.Row="1" IsVisible="{Binding IsSelectedTabSettingsTab}">
-            <controls:SettingsControl DataContext="{Binding  TabSettingsViewModel}" />
+            <controls:SettingsTab DataContext="{Binding  TabSettingsViewModel}" />
         </Grid>
     </Grid>
 </UserControl>

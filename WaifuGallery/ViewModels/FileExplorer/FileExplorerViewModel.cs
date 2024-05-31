@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -15,7 +15,7 @@ using ReactiveUI;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
-namespace WaifuGallery.ViewModels;
+namespace WaifuGallery.ViewModels.FileExplorer;
 
 public class FileExplorerViewModel : ViewModelBase
 {
@@ -24,14 +24,16 @@ public class FileExplorerViewModel : ViewModelBase
     private ObservableCollection<FileViewModel> _filesInDir = [];
     private ScrollBarVisibility _scrollBarVisibility = ScrollBarVisibility.Auto;
 
+    private Brush? _fileExplorerBackground;
+    private FileViewModel[] _selectedItem;
     private bool _isFileExplorerExpanded = true;
     private bool _isFileExplorerVisible = true;
     private bool _isSearchFocused;
     private int _columnsCount;
-    private int _selectedIndexInFileExplorer;
     private int _imagesInPathCount = 0;
+    private int _selectedIndexInFileExplorer;
+    private bool _isPointerOver;
     private readonly List<string> _pathHistory = [];
-    private FileViewModel[] _selectedItem;
 
     public FileViewModel[] SelectedItem
     {
@@ -61,12 +63,24 @@ public class FileExplorerViewModel : ViewModelBase
         }
     }
 
-    private string _currentPath = "";
+    private string _currentPath = string.Empty;
     private string[]? _cachedImagesPath;
 
     #endregion
 
     #region Public Properties
+
+    public bool IsPointerOver
+    {
+        get => _isPointerOver;
+        set => this.RaiseAndSetIfChanged(ref _isPointerOver, value);
+    }
+
+    public Brush? FileExplorerBackground
+    {
+        get => _fileExplorerBackground;
+        set => this.RaiseAndSetIfChanged(ref _fileExplorerBackground, value);
+    }
 
     public PreviewImageViewModel PreviewImageViewModel { get; }
 
@@ -93,7 +107,11 @@ public class FileExplorerViewModel : ViewModelBase
     public bool IsFileExplorerExpanded
     {
         get => _isFileExplorerExpanded;
-        set => this.RaiseAndSetIfChanged(ref _isFileExplorerExpanded, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _isFileExplorerExpanded, value);
+            FileExplorerBackground = IsFileExplorerExpanded ? new SolidColorBrush(Colors.Transparent) : null;
+        }
     }
 
     public bool IsSearchFocused
@@ -113,9 +131,11 @@ public class FileExplorerViewModel : ViewModelBase
         get => _selectedIndexInFileExplorer;
         set
         {
-            Console.WriteLine($"Value:{value} ,_selectedIndexInFileExplorer: {_selectedIndexInFileExplorer}");
             if (value < 0)
                 value = 0;
+
+            if (value >= FilesInDir.Count)
+                value = FilesInDir.Count - 1;
 
             this.RaiseAndSetIfChanged(ref _selectedIndexInFileExplorer, value);
         }
@@ -150,6 +170,8 @@ public class FileExplorerViewModel : ViewModelBase
         {
             CurrentPath = "/home/arno/Downloads";
         }
+
+        FileExplorerBackground = new SolidColorBrush(Colors.Transparent);
     }
 
     #endregion
@@ -168,7 +190,7 @@ public class FileExplorerViewModel : ViewModelBase
         ScrollBarVisibility = ScrollBarVisibility.Auto;
     }
 
-    private async void GetFilesFromPath(string path)
+    private void GetFilesFromPath(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return;
         if (path.Last() is '\\')
@@ -186,60 +208,59 @@ public class FileExplorerViewModel : ViewModelBase
             .Where(file => ImagesHelper.ImageFileExtensions.Contains(file.Extension.ToLower()))
             .OrderBy(f => f.Name, new NaturalSortComparer())
             .ToArray();
-        await SetDirsAndFiles(dirs, imagesFileInfo);
+        SetDirsAndFiles(dirs, imagesFileInfo);
         _pathHistory.Add(currentPathDirectoryInfo.FullName);
     }
 
-    private async Task SetDirsAndFiles(DirectoryInfo[] dirs, FileInfo[] imagesFileInfo)
+    private void SetDirsAndFiles(DirectoryInfo[] dirs, FileInfo[] imagesFileInfo)
     {
         // If dir not empty call SetDirs
         if (dirs is not {Length: 0})
-            await SetDirs(dirs);
+            SetDirs(dirs);
         // If images not empty call SetFiles and set _imagesInPathCount
         if (imagesFileInfo is not {Length: 0})
         {
-            await SetFiles(imagesFileInfo);
+            SetFiles(imagesFileInfo);
             _imagesInPathCount = imagesFileInfo.Length;
         }
     }
 
-    private async Task SetDirs(DirectoryInfo[] dirs)
+    private void SetDirs(DirectoryInfo[] dirs)
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        foreach (var dir in dirs)
         {
-            foreach (var dir in dirs)
-            {
-                SetDir(dir);
-            }
-        });
+            SetDir(dir);
+        }
     }
 
-    private async Task SetFiles(FileInfo[] files)
+    private async void SetFiles(FileInfo[] files)
     {
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             foreach (var file in files)
             {
-                await SetFile(file);
+                SetFile(file);
             }
         });
     }
 
-    private void SetDir(DirectoryInfo dir)
+    private async void SetDir(DirectoryInfo dir)
     {
         // if (dir.Parent?.FullName != CurrentPath)
         // {
         //     FilesInDir.Clear();
         //     return;
         // }
-
-        var fileViewModel = new FileViewModel(dir.Parent?.FullName, dir.Name);
-        fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
-        FilesInDir.Add(fileViewModel);
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var fileViewModel = new FileViewModel(dir.Parent?.FullName, dir.Name);
+            fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
+            FilesInDir.Add(fileViewModel);
+        });
     }
 
 
-    private async Task SetFile(FileInfo fileInfo)
+    private async void SetFile(FileInfo fileInfo)
     {
         // If we are not in CurrentPath, clear FilesInDir and return
         if (fileInfo.DirectoryName != CurrentPath)
@@ -275,11 +296,11 @@ public class FileExplorerViewModel : ViewModelBase
         FilesInDir.Add(fileViewModel);
     }
 
-    public event EventHandler<Command> OnSendMessageToMainView;
+    public event EventHandler<Command> OnSendCommandToMainView;
 
     private void SendCommandToMainView(Command command)
     {
-        OnSendMessageToMainView.Invoke(this, command);
+        OnSendCommandToMainView.Invoke(this, command);
     }
 
     private void HandleFileCommand(object? sender, Command command)
@@ -324,14 +345,10 @@ public class FileExplorerViewModel : ViewModelBase
             Title = "Open Folder",
             AllowMultiple = false,
         });
-        if (result.Count is not 1)
-            return;
+
+        if (result.Count == 0) return;
         var path = result[0].Path;
-        var last = path.Segments.Last();
-        var newPath = path.AbsolutePath.Replace(last, "").Replace("/", "\\");
-        var i = newPath.Length - 1;
-        newPath = newPath[..i];
-        ChangePath(newPath);
+        ChangePath(path.LocalPath);
     }
 
 
@@ -354,7 +371,7 @@ public class FileExplorerViewModel : ViewModelBase
 
     #region Public Methods
 
-    public void SendMessageToStatusBar(string message)
+    private void SendMessageToStatusBar(string message)
     {
         var command = new Command(CommandType.SendMessageToStatusBar, message: message);
         SendCommandToMainView(command);
