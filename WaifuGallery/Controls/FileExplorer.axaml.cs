@@ -1,10 +1,8 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media;
-using WaifuGallery.ViewModels;
 using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Controls;
@@ -72,10 +70,12 @@ public partial class FileExplorer : UserControl
         const int offset = 20;
         var x = gridSize.Width - previewImageSize.Width;
         var y = gridSize.Height - previewImageSize.Height;
+        x -= offset;
+        y -= offset;
         if (x < 0) x = 0;
         if (y < 0) y = 0;
-        var xClamp = Math.Clamp(pointerPosition.X, 0, x - offset);
-        var yClamp = Math.Clamp(pointerPosition.Y, 0, y - offset);
+        var xClamp = Math.Clamp(pointerPosition.X, 0, x);
+        var yClamp = Math.Clamp(pointerPosition.Y, 0, y);
         return new Point(xClamp, yClamp);
     }
 }

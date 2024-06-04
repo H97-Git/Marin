@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using WaifuGallery.ViewModels;
 using WaifuGallery.ViewModels.Tabs;
 
 namespace WaifuGallery.Helpers;

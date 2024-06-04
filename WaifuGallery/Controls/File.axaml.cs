@@ -4,7 +4,6 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
-using WaifuGallery.ViewModels;
 using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Controls;

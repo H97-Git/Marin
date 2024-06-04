@@ -128,9 +128,11 @@ public class MainViewViewModel : ViewModelBase
                 break;
             case CommandType.FitToWidth:
                 StatusBarMessage = $"FitToWidth";
+                TabsViewModel.FitToHeight(_mainWindow.Bounds.Size.Height - 50);
                 break;
             case CommandType.FitToHeight:
                 StatusBarMessage = $"FitToHeight";
+                TabsViewModel.FitToWidth(_mainWindow.Bounds.Size.Width - 50);
                 break;
             default:
                 StatusBarMessage = "Command not found!";

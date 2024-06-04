@@ -18,6 +18,7 @@ public class ImageTabViewModel : TabViewModelBase
     private string _imagePath;
     private string _tabHeaderContent;
     private string[] _imagesInPath;
+    private Point _imagePosition;
 
     #endregion
 
@@ -33,6 +34,12 @@ public class ImageTabViewModel : TabViewModelBase
     {
         get => _imageSize;
         set => this.RaiseAndSetIfChanged(ref _imageSize, value);
+    }
+
+    public Point ImagePosition
+    {
+        get => _imagePosition;
+        set => this.RaiseAndSetIfChanged(ref _imagePosition, value);
     }
 
     public int Index

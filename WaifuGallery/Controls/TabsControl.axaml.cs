@@ -1,7 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Media.Imaging;
-using WaifuGallery.ViewModels;
 using WaifuGallery.ViewModels.Tabs;
 
 namespace WaifuGallery.Controls;
@@ -15,6 +13,7 @@ public partial class TabsControl : UserControl
         InitializeComponent();
         ImagesTabControl.SelectionChanged += ImagesTabControl_OnSelectionChanged;
     }
+
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
