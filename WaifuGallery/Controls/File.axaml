@@ -10,7 +10,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns="https://github.com/avaloniaui"
     xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer">
-    <Grid ColumnDefinitions="*" RowDefinitions="*,Auto" Width="165">
+    <Grid RowDefinitions="*,Auto" Width="165">
+        <ToolTip.Tip>
+            <StackPanel>
+                <TextBlock FontSize="16" Text="{Binding FileName}"/>
+                <TextBlock Text="{Binding ParentPath}" />
+                <TextBlock Text="{Binding CreatedTime}" />
+                <TextBlock Text="{Binding LastAccessTime}" />
+                <TextBlock Text="{Binding SizeInHumanReadable}" />
+            </StackPanel>
+        </ToolTip.Tip>
         <!-- Image Thumbnail -->
         <Border Grid.Row="0"
                 ClipToBounds="True"
@@ -19,7 +28,7 @@
             <Image
                 Height="{Binding ImageSize.Height}"
                 Width="{Binding ImageSize.Width}"
-                Source="{Binding Image}"
+                Source="{Binding Thumbnail}"
                 Stretch="UniformToFill" />
         </Border>
         <!-- Folder Icon -->

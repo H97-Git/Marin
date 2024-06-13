@@ -6,7 +6,7 @@ using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Helpers;
 
-public abstract class ImagesHelper
+public abstract class Helper
 {
     #region Public Members
 
@@ -48,6 +48,12 @@ public abstract class ImagesHelper
             ? new DirectoryInfo(fileViewModel.ParentPath)
             : new DirectoryInfo(fileViewModel.FullPath);
         return GetAllImagesInPath(directoryInfo);
+    }
+
+    public static long GetDirectorySizeInByte(FileSystemInfo fileSystemInfo)
+    {
+        var files = Directory.GetFiles(fileSystemInfo.FullName, "*.*", SearchOption.AllDirectories);
+        return files.Select(file => new FileInfo(file)).Select(fileInfo => fileInfo.Length).Sum();
     }
 
     #endregion

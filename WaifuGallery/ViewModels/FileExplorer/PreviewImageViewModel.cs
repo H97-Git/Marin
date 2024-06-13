@@ -16,6 +16,14 @@ public class PreviewImageViewModel : ViewModelBase
     private bool _isPreviewImageVisible;
     private int _previewImageIndex;
     private string[] _previewImagePaths = [];
+    private string _previewImageCounter = "0/0";
+
+    public string PreviewCounter
+    {
+        get => _previewImageCounter;
+        set => this.RaiseAndSetIfChanged(ref _previewImageCounter, value);
+    }
+
 
     private int PreviewImageIndex
     {
@@ -28,7 +36,8 @@ public class PreviewImageViewModel : ViewModelBase
             if (value >= _previewImagePaths.Length)
                 value = _previewImagePaths.Length - 1;
             _previewImageIndex = value;
-            PreviewImage = new Bitmap(_previewImagePaths[PreviewImageIndex]);
+            PreviewCounter = $"{_previewImageIndex + 1}/{_previewImagePaths.Length}";
+            PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using Avalonia;
 using Avalonia.Media.Imaging;
@@ -12,22 +13,25 @@ public sealed class FileViewModel : ViewModelBase
 {
     #region Private Members
 
-    private Bitmap? _image;
+    private Bitmap? _thumbnail;
     private Size _imageSize;
     private bool _isImage;
     private readonly FileSystemInfo _fileSystemInfo;
     private readonly string _fileName = string.Empty;
+    private string _createdTime = string.Empty;
+    private string _lastAccessTime = string.Empty;
+    private long _sizeInBytes;
 
     #endregion
 
     #region Public Properties
 
-    public Bitmap? Image
+    public Bitmap? Thumbnail
     {
-        get => _image;
+        get => _thumbnail;
         set
         {
-            this.RaiseAndSetIfChanged(ref _image, value);
+            this.RaiseAndSetIfChanged(ref _thumbnail, value);
             ResizeThumbnail();
         }
     }
@@ -49,7 +53,39 @@ public sealed class FileViewModel : ViewModelBase
         get => _fileName;
         private init => this.RaiseAndSetIfChanged(ref _fileName, value);
     }
+
+    public string LastAccessTime
+    {
+        get => _lastAccessTime;
+        set => this.RaiseAndSetIfChanged(ref _lastAccessTime, value);
+    }
+
+    public string CreatedTime
+    {
+        get => _createdTime;
+        set => this.RaiseAndSetIfChanged(ref _createdTime, value);
+    }
+
+    public long SizeInBytes
+    {
+        get => _sizeInBytes;
+        set => this.RaiseAndSetIfChanged(ref _sizeInBytes, value);
+    }
     
+    public string SizeInHumanReadable
+    {
+        get
+        {
+            if (SizeInBytes < 1024)
+                return $"{SizeInBytes} B";
+            if (SizeInBytes < 1024 * 1024)
+                return $"{SizeInBytes / 1024} KB";
+            if (SizeInBytes < 1024 * 1024 * 1024)
+                return $"{SizeInBytes / 1024 / 1024} MB";
+            return $"{SizeInBytes / 1024 / 1024 / 1024} GB";
+        }
+    }
+
     public string FullPath => _fileSystemInfo.FullName;
     public string? ParentPath { get; }
 
@@ -57,19 +93,32 @@ public sealed class FileViewModel : ViewModelBase
 
     #region CTOR
 
-    public FileViewModel(FileSystemInfo fileSystemInfo, Bitmap? image = null)
+    public FileViewModel(FileSystemInfo fileSystemInfo, Bitmap? thumbnail = null)
     {
         _fileSystemInfo = fileSystemInfo;
-        ParentPath = _fileSystemInfo switch
+        switch (fileSystemInfo)
         {
-            DirectoryInfo directoryInfo => directoryInfo.Parent?.FullName,
-            FileInfo fileInfo => fileInfo.DirectoryName,
-            _ => ParentPath
-        };
+            case DirectoryInfo directoryInfo:
+                ParentPath = directoryInfo.Parent?.FullName;
+                SizeInBytes = Helper.GetDirectorySizeInByte(fileSystemInfo);
+                break;
+            case FileInfo fileInfo:
+                ParentPath = fileInfo.DirectoryName;
+                SizeInBytes = fileInfo.Length;
+                break;
+        }
+
+        CreatedTime = fileSystemInfo.CreationTime.ToString(CultureInfo.InvariantCulture);
+        LastAccessTime = fileSystemInfo.LastAccessTime.ToString(CultureInfo.InvariantCulture);
+
 
         FileName = fileSystemInfo.Name;
-        if (image is null) return;
-        Image = image;
+
+        SizeInBytes = Helper.GetDirectorySizeInByte(fileSystemInfo);
+
+
+        if (thumbnail is null) return;
+        Thumbnail = thumbnail;
         IsImage = true;
     }
 
@@ -85,11 +134,11 @@ public sealed class FileViewModel : ViewModelBase
 
     private void ResizeThumbnail()
     {
-        if (Image is null) return;
-        var isPortrait = Image.Size.Width < Image.Size.Height;
+        if (Thumbnail is null) return;
+        var isPortrait = Thumbnail.Size.Width < Thumbnail.Size.Height;
         ImageSize = isPortrait
-            ? ImagesHelper.GetScaledSizeByHeight(Image, 100)
-            : ImagesHelper.GetScaledSizeByWidth(Image, 100);
+            ? Helper.GetScaledSizeByHeight(Thumbnail, 100)
+            : Helper.GetScaledSizeByWidth(Thumbnail, 100);
     }
 
     #endregion

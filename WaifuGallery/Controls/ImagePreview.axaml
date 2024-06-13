@@ -16,11 +16,14 @@
                 BorderBrush="Gray"
                 BorderThickness="3"
                 IsVisible="{Binding IsPreviewImageVisible}">
-            <Image Name="PreviewImage"
-                   Stretch="UniformToFill"
-                   Source="{Binding PreviewImage}"
-                   Width="{Binding PreviewImageSize.Width}"
-                   Height="{Binding PreviewImageSize.Height}" />
+            <Grid>
+                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="{Binding PreviewCounter}" ZIndex="1" MaxHeight="40" />
+                <Image Name="PreviewImage"
+                       Stretch="UniformToFill"
+                       Source="{Binding PreviewImage}"
+                       Width="{Binding PreviewImageSize.Width}"
+                       Height="{Binding PreviewImageSize.Height}" />
+            </Grid>
         </Border>
     </Canvas>
 </UserControl>

@@ -196,7 +196,7 @@ public class FileExplorerViewModel : ViewModelBase
     {
         var dirs = currentDir.GetDirectories();
         var imagesFileInfo = currentDir.GetFiles()
-            .Where(file => ImagesHelper.ImageFileExtensions.Contains(file.Extension.ToLower()))
+            .Where(file => Helper.ImageFileExtensions.Contains(file.Extension.ToLower()))
             .OrderBy(f => f.Name, new NaturalSortComparer())
             .ToArray();
         // If dir not empty call SetDirs
@@ -242,7 +242,7 @@ public class FileExplorerViewModel : ViewModelBase
             // Check if dir exists, if not create it
             CheckDirAndCreate(dirInCacheForCurrentFile);
             // Get all files in the directory
-            _cachedImagesPath ??= ImagesHelper.GetAllImagesInPathFromString(dirInCacheForCurrentFile);
+            _cachedImagesPath ??= Helper.GetAllImagesInPathFromString(dirInCacheForCurrentFile);
 
             // Create an instance of the Bitmap object
             Bitmap? image;
@@ -412,7 +412,7 @@ public class FileExplorerViewModel : ViewModelBase
 
     public void OpenImageTab()
     {
-        var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(SelectedFile);
+        var imagesInPath = Helper.GetAllImagesInPathFromFileViewModel(SelectedFile);
         var command = SelectedFile.IsImage
             ? new Command(CommandType.OpenImageInNewTab, imagesInPath, SelectedFile.FullPath, SelectedIndex)
             : new Command(CommandType.OpenFolderInNewTab, imagesInPath, SelectedFile.FullPath);

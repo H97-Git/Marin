@@ -124,10 +124,10 @@ public class ImageTabViewModel : TabViewModelBase
     }
 
     public void ResizeImageByHeight(double targetHeight) =>
-        ImageSize = ImagesHelper.GetScaledSizeByHeight(_bitmapImage, (int) targetHeight);
+        ImageSize = Helper.GetScaledSizeByHeight(_bitmapImage, (int) targetHeight);
 
     public void ResizeImageByWidth(double targetHeight) =>
-        ImageSize = ImagesHelper.GetScaledSizeByWidth(_bitmapImage, (int) targetHeight);
+        ImageSize = Helper.GetScaledSizeByWidth(_bitmapImage, (int) targetHeight);
 
     public void ZoomImage(double deltaY)
     {

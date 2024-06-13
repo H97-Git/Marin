@@ -213,7 +213,7 @@ public class MainViewViewModel : ViewModelBase
                 break;
             case {Key: Key.P}:
                 var imagesInPath =
-                    ImagesHelper.GetAllImagesInPathFromString(FileExplorerViewModel.SelectedFile.FullPath);
+                    Helper.GetAllImagesInPathFromString(FileExplorerViewModel.SelectedFile.FullPath);
                 FileExplorerViewModel.StartPreview(imagesInPath);
                 break;
             case {Key: Key.Escape}:

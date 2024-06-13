@@ -59,7 +59,7 @@ public partial class File : UserControl
     {
         if (!_previewTimer.IsEnabled) return;
         if (FileViewModel is null) return;
-        var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(FileViewModel);
+        var imagesInPath = Helper.GetAllImagesInPathFromFileViewModel(FileViewModel);
         if (imagesInPath is {Length: 0}) return;
         var command = new Command(CommandType.StartPreview, path: FileViewModel?.FullPath, imagesInPath: imagesInPath);
         _previewTimer.Stop();
@@ -75,7 +75,7 @@ public partial class File : UserControl
         if (e.InitialPressMouseButton is not MouseButton.Middle) return;
         if (FileViewModel is null) return;
 
-        var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(FileViewModel);
+        var imagesInPath = Helper.GetAllImagesInPathFromFileViewModel(FileViewModel);
         if (imagesInPath is {Length: 0}) return;
 
         Command command;
