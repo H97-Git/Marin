@@ -30,7 +30,7 @@ public partial class MainWindow : Window
         Console.WriteLine(e.KeyModifiers is KeyModifiers.None
             ? $"{e.Key} MainWindow"
             : $"{e.Key} {e.KeyModifiers} MainWindow");
-        if (e.Key == Key.Tab)
+        if (e.Key is Key.Tab)
         {
             e.Handled = true;
         }

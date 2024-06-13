@@ -28,5 +28,6 @@ public enum CommandType
     ToggleFileExplorer,
     ToggleFileExplorerVisibility,
     ToggleFullScreen,
+    ToggleFileExplorerScrollBar,
     SendMessageToStatusBar,
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using Avalonia;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using WaifuGallery.Helpers;
@@ -11,11 +13,10 @@ public sealed class FileViewModel : ViewModelBase
     #region Private Members
 
     private Bitmap? _image;
+    private Size _imageSize;
     private bool _isImage;
-    private int _imageHeight;
-    private int _imageWidth;
+    private readonly FileSystemInfo _fileSystemInfo;
     private readonly string _fileName = string.Empty;
-    private readonly string _parentDirPath = string.Empty;
 
     #endregion
 
@@ -37,30 +38,39 @@ public sealed class FileViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _isImage, value);
     }
 
-    public int ImageHeight
+    public Size ImageSize
     {
-        get => _imageHeight;
-        set => this.RaiseAndSetIfChanged(ref _imageHeight, value);
+        get => _imageSize;
+        set => this.RaiseAndSetIfChanged(ref _imageSize, value);
     }
-
-    public int ImageWidth
-    {
-        get => _imageWidth;
-        set => this.RaiseAndSetIfChanged(ref _imageWidth, value);
-    }
-
-    public string FullPath => ParentDirPath + "\\" + FileName;
 
     public string FileName
     {
         get => _fileName;
         private init => this.RaiseAndSetIfChanged(ref _fileName, value);
     }
+    
+    public string FullPath => _fileSystemInfo.FullName;
+    public string? ParentPath { get; }
 
-    public string ParentDirPath
+    #endregion
+
+    #region CTOR
+
+    public FileViewModel(FileSystemInfo fileSystemInfo, Bitmap? image = null)
     {
-        get => _parentDirPath;
-        private init => this.RaiseAndSetIfChanged(ref _parentDirPath, value);
+        _fileSystemInfo = fileSystemInfo;
+        ParentPath = _fileSystemInfo switch
+        {
+            DirectoryInfo directoryInfo => directoryInfo.Parent?.FullName,
+            FileInfo fileInfo => fileInfo.DirectoryName,
+            _ => ParentPath
+        };
+
+        FileName = fileSystemInfo.Name;
+        if (image is null) return;
+        Image = image;
+        IsImage = true;
     }
 
     #endregion
@@ -69,42 +79,26 @@ public sealed class FileViewModel : ViewModelBase
 
     public event EventHandler<Command>? OnSendCommandToFileExplorer;
 
-    public void SendCommandToFileExplorer(Command command)
-    {
-        OnSendCommandToFileExplorer?.Invoke(this, command);
-    }
-
-    #endregion
-
-    #region CTOR
-
-    public FileViewModel(string parentDirPath, string fileName, Bitmap? image = null)
-    {
-        ParentDirPath = parentDirPath;
-        FileName = fileName;
-        if (image is null) return;
-        Image = image;
-        IsImage = true;
-    }
-
     #endregion
 
     #region Private Methods
 
     private void ResizeThumbnail()
     {
-        if (Image == null) return;
-        // Console.WriteLine($"ResizeThumbnail: {Image.Size.Width}x{Image.Size.Height}");
-        var imageSize = Image.Size.Width < Image.Size.Height
-            ?
-            // Image is vertical
-            ImagesHelper.GetScaledSizeByHeight(Image, 100)
-            :
-            // Image is horizontal
-            ImagesHelper.GetScaledSizeByWidth(Image, 100);
+        if (Image is null) return;
+        var isPortrait = Image.Size.Width < Image.Size.Height;
+        ImageSize = isPortrait
+            ? ImagesHelper.GetScaledSizeByHeight(Image, 100)
+            : ImagesHelper.GetScaledSizeByWidth(Image, 100);
+    }
 
-        ImageWidth = (int) imageSize.Width;
-        ImageHeight = (int) imageSize.Height;
+    #endregion
+
+    #region Public Methods
+
+    public void SendCommandToFileExplorer(Command command)
+    {
+        OnSendCommandToFileExplorer?.Invoke(this, command);
     }
 
     #endregion

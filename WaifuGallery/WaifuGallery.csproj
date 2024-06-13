@@ -13,6 +13,7 @@
     <ItemGroup>
         <PackageReference Include="ActiproSoftware.Controls.Avalonia" Version="24.1.0" />
         <PackageReference Include="Avalonia" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.0.0.3" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />

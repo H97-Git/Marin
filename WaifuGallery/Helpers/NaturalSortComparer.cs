@@ -9,23 +9,23 @@ public class NaturalSortComparer : IComparer<string>
 {
     public int Compare(string? x, string? y)
     {
-        if (x == null && y == null) return 0;
-        if (x == null) return -1;
-        if (y == null) return 1;
+        if (x is null && y is null) return 0;
+        if (x is null) return -1;
+        if (y is null) return 1;
 
         var xx = Path.GetFileNameWithoutExtension(x);
         var yy = Path.GetFileNameWithoutExtension(y);
 
-        if (xx == null && yy == null) return 0;
-        if (xx == null) return -1;
-        if (yy == null) return 1;
+        if (xx is null && yy is null) return 0;
+        if (xx is null) return -1;
+        if (yy is null) return 1;
 
         var nx = GetNumericValue(xx);
         var ny = GetNumericValue(yy);
 
-        if (nx == null && ny == null) return 0;
-        if (nx == null) return -1;
-        if (ny == null) return 1;
+        if (nx is null && ny is null) return 0;
+        if (nx is null) return -1;
+        if (ny is null) return 1;
         var nxx = (int) nx;
         var compareNumeric = nxx.CompareTo(ny);
         if (compareNumeric != 0)

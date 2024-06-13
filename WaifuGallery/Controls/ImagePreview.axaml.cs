@@ -12,6 +12,17 @@ public partial class ImagePreview : UserControl
     private void ImagePreview_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         var properties = e.GetCurrentPoint(this).Properties;
+
+        if (properties.IsXButton1Pressed)
+        {
+            PreviewImageViewModel?.NextPreview();
+        }
+
+        if (properties.IsXButton2Pressed)
+        {
+            PreviewImageViewModel?.PreviousPreview();
+        }
+
         if (properties.IsLeftButtonPressed || properties.IsRightButtonPressed)
             PreviewImageViewModel?.ClosePreview();
     }

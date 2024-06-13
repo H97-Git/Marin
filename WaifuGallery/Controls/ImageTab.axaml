@@ -6,15 +6,16 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="tabs:ImageTabViewModel"
              x:Class="WaifuGallery.Controls.ImageTab">
-    <Canvas Background="Transparent" Name="ImageCanvas" ClipToBounds="True">
-        <Image
-            Canvas.Left="{Binding  ImagePosition.X}"
-            Canvas.Top="{Binding   ImagePosition.Y}"
-            ClipToBounds="True"
-            Margin="5"
-            Name="ImageInTab"
-            Source="{Binding BitmapImage}"
-            Width="{Binding ImageSize.Width}"
-            Height="{Binding ImageSize.Height}" />
-    </Canvas>
+    <!-- <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"> -->
+    <Grid>
+        <ZoomBorder Name="ZoomBorder">
+            <Image
+                ClipToBounds="True"
+                Name="ImageInTab"
+                Source="{Binding BitmapImage}"
+                Width="{Binding ImageSize.Width}"
+                Height="{Binding ImageSize.Height}" />
+        </ZoomBorder>
+    </Grid>
+    <!-- </ScrollViewer> -->
 </UserControl>

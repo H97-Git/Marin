@@ -55,7 +55,7 @@ public partial class FileExplorer : UserControl
     {
         // if (e.KeyModifiers is not KeyModifiers.Control) return;
         if (sender is not Grid grid) return;
-        if (FileExplorerViewModel?.PreviewImageViewModel == null) return;
+        if (FileExplorerViewModel?.PreviewImageViewModel is null) return;
         var point = e.GetPosition(grid);
         var newPoint = CalcNewPoint(grid.Bounds.Size, point,
             FileExplorerViewModel.PreviewImageViewModel.PreviewImageSize);
@@ -67,15 +67,15 @@ public partial class FileExplorer : UserControl
 
     private static Point CalcNewPoint(Size gridSize, Point pointerPosition, Size previewImageSize)
     {
-        const int offset = 20;
+        const int offset = 30;
         var x = gridSize.Width - previewImageSize.Width;
         var y = gridSize.Height - previewImageSize.Height;
         x -= offset;
         y -= offset;
         if (x < 0) x = 0;
         if (y < 0) y = 0;
-        var xClamp = Math.Clamp(pointerPosition.X, 0, x);
-        var yClamp = Math.Clamp(pointerPosition.Y, 0, y);
+        var xClamp = Math.Clamp(pointerPosition.X - offset, 0, x);
+        var yClamp = Math.Clamp(pointerPosition.Y - offset, 0, y);
         return new Point(xClamp, yClamp);
     }
 }

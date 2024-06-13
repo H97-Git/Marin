@@ -18,13 +18,13 @@
     <Grid RowDefinitions="Auto,*,Auto" Name="MainGrid">
         <!-- Menu Bar-->
         <controls:MenuBar Grid.Row="0" DataContext="{Binding MenuBarViewModel}" IsVisible="{Binding IsMenuVisible}" />
-
+       
         <!-- Main Area -->
         <Grid Grid.Row="1" Name="MainArea">
             <!-- Tabs -->
             <controls:TabsControl DataContext="{Binding TabsViewModel}" />
             <!-- File Explorer -->
-            <Panel PointerReleased="InputElement_OnPointerReleased"
+            <Panel Name="FileExplorerPanel"
                    Background="{Binding FileExplorerViewModel.FileExplorerBackground}">
                 <controls:FileExplorer DataContext="{Binding FileExplorerViewModel}" Opacity="1" />
             </Panel>
@@ -35,8 +35,8 @@
                 Margin="0,0,0,0"
                 BorderBrush="Red"
                 BorderThickness="1"
-                IsVisible="{Binding IsStatusBarVisible}">
-            <Label Content="{Binding StatusBarMessage}" Foreground="White" />
+                IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}">
+            <Label Content="{Binding StatusBarViewModel.Message}" Foreground="White" />
         </Border>
     </Grid>
 </UserControl>

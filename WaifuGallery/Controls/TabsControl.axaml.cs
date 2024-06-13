@@ -1,5 +1,6 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
+﻿using System;
+using Avalonia.Controls;
+using Avalonia.Controls.PanAndZoom;
 using WaifuGallery.ViewModels.Tabs;
 
 namespace WaifuGallery.Controls;
@@ -14,30 +15,12 @@ public partial class TabsControl : UserControl
         ImagesTabControl.SelectionChanged += ImagesTabControl_OnSelectionChanged;
     }
 
-
-    private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    protected override void OnSizeChanged(SizeChangedEventArgs e)
     {
-        // Find which tab is clicked
-        if (sender is not ListBox listBox) return;
-        if (listBox.SelectedIndex < 0) return;
-        if (listBox.Items[listBox.SelectedIndex] is not ImageTabViewModel imageTabViewModel) return;
-        // Set the content of the tab
         if (TabsViewModel is null) return;
-
-        TabsViewModel.ImageTabViewModel = imageTabViewModel;
-        // var image = new Bitmap(tab.CurrentImagePath);
-        // ImageTabContent.Source = image;
+        TabsViewModel.ControlSize = TabsUserControl.Bounds.Size;
     }
-
 
     private void ImagesTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) =>
-        TabsViewModel?.FitToHeight(TabsUserControl.Bounds.Size.Height);
-
-
-    private void ImageInTab_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
-    {
-        if (sender is not Grid grid) return;
-        if (grid.DataContext is not TabsViewModel tabViewModel) return;
-        tabViewModel.ImageTabViewModel?.ZoomImage(e.Delta.Y);
-    }
+        TabsViewModel?.SelectionChanged(e);
 }

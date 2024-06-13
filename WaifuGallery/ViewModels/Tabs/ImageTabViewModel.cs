@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
@@ -12,13 +14,27 @@ public class ImageTabViewModel : TabViewModelBase
     #region Private Members
 
     private Bitmap _bitmapImage;
-    private int _index;
     private Size _imageSize;
-    private string _parentFolderName;
-    private string _imagePath;
-    private string _tabHeaderContent;
-    private string[] _imagesInPath;
     private Point _imagePosition;
+    private readonly string[] _imagesInPath;
+    private readonly string? _parentFolderName;
+    private int _index;
+
+    private int Index
+    {
+        get => _index;
+        set
+        {
+            if (value < 0)
+                value = 0;
+            if (value >= _imagesInPath.Length)
+                value = _imagesInPath.Length - 1;
+            _index = value;
+            Task.Run(LoadImageAsync);
+        }
+    }
+
+    private string CurrentImagePath => _imagesInPath[Index];
 
     #endregion
 
@@ -33,76 +49,54 @@ public class ImageTabViewModel : TabViewModelBase
     public Size ImageSize
     {
         get => _imageSize;
-        set => this.RaiseAndSetIfChanged(ref _imageSize, value);
+        private set => this.RaiseAndSetIfChanged(ref _imageSize, value);
     }
 
     public Point ImagePosition
     {
         get => _imagePosition;
-        set => this.RaiseAndSetIfChanged(ref _imagePosition, value);
-    }
-
-    public int Index
-    {
-        get => _index;
         set
         {
-            if (value < 0)
-                value = 0;
-            if (value >= ImagesInPath.Length)
-                value = ImagesInPath.Length - 1;
-            this.RaiseAndSetIfChanged(ref _index, value);
-            ChangeImage();
+            Console.WriteLine(value: $"Before value: {value}");
+            if (value.Y < 0)
+                value = new Point(value.X, 0);
+            if (value.X < 0)
+                value = new Point(0, value.Y);
+            Console.WriteLine(value: $"After value: {value}");
+            this.RaiseAndSetIfChanged(ref _imagePosition, value);
         }
-    }
-
-    public string ParentFolderName
-    {
-        get => _parentFolderName;
-        set => this.RaiseAndSetIfChanged(ref _parentFolderName, value);
-    }
-
-    public string ImagePath
-    {
-        get => _imagePath;
-        set => this.RaiseAndSetIfChanged(ref _imagePath, value);
-    }
-
-    public string[] ImagesInPath
-    {
-        get => _imagesInPath;
-        set => this.RaiseAndSetIfChanged(ref _imagesInPath, value);
     }
 
     #endregion
 
     #region CTOR
 
-    public ImageTabViewModel(string parentFolderName, string[] imagesInPath, int index)
+    public ImageTabViewModel(Guid id, string[] imagesInPath, int index)
     {
-        ParentFolderName = parentFolderName;
-        ImagesInPath = imagesInPath;
+        Id = id;
+        _imagesInPath = imagesInPath;
+        _parentFolderName = Directory.GetParent(_imagesInPath.First())?.Name;
         Index = index;
+        Header = SetTabHeaderContent();
+        Task.Run(LoadImageAsync);
+    }
+
+    private Task LoadImageAsync()
+    {
+        return Task.Run(() => { BitmapImage = new Bitmap(CurrentImagePath); });
     }
 
     #endregion
 
     #region Private Methods
 
-    private void ChangeImage()
-    {
-        ImagePath = ImagesInPath[Index];
-        BitmapImage = new Bitmap(ImagePath);
-        Header = SetTabHeaderContent();
-    }
-
     private string SetTabHeaderContent()
     {
         const int maxLength = 12;
-        var index = ParentFolderName.Length > maxLength ? maxLength : ParentFolderName.Length;
-
-        return ParentFolderName[..index] + ": " +
-               Path.GetFileNameWithoutExtension(ImagePath);
+        if (_parentFolderName is null) return Path.GetFileNameWithoutExtension(CurrentImagePath);
+        var index = _parentFolderName is {Length: > maxLength} ? maxLength : _parentFolderName.Length;
+        return _parentFolderName[..index] + ": " +
+               Path.GetFileNameWithoutExtension(CurrentImagePath);
     }
 
     #endregion
@@ -126,7 +120,7 @@ public class ImageTabViewModel : TabViewModelBase
 
     public void LoadLastImage()
     {
-        Index = ImagesInPath.Length - 1;
+        Index = _imagesInPath.Length - 1;
     }
 
     public void ResizeImageByHeight(double targetHeight) =>
@@ -137,21 +131,22 @@ public class ImageTabViewModel : TabViewModelBase
 
     public void ZoomImage(double deltaY)
     {
-        var newDelta = (int) deltaY * 100;
-        double newWidth;
-        double newHeight;
-        if (newDelta < 0)
+        const double zoomFactor = 1.1;
+        if (deltaY < 0)
         {
-            newWidth = Math.Max(200, ImageSize.Width + newDelta);
-            newHeight = Math.Max(200, ImageSize.Height + newDelta);
+            var newWidth = Math.Max(300, ImageSize.Width / zoomFactor);
+            var newHeight = Math.Max(300, ImageSize.Height / zoomFactor);
+
+            ImageSize = new Size(newWidth, newHeight);
         }
         else
         {
-            newWidth = ImageSize.Width + newDelta;
-            newHeight = ImageSize.Height + newDelta;
+            ImageSize *= zoomFactor;
+            // newWidth = ImageSize.Width + newDelta;
+            // newHeight = ImageSize.Height + newDelta;
         }
 
-        ImageSize = new Size(newWidth, newHeight);
+        // ImageSize = new Size(newWidth, newHeight);
     }
 
     #endregion

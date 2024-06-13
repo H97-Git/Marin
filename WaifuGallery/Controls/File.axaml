@@ -17,8 +17,8 @@
                 CornerRadius="5"
                 IsVisible="{Binding IsImage}">
             <Image
-                Height="{Binding ImageHeight}"
-                Width="{Binding ImageWidth}"
+                Height="{Binding ImageSize.Height}"
+                Width="{Binding ImageSize.Width}"
                 Source="{Binding Image}"
                 Stretch="UniformToFill" />
         </Border>

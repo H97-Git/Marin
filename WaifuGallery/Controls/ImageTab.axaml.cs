@@ -1,48 +1,62 @@
-﻿using Avalonia;
+﻿using System;
 using Avalonia.Controls;
+using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using WaifuGallery.ViewModels.Tabs;
 
 namespace WaifuGallery.Controls;
 
 public partial class ImageTab : UserControl
 {
-    private bool _isMouseDown;
-    private Point _startDragPosition;
-    private Point _initialImagePosition;
-
     private ImageTabViewModel? ImageTabViewModel => DataContext as ImageTabViewModel;
 
     public ImageTab()
     {
         InitializeComponent();
-        ImageCanvas.PointerPressed += Canvas_OnPointerPressed;
-        ImageCanvas.PointerReleased += Canvas_OnPointerReleased;
-        ImageCanvas.PointerMoved += Canvas_OnPointerMoved;
+        SetZoomBorder();
     }
 
-    private void Canvas_OnPointerMoved(object? sender, PointerEventArgs e)
+    private void SetZoomBorder()
     {
-        if (!_isMouseDown) return;
-
-        var currentPosition = e.GetPosition(ImageCanvas);
-        var delta = _startDragPosition - currentPosition;
-
-        if (ImageTabViewModel is null) return;
-        ImageTabViewModel.ImagePosition =
-            new Point(_initialImagePosition.X - delta.X, _initialImagePosition.Y - delta.Y);
+        ZoomBorder.ClipToBounds = true;
+        ZoomBorder.KeyDown += ZoomBorder_OnKeyDown;
+        // ZoomBorder.MaxOffsetX = 300;
+        // ZoomBorder.MaxOffsetY = 300;
+        ZoomBorder.MaxZoomX = 50;
+        ZoomBorder.MaxZoomY = 50;
+        // ZoomBorder.MinOffsetX = -100;
+        // ZoomBorder.MinOffsetY = -100;
+        ZoomBorder.MinZoomX = 0.4;
+        ZoomBorder.MinZoomY = 0.4;
+        ZoomBorder.PanButton = ButtonName.Right;
+        ZoomBorder.Stretch = StretchMode.None;
+        ZoomBorder.ZoomChanged += ZoomBorder_OnZoomChanged;
+        ZoomBorder.ZoomSpeed = 1.5;
     }
 
-    private void Canvas_OnPointerReleased(object? sender, PointerReleasedEventArgs e) => _isMouseDown = false;
-
-
-    private void Canvas_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
-        // Check if the mouse is over the image
-        if (!e.GetCurrentPoint(ImageCanvas).Properties.IsLeftButtonPressed) return;
+        Console.WriteLine($"[ZoomChanged] {e.ZoomX} {e.ZoomY} {e.OffsetX} {e.OffsetY}");
+    }
 
-        _isMouseDown = true;
-        _startDragPosition = e.GetPosition(ImageCanvas);
-        _initialImagePosition = new Point(Canvas.GetLeft(ImageInTab), Canvas.GetTop(ImageInTab));
+    private void ZoomBorder_OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case Key.F:
+                ZoomBorder.Fill();
+                break;
+            case Key.U:
+                ZoomBorder.Uniform();
+                break;
+            case Key.R:
+                ZoomBorder.ResetMatrix();
+                break;
+            case Key.T:
+                ZoomBorder.ToggleStretchMode();
+                ZoomBorder.AutoFit();
+                break;
+        }
     }
 }

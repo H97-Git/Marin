@@ -11,42 +11,42 @@
         <MenuItem Header="_File">
             <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="FolderOpen" />
+                    <hero:HeroIcon Type="FolderOpen" Foreground="GhostWhite" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
             <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="XCircle" />
+                    <hero:HeroIcon Type="XCircle" Foreground="GhostWhite" />
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>
         <MenuItem Header="_View">
             <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="ArrowsPointingOut" />
+                    <hero:HeroIcon Type="ArrowsPointingOut" Foreground="GhostWhite" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
             <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="ArchiveBoxArrowDown" />
+                    <hero:HeroIcon Type="ArchiveBoxArrowDown" Foreground="GhostWhite" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="EyeSlash" />
+                    <hero:HeroIcon Type="EyeSlash" Foreground="GhostWhite" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
             <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="ArrowsRightLeft" />
+                    <hero:HeroIcon Type="ArrowsRightLeft" Foreground="GhostWhite" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="ArrowsUpDown" />
+                    <hero:HeroIcon Type="ArrowsUpDown" Foreground="GhostWhite" />
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>

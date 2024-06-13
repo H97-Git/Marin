@@ -25,8 +25,10 @@ public class TabSettingsViewModel : TabViewModelBase
         public string TSAppTheme { get; set; }
     }
 
-    public TabSettingsViewModel()
+    public TabSettingsViewModel(Guid id)
     {
+        Id = id;
+        Header = "Settings";
         _fluentAvaloniaTheme = Application.Current.Styles[0] as FluentAvaloniaTheme;
         _modernTheme = Application.Current.Styles[1] as ModernTheme;
         LoadSettings();
@@ -65,7 +67,7 @@ public class TabSettingsViewModel : TabViewModelBase
             var jsonString = File.ReadAllText(path);
             var settings = JsonSerializer.Deserialize<ThemeSettings>(jsonString, options);
 
-            if (settings == null) return;
+            if (settings is null) return;
             CurrentAppTheme = settings.TSAppTheme;
         }
         catch (Exception ex)

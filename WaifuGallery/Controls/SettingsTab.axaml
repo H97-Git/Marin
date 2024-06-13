@@ -5,7 +5,6 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="WaifuGallery.Controls.SettingsTab"
              xmlns:ui="using:FluentAvalonia.UI.Controls"
-             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
              xmlns:tabs="clr-namespace:WaifuGallery.ViewModels.Tabs"
              x:DataType="tabs:TabSettingsViewModel">
     <ScrollViewer Padding="{StaticResource SampleAppPageMargin}">
@@ -50,13 +49,13 @@
                                  IsExpanded="True">
                 <ui:SettingsExpanderItem Content="Preview">
                     <ui:SettingsExpanderItem.Footer>
-                        <TextBlock Text="Hello World"/>
+                        <TextBlock Text="Hello World" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
                 <ui:SettingsExpanderItem>
-                   <TextBlock Text="Expander Item"/>
+                    <TextBlock Text="Expander Item" />
                     <ui:SettingsExpanderItem.Footer>
-                       <TextBlock Text="Expander Item Footer"/>
+                        <TextBlock Text="Expander Item Footer" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>

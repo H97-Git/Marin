@@ -21,27 +21,19 @@ public class FileExplorerViewModel : ViewModelBase
 {
     #region Private Members
 
+    private Brush? _fileExplorerBackground;
     private ObservableCollection<FileViewModel> _filesInDir = [];
     private ScrollBarVisibility _scrollBarVisibility = ScrollBarVisibility.Auto;
-
-    private Brush? _fileExplorerBackground;
-    private FileViewModel[] _selectedItem;
+    private IStorageProvider _storageProvider;
     private bool _isFileExplorerExpanded = true;
     private bool _isFileExplorerVisible = true;
+    private bool _isPointerOver;
     private bool _isSearchFocused;
     private int _columnsCount;
-    private int _imagesInPathCount = 0;
     private int _selectedIndexInFileExplorer;
-    private bool _isPointerOver;
-    private readonly List<string> _pathHistory = [];
-
-    public FileViewModel[] SelectedItem
-    {
-        get => _selectedItem;
-        set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
-    }
-
-    private static List<FilePickerFileType> GetFileTypes() => [FilePickerFileTypes.ImageAll];
+    private string _currentPath = "";
+    private string[]? _cachedImagesPath;
+    private readonly FileExplorerHistory _pathHistory;
 
     private static string SettingsPath
     {
@@ -63,18 +55,14 @@ public class FileExplorerViewModel : ViewModelBase
         }
     }
 
-    private string _currentPath = string.Empty;
-    private string[]? _cachedImagesPath;
-
     #endregion
 
-    #region Public Properties
+    #region Public Members
 
-    public bool IsPointerOver
-    {
-        get => _isPointerOver;
-        set => this.RaiseAndSetIfChanged(ref _isPointerOver, value);
-    }
+    public event EventHandler<Command>? OnSendCommandToMainView;
+    public PreviewImageViewModel PreviewImageViewModel { get; init; }
+
+    public FileViewModel SelectedFile => FilesInDir[SelectedIndex];
 
     public Brush? FileExplorerBackground
     {
@@ -82,20 +70,22 @@ public class FileExplorerViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _fileExplorerBackground, value);
     }
 
-    public PreviewImageViewModel PreviewImageViewModel { get; }
-
     public ObservableCollection<FileViewModel> FilesInDir
     {
         get => _filesInDir;
         set => this.RaiseAndSetIfChanged(ref _filesInDir, value);
     }
 
-    public FileViewModel SelectedFile => FilesInDir[SelectedIndex];
-
     public ScrollBarVisibility ScrollBarVisibility
     {
         get => _scrollBarVisibility;
         set => this.RaiseAndSetIfChanged(ref _scrollBarVisibility, value);
+    }
+
+    public bool IsPointerOver
+    {
+        get => _isPointerOver;
+        set => this.RaiseAndSetIfChanged(ref _isPointerOver, value);
     }
 
     public bool IsFileExplorerVisible
@@ -113,6 +103,8 @@ public class FileExplorerViewModel : ViewModelBase
             FileExplorerBackground = IsFileExplorerExpanded ? new SolidColorBrush(Colors.Transparent) : null;
         }
     }
+
+    public bool IsFileExplorerExpandedAndVisible => IsFileExplorerExpanded && IsFileExplorerVisible;
 
     public bool IsSearchFocused
     {
@@ -147,15 +139,18 @@ public class FileExplorerViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _currentPath, value);
     }
 
-    public IStorageProvider? StorageProvider { get; init; }
-
     #endregion
 
     #region CTOR
 
-    public FileExplorerViewModel()
+    public FileExplorerViewModel(IStorageProvider storageProvider)
     {
+        _storageProvider = storageProvider;
+        _pathHistory = new FileExplorerHistory();
         PreviewImageViewModel = new PreviewImageViewModel();
+        PreviewImageViewModel.OnSendCommandToFileExplorer += HandlePreviewImageCommand;
+        FileExplorerBackground = new SolidColorBrush(Colors.Transparent);
+
         this.WhenAnyValue(x => x.CurrentPath)
             .Subscribe(GetFilesFromPath);
         CheckDirAndCreate(SettingsPath);
@@ -163,20 +158,134 @@ public class FileExplorerViewModel : ViewModelBase
 
         if (OperatingSystem.IsWindows())
         {
-            CurrentPath = @"C:\oxford-iiit-pet\images";
+            ChangePath(@"C:\oxford-iiit-pet\images");
         }
 
         if (OperatingSystem.IsLinux())
         {
-            CurrentPath = "/home/arno/Downloads";
+            ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
         }
-
-        FileExplorerBackground = new SolidColorBrush(Colors.Transparent);
     }
 
     #endregion
 
     #region Private Methods
+
+    private async void GetFilesFromPath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return;
+        //Remove last backslash if it exists
+        if (path.Last() is '\\')
+        {
+            path = path[..^1];
+        }
+
+        var currentPathDirectoryInfo = new DirectoryInfo(path);
+        if (!currentPathDirectoryInfo.Exists)
+        {
+            SendMessageToStatusBar("The path does not exist");
+            return;
+        }
+
+        FilesInDir.Clear();
+        _cachedImagesPath = null;
+        await SetDirsAndFiles(currentPathDirectoryInfo);
+    }
+
+    private async Task SetDirsAndFiles(DirectoryInfo currentDir)
+    {
+        var dirs = currentDir.GetDirectories();
+        var imagesFileInfo = currentDir.GetFiles()
+            .Where(file => ImagesHelper.ImageFileExtensions.Contains(file.Extension.ToLower()))
+            .OrderBy(f => f.Name, new NaturalSortComparer())
+            .ToArray();
+        // If dir not empty call SetDirs
+        if (dirs is not {Length: 0})
+            await SetDirs(dirs);
+        // If images not empty call SetFiles and set _imagesInPathCount
+        if (imagesFileInfo is not {Length: 0})
+            await SetFiles(imagesFileInfo);
+    }
+
+    private async Task SetDirs(IEnumerable<DirectoryInfo> dirs)
+    {
+        foreach (var dir in dirs)
+        {
+            await SetDir(dir);
+        }
+    }
+
+    private async Task SetFiles(IEnumerable<FileInfo> files)
+    {
+        foreach (var file in files)
+        {
+            await SetFile(file);
+        }
+    }
+
+    private async Task SetDir(FileSystemInfo directoryInfo)
+    {
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var fileViewModel = new FileViewModel(directoryInfo);
+            fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
+            FilesInDir.Add(fileViewModel);
+        });
+    }
+
+    private async Task SetFile(FileInfo fileInfo)
+    {
+        await Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            // The path to the directory in the cache that contains thumbnails for this file
+            var dirInCacheForCurrentFile = ThumbnailsPath + "\\" + fileInfo.Directory?.Name;
+            // Check if dir exists, if not create it
+            CheckDirAndCreate(dirInCacheForCurrentFile);
+            // Get all files in the directory
+            _cachedImagesPath ??= ImagesHelper.GetAllImagesInPathFromString(dirInCacheForCurrentFile);
+
+            // Create an instance of the Bitmap object
+            Bitmap? image;
+            var thumbnailPath = _cachedImagesPath.FirstOrDefault(x => Path.GetFileName(x) == fileInfo.Name);
+            // If cache is empty or the thumbnail can't be found in cache create a new thumbnail
+            if (_cachedImagesPath is {Length: 0} || !File.Exists(thumbnailPath))
+            {
+                var outputFileInfo = new FileInfo(dirInCacheForCurrentFile + "\\" + fileInfo.Name);
+                image = await GenerateBitmapThumb(fileInfo, outputFileInfo);
+            }
+            // Else (the thumbnail can be found in cache) use the thumbnail from cache
+            else
+            {
+                image = await LoadImageAsync(thumbnailPath);
+            }
+
+            var fileViewModel = new FileViewModel(fileInfo, image);
+            fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
+            FilesInDir.Add(fileViewModel);
+        });
+    }
+
+    private void HandleFileCommand(object? sender, Command command)
+    {
+        switch (command.Type)
+        {
+            case CommandType.ChangePath:
+                if (command.Path is null) return;
+                ChangePath(command.Path);
+                break;
+            case CommandType.OpenFolderInNewTab:
+            case CommandType.OpenImageInNewTab:
+                SendCommandToMainView(command);
+                break;
+            case CommandType.StartPreview:
+                if (command.ImagesInPath != null)
+                    StartPreview(command.ImagesInPath);
+                break;
+            case CommandType.ClosePreview:
+                ClosePreview();
+                break;
+        }
+    }
 
     public void StartPreview(string[] imagesInPath)
     {
@@ -187,139 +296,15 @@ public class FileExplorerViewModel : ViewModelBase
     public void ClosePreview()
     {
         PreviewImageViewModel.ClosePreview();
-        ScrollBarVisibility = ScrollBarVisibility.Auto;
+        ScrollBarVisibility = ScrollBarVisibility.Visible;
     }
 
-    private void GetFilesFromPath(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path)) return;
-        if (path.Last() is '\\')
-        {
-            path = path[..^1];
-        }
-
-        var currentPathDirectoryInfo = new DirectoryInfo(path);
-        if (!currentPathDirectoryInfo.Exists) return;
-        if (_pathHistory.Count > 0 && currentPathDirectoryInfo.FullName == _pathHistory.Last()) return;
-        FilesInDir.Clear();
-        _cachedImagesPath = null;
-        var dirs = currentPathDirectoryInfo.GetDirectories();
-        var imagesFileInfo = currentPathDirectoryInfo.GetFiles()
-            .Where(file => ImagesHelper.ImageFileExtensions.Contains(file.Extension.ToLower()))
-            .OrderBy(f => f.Name, new NaturalSortComparer())
-            .ToArray();
-        SetDirsAndFiles(dirs, imagesFileInfo);
-        _pathHistory.Add(currentPathDirectoryInfo.FullName);
-    }
-
-    private void SetDirsAndFiles(DirectoryInfo[] dirs, FileInfo[] imagesFileInfo)
-    {
-        // If dir not empty call SetDirs
-        if (dirs is not {Length: 0})
-            SetDirs(dirs);
-        // If images not empty call SetFiles and set _imagesInPathCount
-        if (imagesFileInfo is not {Length: 0})
-        {
-            SetFiles(imagesFileInfo);
-            _imagesInPathCount = imagesFileInfo.Length;
-        }
-    }
-
-    private void SetDirs(DirectoryInfo[] dirs)
-    {
-        foreach (var dir in dirs)
-        {
-            SetDir(dir);
-        }
-    }
-
-    private async void SetFiles(FileInfo[] files)
-    {
-        await Dispatcher.UIThread.InvokeAsync(async () =>
-        {
-            foreach (var file in files)
-            {
-                SetFile(file);
-            }
-        });
-    }
-
-    private async void SetDir(DirectoryInfo dir)
-    {
-        // if (dir.Parent?.FullName != CurrentPath)
-        // {
-        //     FilesInDir.Clear();
-        //     return;
-        // }
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            var fileViewModel = new FileViewModel(dir.Parent?.FullName, dir.Name);
-            fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
-            FilesInDir.Add(fileViewModel);
-        });
-    }
-
-
-    private async void SetFile(FileInfo fileInfo)
-    {
-        // If we are not in CurrentPath, clear FilesInDir and return
-        if (fileInfo.DirectoryName != CurrentPath)
-        {
-            FilesInDir.Clear();
-            return;
-        }
-
-        // The path to the directory in the cache that contains thumbnails for this file
-        var dirInCacheForCurrentFile = ThumbnailsPath + "\\" + fileInfo.Directory?.Name;
-        // Check if dir exists, if not create it
-        CheckDirAndCreate(dirInCacheForCurrentFile);
-        // Get all files in the directory
-        _cachedImagesPath ??= ImagesHelper.GetAllImagesInPathFromString(dirInCacheForCurrentFile);
-
-        // Create an instance of the Bitmap object
-        Bitmap? image;
-        var thumbnailPath = _cachedImagesPath.FirstOrDefault(x => Path.GetFileName(x) == fileInfo.Name);
-        // If cache is empty or the thumbnail can't be found in cache create a new thumbnail
-        if (_cachedImagesPath is {Length: 0} || !File.Exists(thumbnailPath))
-        {
-            var outputFileInfo = new FileInfo(dirInCacheForCurrentFile + "\\" + fileInfo.Name);
-            image = await GenerateBitmapThumb(fileInfo, outputFileInfo);
-        }
-        // Else (the thumbnail can be found in cache) use the thumbnail from cache
-        else
-        {
-            image = await LoadImageAsync(thumbnailPath);
-        }
-
-        var fileViewModel = new FileViewModel(fileInfo.Directory?.FullName, fileInfo.Name, image);
-        fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
-        FilesInDir.Add(fileViewModel);
-    }
-
-    public event EventHandler<Command> OnSendCommandToMainView;
-
-    private void SendCommandToMainView(Command command)
-    {
-        OnSendCommandToMainView.Invoke(this, command);
-    }
-
-    private void HandleFileCommand(object? sender, Command command)
+    private void HandlePreviewImageCommand(object? sender, Command command)
     {
         switch (command.Type)
         {
-            case CommandType.ChangePath:
-                ChangePath(command.Path);
-                break;
-            case CommandType.ClosePreview:
-                ClosePreview();
-                break;
-            case CommandType.OpenFolderInNewTab:
-            case CommandType.OpenImageInNewTab:
-                SendCommandToMainView(command);
-                break;
-            case CommandType.StartPreview:
-                if (command.ImagesInPath != null)
-                    StartPreview(command.ImagesInPath);
+            case CommandType.ToggleFileExplorerScrollBar:
+                ScrollBarVisibility = ScrollBarVisibility.Auto;
                 break;
         }
     }
@@ -339,18 +324,16 @@ public class FileExplorerViewModel : ViewModelBase
 
     private async void OpenPathInFileExplorer()
     {
-        if (StorageProvider is null) return;
-        var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
+        var result = await _storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
         {
             Title = "Open Folder",
             AllowMultiple = false,
         });
 
-        if (result.Count == 0) return;
+        if (result.Count is 0) return;
         var path = result[0].Path;
         ChangePath(path.LocalPath);
     }
-
 
     private static void CheckDirAndCreate(string path)
     {
@@ -361,36 +344,57 @@ public class FileExplorerViewModel : ViewModelBase
         }
     }
 
-    public void GoToParentFolder()
-    {
-        var parent = Directory.GetParent(CurrentPath)?.FullName;
-        ChangePath(parent);
-    }
-
-    #endregion
-
-    #region Public Methods
-
     private void SendMessageToStatusBar(string message)
     {
         var command = new Command(CommandType.SendMessageToStatusBar, message: message);
         SendCommandToMainView(command);
     }
 
-    public void ChangePath(string? folderPath)
+    private void SendCommandToMainView(Command command)
     {
-        if (folderPath is not null)
-            CurrentPath = folderPath;
+        OnSendCommandToMainView?.Invoke(this, command);
     }
 
-    public void ToggleFileExplorer()
+    private void GoForwardHistory()
     {
-        IsFileExplorerExpanded = !IsFileExplorerExpanded;
+        var path = _pathHistory.GoForward();
+        UpdatePath(path);
     }
 
-    public void ToggleFileExplorerVisibility()
+    private void GoBackwardHistory()
     {
-        IsFileExplorerVisible = !IsFileExplorerVisible;
+        var path = _pathHistory.GoBack();
+        UpdatePath(path);
+    }
+
+    private void UpdatePath(string path) => CurrentPath = path; //Dispatcher.UIThread.Post(() => );
+
+    #endregion
+
+    #region Public Methods
+
+    public void GoToParentFolder()
+    {
+        var parent = Directory.GetParent(CurrentPath)?.FullName;
+        if (parent is null) return;
+        ChangePath(parent);
+    }
+
+    public void ChangePath(string path)
+    {
+        _pathHistory.AddPath(path);
+        UpdatePath(path);
+    }
+
+    public void ToggleFileExplorer() => IsFileExplorerExpanded = !IsFileExplorerExpanded;
+
+    public void ToggleFileExplorerVisibility() => IsFileExplorerVisible = !IsFileExplorerVisible;
+
+    public void GoUp()
+    {
+        var isFirstRow = SelectedIndex < ColumnsCount;
+        if (isFirstRow) return;
+        SelectedIndex -= ColumnsCount;
     }
 
     public void GoDown()
@@ -406,23 +410,7 @@ public class FileExplorerViewModel : ViewModelBase
         }
     }
 
-    public void GoUp()
-    {
-        var isFirstRow = SelectedIndex < ColumnsCount;
-        if (isFirstRow) return;
-        SelectedIndex -= ColumnsCount;
-    }
-
-    #endregion
-
-    #region Public Commands
-
-    public ICommand GotoParentFolderCommand => ReactiveCommand.Create(GoToParentFolder);
-    public ICommand OpenFileCommand => ReactiveCommand.Create(OpenPathInFileExplorer);
-
-    #endregion
-
-    public void OpenTab()
+    public void OpenImageTab()
     {
         var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(SelectedFile);
         var command = SelectedFile.IsImage
@@ -431,4 +419,15 @@ public class FileExplorerViewModel : ViewModelBase
 
         SendCommandToMainView(command);
     }
+
+    #endregion
+
+    #region Public Commands
+
+    public ICommand GotoParentFolderCommand => ReactiveCommand.Create(GoToParentFolder);
+    public ICommand GotoNextDirCommand => ReactiveCommand.Create(GoForwardHistory);
+    public ICommand GotoPreviousDirCommand => ReactiveCommand.Create(GoBackwardHistory);
+    public ICommand OpenFileCommand => ReactiveCommand.Create(OpenPathInFileExplorer);
+
+    #endregion
 }

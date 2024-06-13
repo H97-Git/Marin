@@ -13,6 +13,7 @@
     Title="WaifuGallery"
     Height="1000"
     Width="1880"
-    WindowStartupLocation="CenterScreen">
+    WindowStartupLocation="CenterScreen"
+    IsTabStop="False">
     <!-- The Content is set in MainWindow.axaml.cs -->
 </Window>

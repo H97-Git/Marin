@@ -17,37 +17,16 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
-        MainGrid.PointerPressed += MainGrid_OnPointerPressed;
+        FileExplorerPanel.PointerReleased += InputElement_OnPointerReleased;
     }
 
     #endregion
 
     #region Private Methods
 
-    private void MainGrid_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        switch (MainViewModel)
-        {
-            // If the file explorer is not expanded or the menu is open, don't do anything.
-            case {FileExplorerViewModel.IsFileExplorerExpanded: false}:
-            case {MenuBarViewModel.IsMenuOpen: true}:
-                return;
-        }
-
-        // if (sender is not Grid mainGrid) return;
-        // if (mainGrid.Children[1] is not Grid control) return;
-        // var expander = control.Children[1].GetControl<Expander>("FileExplorerExpander");
-        // if (!expander.IsPointerOver)
-        // {
-        //     MainViewModel?.FileExplorerViewModel.ToggleFileExplorer();
-        // }
-    }
-
-    #endregion
-
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (e.InitialPressMouseButton == MouseButton.Middle) return;
+        if (e.InitialPressMouseButton is MouseButton.Middle) return;
         switch (MainViewModel)
         {
             case {FileExplorerViewModel.IsFileExplorerExpanded: false}:
@@ -59,4 +38,6 @@ public partial class MainView : UserControl
                 break;
         }
     }
+
+    #endregion
 }

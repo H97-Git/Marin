@@ -58,7 +58,7 @@ public partial class File : UserControl
     private void OnPreviewTimerTick(object? sender, EventArgs e)
     {
         if (!_previewTimer.IsEnabled) return;
-        if (FileViewModel == null) return;
+        if (FileViewModel is null) return;
         var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(FileViewModel);
         if (imagesInPath is {Length: 0}) return;
         var command = new Command(CommandType.StartPreview, path: FileViewModel?.FullPath, imagesInPath: imagesInPath);
@@ -73,7 +73,7 @@ public partial class File : UserControl
     {
         StopTimer();
         if (e.InitialPressMouseButton is not MouseButton.Middle) return;
-        if (FileViewModel == null) return;
+        if (FileViewModel is null) return;
 
         var imagesInPath = ImagesHelper.GetAllImagesInPathFromFileViewModel(FileViewModel);
         if (imagesInPath is {Length: 0}) return;

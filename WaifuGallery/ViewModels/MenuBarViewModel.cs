@@ -29,7 +29,7 @@ public class MenuBarViewModel : ViewModelBase
         get => _isMenuOpen;
         set => this.RaiseAndSetIfChanged(ref _isMenuOpen, value);
     }
-    
+
     public bool IsMenuVisible
     {
         get => _isMenuVisible;
@@ -46,7 +46,8 @@ public class MenuBarViewModel : ViewModelBase
 
     #region Public Commands
 
-    public ICommand Exit => ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.Exit)));
+    public ICommand Exit =>
+        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.Exit)));
 
     public ICommand FitToHeightCommand =>
         ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.FitToHeight)));
@@ -54,7 +55,8 @@ public class MenuBarViewModel : ViewModelBase
     public ICommand FitToWidthCommand =>
         ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.FitToWidth)));
 
-    public ICommand OpenFileCommand => ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.OpenFile)));
+    public ICommand OpenFileCommand =>
+        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.OpenFile)));
 
     public ICommand ToggleFileExplorerCommand =>
         ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.ToggleFileExplorer)));

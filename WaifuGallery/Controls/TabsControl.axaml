@@ -15,8 +15,6 @@
         <ListBox Grid.Row="0" Name="ImagesTabControl"
                  ItemsSource="{Binding  OpenTabs}"
                  MaxHeight="35"
-                 PointerReleased="InputElement_OnPointerReleased"
-                 ZIndex="9"
                  SelectedItem="{Binding SelectedTab}"
                  SelectedIndex="{Binding SelectedTabIndex}">
             <ListBox.ItemsPanel>
@@ -41,9 +39,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <!-- Image Tab -->
-        <Grid Grid.Row="1" IsVisible="{Binding !IsSelectedTabSettingsTab}"
-              Background="Transparent"
-              PointerWheelChanged="ImageInTab_OnPointerWheelChanged">
+        <Grid Grid.Row="1" IsVisible="{Binding !IsSelectedTabSettingsTab}">
             <controls:ImageTab DataContext="{Binding ImageTabViewModel}" />
         </Grid>
         <!-- Settings Tab -->

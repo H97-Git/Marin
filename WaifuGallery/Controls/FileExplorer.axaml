@@ -24,7 +24,7 @@
                 <!-- Expander.IsExpanded = false -->
                 <TextBlock Text="File Explorer" IsVisible="{Binding !IsFileExplorerExpanded}" />
                 <!-- Expander.IsExpanded = true -->
-                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,0"
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,0"
                       IsVisible="{Binding IsFileExplorerExpanded}">
                     <Button Grid.Column="0" Command="{Binding OpenFileCommand}">
                         <icons:HeroIcon Foreground="White" Type="FolderOpen" Width="20" Height="20" />
@@ -34,9 +34,19 @@
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Center" Margin="5,0"
                              IsFocused="{Binding IsSearchFocused,Mode=OneWayToSource}" />
-                    <Button Grid.Column="2" Command="{Binding GotoParentFolderCommand}" Margin="0,0"
+                    <Button Grid.Column="2" Command="{Binding GotoPreviousDirCommand}" Margin="0,0"
+                            MaxWidth="45">
+                        <icons:HeroIcon Foreground="White" Type="ArrowLeftCircle" Width="20" Height="20" />
+                        <!-- <PathIcon Data="{StaticResource ArrowCurveUpRightRegular}" /> -->
+                    </Button>
+                    <Button Grid.Column="3" Command="{Binding GotoParentFolderCommand}" Margin="0,0"
                             MaxWidth="45">
                         <icons:HeroIcon Foreground="White" Type="ArrowUturnUp" Width="20" Height="20" />
+                        <!-- <PathIcon Data="{StaticResource ArrowCurveUpRightRegular}" /> -->
+                    </Button>
+                    <Button Grid.Column="4" Command="{Binding GotoNextDirCommand}" Margin="0,0"
+                            MaxWidth="45">
+                        <icons:HeroIcon Foreground="White" Type="ArrowRightCircle" Width="20" Height="20" />
                         <!-- <PathIcon Data="{StaticResource ArrowCurveUpRightRegular}" /> -->
                     </Button>
                 </Grid>
@@ -47,12 +57,11 @@
               MinWidth="500">
             <controls:ImagePreview Name="ImagePreviewControl" DataContext="{Binding PreviewImageViewModel}" ZIndex="99" />
             <!-- ListBox -->
-            <!-- <ScrollViewer Name="FileExplorerScrollViewer" AllowAutoHide="False" -->
-            <!-- VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"> -->
-            <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding FilesInDir}"
+            <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"
+                     ItemsSource="{Binding FilesInDir}"
                      Margin="0,0,20,0"
                      SelectedIndex="{Binding SelectedIndex}"
-                     SelectedItems="{Binding SelectedItem}"
                      Name="FileExplorerListBox"
                      SelectionMode="Multiple"
                      BorderThickness="0">
@@ -75,7 +84,6 @@
                     </Style>
                 </ListBox.Styles>
             </ListBox>
-            <!-- </ScrollViewer> -->
         </Grid>
     </Expander>
 </UserControl>

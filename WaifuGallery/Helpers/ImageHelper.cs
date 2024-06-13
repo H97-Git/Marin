@@ -45,7 +45,7 @@ public abstract class ImagesHelper
     {
         // if it's an image, use the parent directory else use the full path
         var directoryInfo = fileViewModel.IsImage
-            ? new DirectoryInfo(fileViewModel.ParentDirPath)
+            ? new DirectoryInfo(fileViewModel.ParentPath)
             : new DirectoryInfo(fileViewModel.FullPath);
         return GetAllImagesInPath(directoryInfo);
     }
