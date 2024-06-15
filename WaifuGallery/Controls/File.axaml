@@ -2,22 +2,51 @@
     Name="FileControl"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="WaifuGallery.Controls.File"
-    x:DataType="fileExplorer:FileViewModel"
+    x:DataType="viewModels:FileViewModel"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns="https://github.com/avaloniaui"
-    xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer">
+    xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels.FileExplorer">
     <Grid RowDefinitions="*,Auto" Width="165">
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Move/Rename" Command="{Binding  Move}">
+                    <MenuItem.Icon>
+                        <icons:HeroIcon Type="Clipboard" Foreground="GhostWhite" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Copy" Command="{Binding  Copy}">
+                    <MenuItem.Icon>
+                        <icons:HeroIcon Type="Clipboard" Foreground="GhostWhite" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Cut" Command="{Binding Cut}">
+                    <MenuItem.Icon>
+                        <icons:HeroIcon Type="Scissors" Foreground="GhostWhite" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Paste" Command="{Binding  Paste}">
+                    <MenuItem.Icon>
+                        <icons:HeroIcon Type="ClipboardDocumentCheck" Foreground="GhostWhite" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Delete" Command="{Binding  Delete}">
+                    <MenuItem.Icon>
+                        <icons:HeroIcon Type="Trash" Foreground="GhostWhite" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <ToolTip.Tip>
             <StackPanel>
-                <TextBlock FontSize="16" Text="{Binding FileName}"/>
+                <TextBlock FontSize="16" Text="{Binding FileName}" />
                 <TextBlock Text="{Binding ParentPath}" />
                 <TextBlock Text="{Binding CreatedTime}" />
                 <TextBlock Text="{Binding LastAccessTime}" />
                 <TextBlock Text="{Binding SizeInHumanReadable}" />
+                <TextBlock Text="{Binding ReadOnly}" IsVisible="{Binding IsImage}" />
             </StackPanel>
         </ToolTip.Tip>
         <!-- Image Thumbnail -->

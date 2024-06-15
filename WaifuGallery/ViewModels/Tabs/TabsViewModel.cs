@@ -222,4 +222,12 @@ public class TabsViewModel : ViewModelBase
     }
 
     #endregion
+
+    public void MoveTab(TabViewModelBase from, TabViewModelBase to)
+    {
+        var fromIdx = OpenTabs.IndexOf(from);
+        var toIdx = OpenTabs.IndexOf(to);
+        OpenTabs.Move(fromIdx, toIdx);
+        SelectedTab = from;
+    }
 }

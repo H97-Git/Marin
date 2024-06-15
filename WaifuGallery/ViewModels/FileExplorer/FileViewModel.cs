@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
@@ -16,6 +17,7 @@ public sealed class FileViewModel : ViewModelBase
     private Bitmap? _thumbnail;
     private Size _imageSize;
     private bool _isImage;
+    private bool _isFileReadOnly;
     private readonly FileSystemInfo _fileSystemInfo;
     private readonly string _fileName = string.Empty;
     private string _createdTime = string.Empty;
@@ -66,23 +68,31 @@ public sealed class FileViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _createdTime, value);
     }
 
-    public long SizeInBytes
+    private long SizeInBytes
     {
         get => _sizeInBytes;
-        set => this.RaiseAndSetIfChanged(ref _sizeInBytes, value);
+        init => this.RaiseAndSetIfChanged(ref _sizeInBytes, value);
     }
-    
+
+    public bool IsFileReadOnly
+    {
+        get => _isFileReadOnly;
+        set => this.RaiseAndSetIfChanged(ref _isFileReadOnly, value);
+    }
+
+    public string ReadOnly => $"Read Only: {IsFileReadOnly}";
+
     public string SizeInHumanReadable
     {
         get
         {
-            if (SizeInBytes < 1024)
-                return $"{SizeInBytes} B";
-            if (SizeInBytes < 1024 * 1024)
-                return $"{SizeInBytes / 1024} KB";
-            if (SizeInBytes < 1024 * 1024 * 1024)
-                return $"{SizeInBytes / 1024 / 1024} MB";
-            return $"{SizeInBytes / 1024 / 1024 / 1024} GB";
+            return SizeInBytes switch
+            {
+                < 1024 => $"{SizeInBytes} B",
+                < 1024 * 1024 => $"{SizeInBytes / 1024} KB",
+                < 1024 * 1024 * 1024 => $"{SizeInBytes / 1024 / 1024} MB",
+                _ => $"{SizeInBytes / 1024 / 1024 / 1024} GB"
+            };
         }
     }
 
@@ -105,18 +115,13 @@ public sealed class FileViewModel : ViewModelBase
             case FileInfo fileInfo:
                 ParentPath = fileInfo.DirectoryName;
                 SizeInBytes = fileInfo.Length;
+                IsFileReadOnly = fileInfo.IsReadOnly;
                 break;
         }
 
         CreatedTime = fileSystemInfo.CreationTime.ToString(CultureInfo.InvariantCulture);
         LastAccessTime = fileSystemInfo.LastAccessTime.ToString(CultureInfo.InvariantCulture);
-
-
         FileName = fileSystemInfo.Name;
-
-        SizeInBytes = Helper.GetDirectorySizeInByte(fileSystemInfo);
-
-
         if (thumbnail is null) return;
         Thumbnail = thumbnail;
         IsImage = true;
@@ -145,10 +150,29 @@ public sealed class FileViewModel : ViewModelBase
 
     #region Public Methods
 
-    public void SendCommandToFileExplorer(Command command)
-    {
-        OnSendCommandToFileExplorer?.Invoke(this, command);
-    }
+    public Action SendActionCommandToFileExplorer(Command command) =>
+        () => { OnSendCommandToFileExplorer?.Invoke(this, command); };
+
+    public void SendCommandToFileExplorer(Command command) => OnSendCommandToFileExplorer?.Invoke(this, command);
+
+    #endregion
+
+    #region Public Commands
+
+    public ICommand Copy =>
+        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Copy, path: FullPath)));
+
+    public ICommand Cut =>
+        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Cut, path: FullPath)));
+
+    public ICommand Delete =>
+        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Delete, path: FullPath)));
+
+    public ICommand Move =>
+        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Move, path: FullPath)));
+
+    public ICommand Paste =>
+        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Paste, path: FullPath)));
 
     #endregion
 }

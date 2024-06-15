@@ -14,28 +14,8 @@ public partial class FileExplorer : UserControl
     public FileExplorer()
     {
         InitializeComponent();
-        // FileExplorerControl.KeyDown += FileExplorer_OnKeyDown;
-        // FileExplorerExpander.KeyDown += FileExplorer_OnKeyDown;
-        // FileExplorerScrollViewer.KeyDown += FileExplorer_OnKeyDown;
-        FileExplorerListBox.KeyDown += FileExplorer_OnKeyDown;
         ImagePreviewControl.PointerWheelChanged += InputElement_OnPointerWheelChanged;
         FileExplorerContent.PointerMoved += OnPointerMoved_ChangePreviewPosition;
-    }
-
-    private void FileExplorer_OnKeyDown(object? sender, KeyEventArgs e)
-    {
-        // switch (e)
-        // {
-        //     case {Key: Key.Down}:
-        //     case {Key: Key.Up}:
-        //     case {Key: Key.Right}:
-        //     case {Key: Key.Left}:
-        //         e.Handled = true;
-        //         return;
-        // }
-        //
-        // FileExplorerViewModel?.HandleKeyboardEvent(e);
-        // e.Handled = true;
     }
 
     private void InputElement_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)

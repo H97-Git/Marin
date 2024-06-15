@@ -28,7 +28,6 @@
                       IsVisible="{Binding IsFileExplorerExpanded}">
                     <Button Grid.Column="0" Command="{Binding OpenFileCommand}">
                         <icons:HeroIcon Foreground="White" Type="FolderOpen" Width="20" Height="20" />
-                        <!-- <PathIcon Data="{StaticResource FolderOpenVerticalRegular}" /> -->
                     </Button>
                     <TextBox Grid.Column="1" Text="{Binding CurrentPath}"
                              HorizontalAlignment="Stretch"
@@ -37,17 +36,14 @@
                     <Button Grid.Column="2" Command="{Binding GotoPreviousDirCommand}" Margin="0,0"
                             MaxWidth="45">
                         <icons:HeroIcon Foreground="White" Type="ArrowLeftCircle" Width="20" Height="20" />
-                        <!-- <PathIcon Data="{StaticResource ArrowCurveUpRightRegular}" /> -->
                     </Button>
                     <Button Grid.Column="3" Command="{Binding GotoParentFolderCommand}" Margin="0,0"
                             MaxWidth="45">
                         <icons:HeroIcon Foreground="White" Type="ArrowUturnUp" Width="20" Height="20" />
-                        <!-- <PathIcon Data="{StaticResource ArrowCurveUpRightRegular}" /> -->
                     </Button>
                     <Button Grid.Column="4" Command="{Binding GotoNextDirCommand}" Margin="0,0"
                             MaxWidth="45">
                         <icons:HeroIcon Foreground="White" Type="ArrowRightCircle" Width="20" Height="20" />
-                        <!-- <PathIcon Data="{StaticResource ArrowCurveUpRightRegular}" /> -->
                     </Button>
                 </Grid>
             </Panel>

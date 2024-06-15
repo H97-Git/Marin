@@ -30,7 +30,7 @@ public class ImageTabViewModel : TabViewModelBase
             if (value >= _imagesInPath.Length)
                 value = _imagesInPath.Length - 1;
             _index = value;
-            Task.Run(LoadImageAsync);
+            BitmapImage = new Bitmap(CurrentImagePath);
         }
     }
 
@@ -78,12 +78,7 @@ public class ImageTabViewModel : TabViewModelBase
         _parentFolderName = Directory.GetParent(_imagesInPath.First())?.Name;
         Index = index;
         Header = SetTabHeaderContent();
-        Task.Run(LoadImageAsync);
-    }
-
-    private Task LoadImageAsync()
-    {
-        return Task.Run(() => { BitmapImage = new Bitmap(CurrentImagePath); });
+        BitmapImage = new Bitmap(CurrentImagePath);
     }
 
     #endregion

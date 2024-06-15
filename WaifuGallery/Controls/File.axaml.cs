@@ -46,6 +46,7 @@ public partial class File : UserControl
 
     private void OnPointerPressed_StartTimerTickPreview(object? sender, PointerPressedEventArgs e)
     {
+        if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed) return;
         if (FileViewModel is {IsImage: true}) return;
         _previewTimer.Start();
     }
@@ -63,7 +64,7 @@ public partial class File : UserControl
         if (imagesInPath is {Length: 0}) return;
         var command = new Command(CommandType.StartPreview, path: FileViewModel?.FullPath, imagesInPath: imagesInPath);
         _previewTimer.Stop();
-        FileViewModel?.SendCommandToFileExplorer(command);
+        FileViewModel?.SendActionCommandToFileExplorer(command);
     }
 
     // private void OnPointerExited_ClosePreview(object? sender, PointerEventArgs e) =>

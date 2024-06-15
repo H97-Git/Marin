@@ -10,6 +10,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using DynamicData.Binding;
 using ImageMagick;
 using ReactiveUI;
 using WaifuGallery.Helpers;
@@ -151,7 +152,7 @@ public class FileExplorerViewModel : ViewModelBase
         PreviewImageViewModel.OnSendCommandToFileExplorer += HandlePreviewImageCommand;
         FileExplorerBackground = new SolidColorBrush(Colors.Transparent);
 
-        this.WhenAnyValue(x => x.CurrentPath)
+        this.WhenValueChanged(x => x.CurrentPath)
             .Subscribe(GetFilesFromPath);
         CheckDirAndCreate(SettingsPath);
         CheckDirAndCreate(ThumbnailsPath);
@@ -171,7 +172,7 @@ public class FileExplorerViewModel : ViewModelBase
 
     #region Private Methods
 
-    private async void GetFilesFromPath(string path)
+    private void GetFilesFromPath(string? path)
     {
         if (string.IsNullOrWhiteSpace(path)) return;
         //Remove last backslash if it exists
@@ -189,10 +190,10 @@ public class FileExplorerViewModel : ViewModelBase
 
         FilesInDir.Clear();
         _cachedImagesPath = null;
-        await SetDirsAndFiles(currentPathDirectoryInfo);
+        SetDirsAndFiles(currentPathDirectoryInfo);
     }
 
-    private async Task SetDirsAndFiles(DirectoryInfo currentDir)
+    private void SetDirsAndFiles(DirectoryInfo currentDir)
     {
         var dirs = currentDir.GetDirectories();
         var imagesFileInfo = currentDir.GetFiles()
@@ -201,74 +202,76 @@ public class FileExplorerViewModel : ViewModelBase
             .ToArray();
         // If dir not empty call SetDirs
         if (dirs is not {Length: 0})
-            await SetDirs(dirs);
+            SetDirs(dirs);
         // If images not empty call SetFiles and set _imagesInPathCount
         if (imagesFileInfo is not {Length: 0})
-            await SetFiles(imagesFileInfo);
+            SetFiles(imagesFileInfo);
     }
 
-    private async Task SetDirs(IEnumerable<DirectoryInfo> dirs)
+    private void SetDirs(IEnumerable<DirectoryInfo> dirs)
     {
         foreach (var dir in dirs)
         {
-            await SetDir(dir);
+            Dispatcher.UIThread.Post(() => SetDir(dir));
         }
     }
 
-    private async Task SetFiles(IEnumerable<FileInfo> files)
+    private void SetFiles(IEnumerable<FileInfo> files)
     {
         foreach (var file in files)
         {
-            await SetFile(file);
+            Dispatcher.UIThread.Post(() => SetFile(file));
         }
     }
 
-    private async Task SetDir(FileSystemInfo directoryInfo)
+    private void SetDir(FileSystemInfo directoryInfo)
     {
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            var fileViewModel = new FileViewModel(directoryInfo);
-            fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
-            FilesInDir.Add(fileViewModel);
-        });
+        var fileViewModel = new FileViewModel(directoryInfo);
+        fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
+        FilesInDir.Add(fileViewModel);
     }
 
-    private async Task SetFile(FileInfo fileInfo)
+    private async void SetFile(FileInfo fileInfo)
     {
-        await Dispatcher.UIThread.InvokeAsync(async () =>
+        // The path to the directory in the cache that contains thumbnails for this file
+        var dirInCacheForCurrentFile = ThumbnailsPath + "\\" + fileInfo.Directory?.Name;
+        // Check if dir exists, if not create it
+        CheckDirAndCreate(dirInCacheForCurrentFile);
+        // Get all files in the directory
+        _cachedImagesPath ??= Helper.GetAllImagesInPathFromString(dirInCacheForCurrentFile);
+
+        // Create an instance of the Bitmap object
+        Bitmap? image;
+        var thumbnailPath = _cachedImagesPath.FirstOrDefault(x => Path.GetFileName(x) == fileInfo.Name);
+        // If cache is empty or the thumbnail can't be found in cache create a new thumbnail
+        if (_cachedImagesPath is {Length: 0} || !File.Exists(thumbnailPath))
         {
-            // The path to the directory in the cache that contains thumbnails for this file
-            var dirInCacheForCurrentFile = ThumbnailsPath + "\\" + fileInfo.Directory?.Name;
-            // Check if dir exists, if not create it
-            CheckDirAndCreate(dirInCacheForCurrentFile);
-            // Get all files in the directory
-            _cachedImagesPath ??= Helper.GetAllImagesInPathFromString(dirInCacheForCurrentFile);
+            var outputFileInfo = new FileInfo(dirInCacheForCurrentFile + "\\" + fileInfo.Name);
+            image = await GenerateBitmapThumb(fileInfo, outputFileInfo);
+        }
+        // Else (the thumbnail can be found in cache) use the thumbnail from cache
+        else
+        {
+            image = new Bitmap(thumbnailPath);
+        }
 
-            // Create an instance of the Bitmap object
-            Bitmap? image;
-            var thumbnailPath = _cachedImagesPath.FirstOrDefault(x => Path.GetFileName(x) == fileInfo.Name);
-            // If cache is empty or the thumbnail can't be found in cache create a new thumbnail
-            if (_cachedImagesPath is {Length: 0} || !File.Exists(thumbnailPath))
-            {
-                var outputFileInfo = new FileInfo(dirInCacheForCurrentFile + "\\" + fileInfo.Name);
-                image = await GenerateBitmapThumb(fileInfo, outputFileInfo);
-            }
-            // Else (the thumbnail can be found in cache) use the thumbnail from cache
-            else
-            {
-                image = await LoadImageAsync(thumbnailPath);
-            }
+        var fileViewModel = new FileViewModel(fileInfo, image);
+        fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
 
-            var fileViewModel = new FileViewModel(fileInfo, image);
-            fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
-            FilesInDir.Add(fileViewModel);
-        });
+        FilesInDir.Add(fileViewModel);
     }
 
     private void HandleFileCommand(object? sender, Command command)
     {
         switch (command.Type)
         {
+            case CommandType.Copy:
+            case CommandType.Move:
+            case CommandType.Cut:
+            case CommandType.Paste:
+            case CommandType.Delete:
+                SendCommandToMainView(command);
+                break;
             case CommandType.ChangePath:
                 if (command.Path is null) return;
                 ChangePath(command.Path);
@@ -309,7 +312,8 @@ public class FileExplorerViewModel : ViewModelBase
         }
     }
 
-    private static async Task<Bitmap> LoadImageAsync(string imagePath) => await Task.Run(() => new Bitmap(imagePath));
+    // private static async Task<Bitmap> LoadImageAsync(string imagePath) => await Task.Run(() => new Bitmap(imagePath));
+    private async Task ClearFilesListAsync() => await Task.Run(() => FilesInDir.Clear());
 
     private static async Task<Bitmap> GenerateBitmapThumb(FileInfo sourceFileInfo, FileInfo outputFileInfo)
     {
@@ -319,7 +323,7 @@ public class FileExplorerViewModel : ViewModelBase
             IgnoreAspectRatio = false
         });
         await image.WriteAsync(outputFileInfo);
-        return await LoadImageAsync(outputFileInfo.FullName);
+        return new Bitmap(outputFileInfo.FullName);
     }
 
     private async void OpenPathInFileExplorer()
@@ -367,7 +371,7 @@ public class FileExplorerViewModel : ViewModelBase
         UpdatePath(path);
     }
 
-    private void UpdatePath(string path) => CurrentPath = path; //Dispatcher.UIThread.Post(() => );
+    private void UpdatePath(string path) => CurrentPath = path;
 
     #endregion
 

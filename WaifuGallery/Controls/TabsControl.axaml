@@ -12,32 +12,46 @@
     <Grid RowDefinitions="Auto,*">
         <!-- Tab Headers -->
 
-        <ListBox Grid.Row="0" Name="ImagesTabControl"
-                 ItemsSource="{Binding  OpenTabs}"
-                 MaxHeight="35"
-                 SelectedItem="{Binding SelectedTab}"
-                 SelectedIndex="{Binding SelectedTabIndex}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Close Tab" Command="{Binding CloseTabCommand}">
-                                    <MenuItem.Icon>
-                                        <hero:HeroIcon Type="XMark" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
-                    </StackPanel>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Header}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ScrollViewer Grid.Row="0"
+                      Name="launcherTabsScroller"
+                      VerticalScrollBarVisibility="Disabled"
+                      HorizontalScrollBarVisibility="Hidden"
+                      PointerWheelChanged="ScrollTabs">
+
+            <ListBox Name="ImagesTabControl"
+                     ItemsSource="{Binding  OpenTabs}"
+                     MaxHeight="35"
+                     SelectedItem="{Binding SelectedTab}"
+                     SelectedIndex="{Binding SelectedTabIndex}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Close Tab" Command="{Binding CloseTabCommand}">
+                                        <MenuItem.Icon>
+                                            <hero:HeroIcon Type="XMark" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            PointerPressed="OnPointerPressedTab"
+                            PointerMoved="OnPointerMovedOverTab"
+                            PointerReleased="OnPointerReleasedTab"
+                            Loaded="SetupDragAndDrop">
+                            <TextBlock Text="{Binding Header}" />
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+        </ScrollViewer>
         <!-- Image Tab -->
         <Grid Grid.Row="1" IsVisible="{Binding !IsSelectedTabSettingsTab}">
             <controls:ImageTab DataContext="{Binding ImageTabViewModel}" />

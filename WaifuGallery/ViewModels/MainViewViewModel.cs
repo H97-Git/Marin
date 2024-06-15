@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using Avalonia.Controls;
 using Avalonia.Input;
+using WaifuGallery.Controls;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileExplorer;
 using WaifuGallery.ViewModels.Tabs;
+using File = System.IO.File;
 
 namespace WaifuGallery.ViewModels;
 
@@ -13,6 +16,7 @@ public class MainViewViewModel : ViewModelBase
     #region Private Members
 
     private readonly MainWindow _mainWindow;
+    private CommandType _lastCommandType = CommandType.None;
 
     #endregion
 
@@ -54,15 +58,15 @@ public class MainViewViewModel : ViewModelBase
         switch (sender.GetType().Name)
         {
             case "MenuBarViewModel":
-                HandleMenuBarMessage(command.Type);
+                HandleMenuBarCommand(command.Type);
                 break;
             case "FileExplorerViewModel":
-                HandleFileExplorerMessage(command);
+                HandleFileExplorerCommand(command);
                 break;
         }
     }
 
-    private void HandleMenuBarMessage(CommandType type)
+    private void HandleMenuBarCommand(CommandType type)
     {
         switch (type)
         {
@@ -98,10 +102,23 @@ public class MainViewViewModel : ViewModelBase
         }
     }
 
-    private void HandleFileExplorerMessage(Command command)
+    private void HandleFileExplorerCommand(Command command)
     {
         switch (command.Type)
         {
+            case CommandType.Copy:
+            case CommandType.Cut:
+                CopyCutFile(command);
+                break;
+            case CommandType.Rename:
+                RenameFile(command);
+                break;
+            case CommandType.Paste:
+                PasteFile(command);
+                break;
+            case CommandType.Delete:
+                DeleteFile();
+                break;
             case CommandType.OpenImageInNewTab:
             case CommandType.OpenFolderInNewTab:
                 TabsViewModel.AddImageTab(command);
@@ -236,6 +253,50 @@ public class MainViewViewModel : ViewModelBase
             MenuBarViewModel.IsMenuVisible = true;
             StatusBarViewModel.IsStatusBarVisible = true;
         }
+    }
+
+    private void RenameFile(Command command)
+    {
+        var newName = command.Message;
+        var source = command.Path;
+        var destination = source.Replace(Path.GetFileName(source), newName);
+        File.Move(source, destination);
+    }
+
+    private void DeleteFile()
+    {
+        File.Delete(FileExplorerViewModel.SelectedFile.FullPath);
+    }
+
+    private void CopyCutFile(Command command)
+    {
+        _mainWindow.Clipboard?.SetTextAsync(command.Path);
+        _lastCommandType = command.Type;
+    }
+
+    private void PasteFile(Command command)
+    {
+        switch (_lastCommandType)
+        {
+            case CommandType.Copy:
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(command.Path);
+                var newPath = FileExplorerViewModel.CurrentPath + "\\" + fileNameWithoutExtension;
+                if (Directory.Exists(newPath))
+                {
+                    newPath += " (1)";
+                }
+
+                File.Copy(command.Path, newPath);
+                break;
+            case CommandType.Cut:
+                File.Move(command.Path, FileExplorerViewModel.CurrentPath);
+                break;
+        }
+    }
+
+    private void NewFolder()
+    {
+        Directory.CreateDirectory(Path.Combine(FileExplorerViewModel.CurrentPath, "New Folder"));
     }
 
     #endregion
