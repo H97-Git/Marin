@@ -13,7 +13,7 @@
             <Grid Margin="0 0 0 10">
 
                 <DockPanel HorizontalAlignment="Left">
-                    <Image Source="/Assets/avalonia-logo.ico"
+                    <Image Source="/Resouces/avalonia-logo.ico"
                            DockPanel.Dock="Left"
                            Height="80"
                            RenderOptions.BitmapInterpolationMode="HighQuality" />

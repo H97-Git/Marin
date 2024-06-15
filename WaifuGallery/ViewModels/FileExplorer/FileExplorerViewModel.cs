@@ -258,6 +258,7 @@ public class FileExplorerViewModel : ViewModelBase
         var fileViewModel = new FileViewModel(fileInfo, image);
         fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
 
+        //TODO: Refactor to use addRange and Dispatcher.UIThread.Post here
         FilesInDir.Add(fileViewModel);
     }
 
