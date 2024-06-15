@@ -40,4 +40,16 @@ public partial class MainView : UserControl
     }
 
     #endregion
+
+    /// <summary>
+    /// MainView_OnKeyDown is the only place (so far) where the Tab key is handled.
+    /// The rest of the key events are send from the MainWindow, handled in the MainViewModel.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MainView_OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key is not Key.Tab) return;
+        MainViewModel?.HandleTabKeyEvent(e);
+    }
 }

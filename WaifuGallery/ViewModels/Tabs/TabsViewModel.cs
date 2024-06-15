@@ -16,6 +16,7 @@ public class TabsViewModel : ViewModelBase
     private ObservableCollection<TabViewModelBase> _openTabs = [];
     private TabViewModelBase? _selectedTab;
     private ImageTabViewModel? _currentImageTabViewModel;
+    private TabSettingsViewModel? _tabSettingsViewModel;
     private int _selectedTabIndex;
     private bool _isSelectedTabSettingsTab = true;
     private bool IsSettingsTabOpen => OpenTabs.Any(x => x is TabSettingsViewModel);
@@ -64,7 +65,11 @@ public class TabsViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _currentImageTabViewModel, value);
     }
 
-    public TabSettingsViewModel? TabSettingsViewModel => SelectedTab as TabSettingsViewModel;
+    public TabSettingsViewModel? TabSettingsViewModel
+    {
+        get => _tabSettingsViewModel;
+        set => this.RaiseAndSetIfChanged(ref _tabSettingsViewModel, value);
+    }
 
     public Size ControlSize { get; set; }
 
@@ -122,6 +127,7 @@ public class TabsViewModel : ViewModelBase
         else
         {
             IsSelectedTabSettingsTab = true;
+            TabSettingsViewModel = SelectedTab as TabSettingsViewModel;
         }
     }
 
@@ -212,13 +218,24 @@ public class TabsViewModel : ViewModelBase
         AddTab(new TabSettingsViewModel(Guid.Empty));
     }
 
-    public void SwitchTab()
-    {
-        // Calculate the index of the next tab
-        var nextIndex = (SelectedTabIndex + 1) % OpenTabs.Count;
 
-        // Set the selected tab
-        SelectedTabIndex = nextIndex;
+    public void CycleTab(bool reverse = false)
+    {
+        if (OpenTabs.Count is 1) return;
+        int newIndex;
+        // Calculate the index of the next tab
+        if (reverse)
+        {
+            // Going backwards 
+            newIndex = SelectedTabIndex is 0 ? OpenTabs.Count - 1 : SelectedTabIndex - 1;
+        }
+        else
+        {
+            // Going forward
+            newIndex = (SelectedTabIndex + 1) % OpenTabs.Count;
+        }
+
+        SelectedTabIndex = newIndex;
     }
 
     #endregion

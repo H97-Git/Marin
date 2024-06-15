@@ -2,7 +2,6 @@
 using System.IO;
 using Avalonia.Controls;
 using Avalonia.Input;
-using WaifuGallery.Controls;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileExplorer;
@@ -148,10 +147,6 @@ public class MainViewViewModel : ViewModelBase
                 break;
             case {Key: Key.W, KeyModifiers: KeyModifiers.Shift}:
                 TabsViewModel.FitToWidth();
-                break;
-            case {Key: Key.Tab, KeyModifiers: KeyModifiers.Control}:
-                if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
-                    TabsViewModel.SwitchTab();
                 break;
             case {Key: Key.H}:
             case {Key: Key.Left}:
@@ -303,7 +298,7 @@ public class MainViewViewModel : ViewModelBase
 
     #region Public Methods
 
-    public void HandleKeyboardEvent(KeyEventArgs e)
+    public void HandleKeyBoardEvent(KeyEventArgs e)
     {
         if (FileExplorerViewModel.IsSearchFocused) return;
         HandleMainViewKeyboardEvent(e);
@@ -313,4 +308,17 @@ public class MainViewViewModel : ViewModelBase
     }
 
     #endregion
+
+    public void HandleTabKeyEvent(KeyEventArgs e)
+    {
+        if (e.Key is not Key.Tab) return;
+        if (e.KeyModifiers is not KeyModifiers.Shift)
+        {
+            TabsViewModel.CycleTab();
+        }
+        else
+        {
+            TabsViewModel.CycleTab(true);
+        }
+    }
 }
