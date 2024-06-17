@@ -1,8 +1,10 @@
 using System;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using WaifuGallery.ViewModels;
 
 namespace WaifuGallery;
 
@@ -11,6 +13,8 @@ public class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        var pref = Preferences.Instance;
+        SetTheme(pref.Theme);
     }
 
     public override async void OnFrameworkInitializationCompleted()
@@ -26,6 +30,8 @@ public class App : Application
 
             var main = new MainWindow();
             desktop.MainWindow = main;
+            desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            desktop.ShutdownRequested += (_, _) => { Preferences.Instance.Save(); };
             main.Show();
 
             // splash.Close();

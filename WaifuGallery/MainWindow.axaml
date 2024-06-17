@@ -6,7 +6,7 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="WaifuGallery.MainWindow"
     Background="#1641FF"
-    Icon="/Assets/avalonia-logo.ico"
+    Icon="/Resources/avalonia-logo.ico"
     MinHeight="680"
     MinWidth="680"
     Name="MainW"

@@ -21,7 +21,7 @@ public partial class MainView : UserControl
     }
 
     #endregion
-
+    
     #region Private Methods
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -39,8 +39,6 @@ public partial class MainView : UserControl
         }
     }
 
-    #endregion
-
     /// <summary>
     /// MainView_OnKeyDown is the only place (so far) where the Tab key is handled.
     /// The rest of the key events are send from the MainWindow, handled in the MainViewModel.
@@ -52,4 +50,6 @@ public partial class MainView : UserControl
         if (e.Key is not Key.Tab) return;
         MainViewModel?.HandleTabKeyEvent(e);
     }
+
+    #endregion
 }

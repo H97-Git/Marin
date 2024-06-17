@@ -8,7 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns="https://github.com/avaloniaui"
-    xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels.FileExplorer">
+    xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
+    xmlns:viewModels1="clr-namespace:WaifuGallery.ViewModels">
     <Grid RowDefinitions="*,Auto" Width="165">
         <Grid.ContextMenu>
             <ContextMenu>
@@ -41,7 +42,7 @@
         </Grid.ContextMenu>
         <ToolTip.Tip>
             <StackPanel>
-                <TextBlock FontSize="16" Text="{Binding FileName}" />
+                <TextBlock FontFamily="{Binding Source={x:Static viewModels1:Preferences.Instance}, Path=.DefaultFont}" FontSize="16" Text="{Binding FileName}" />
                 <TextBlock Text="{Binding ParentPath}" />
                 <TextBlock Text="{Binding CreatedTime}" />
                 <TextBlock Text="{Binding LastAccessTime}" />

@@ -18,7 +18,7 @@
                 VerticalAlignment="Center">
 
 
-        <Image Source="/Resouces/avalonia-logo.ico"
+        <Image Source="/Resources/avalonia-logo.ico"
                Width="250"
                Height="250"
                RenderOptions.BitmapInterpolationMode="HighQuality" />

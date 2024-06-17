@@ -12,16 +12,18 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <!-- <FluentTheme /> -->
         <fluent:FluentAvaloniaTheme />
-        <actipro:ModernTheme />
+        <FluentTheme />
+        <!-- <actipro:ModernTheme /> -->
+        <StyleInclude Source="Resources/Styles.axaml"/>
     </Application.Styles>
 
     <Application.Resources>
 
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Resouces/Themes.axaml" />
+                <ResourceInclude Source="/Resources/Themes.axaml" />
+                <ResourceInclude Source="/Resources/Icons.axaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
