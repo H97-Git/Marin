@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
+using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 
 namespace WaifuGallery.ViewModels.Tabs;
@@ -14,7 +17,6 @@ public class ImageTabViewModel : TabViewModelBase
 
     private Bitmap _bitmapImage;
     private Size _imageSize;
-    private Point _imagePosition;
     private readonly string[] _imagesInPath;
     private readonly string? _parentFolderName;
     private int _index;
@@ -26,10 +28,10 @@ public class ImageTabViewModel : TabViewModelBase
         {
             if (value < 0)
                 value = 0;
-            if (value >= _imagesInPath.Length)
+            else if (value >= _imagesInPath.Length)
                 value = _imagesInPath.Length - 1;
             _index = value;
-            BitmapImage = new Bitmap(CurrentImagePath);
+            LoadImage();
         }
     }
 
@@ -51,46 +53,53 @@ public class ImageTabViewModel : TabViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _imageSize, value);
     }
 
-    public Point ImagePosition
-    {
-        get => _imagePosition;
-        set
-        {
-            Console.WriteLine(value: $"Before value: {value}");
-            if (value.Y < 0)
-                value = new Point(value.X, 0);
-            if (value.X < 0)
-                value = new Point(0, value.Y);
-            Console.WriteLine(value: $"After value: {value}");
-            this.RaiseAndSetIfChanged(ref _imagePosition, value);
-        }
-    }
-
     #endregion
 
     #region CTOR
 
-    public ImageTabViewModel(Guid id, string[] imagesInPath, int index)
+    private ImageTabViewModel(string id, string[] imagesInPath, int index)
     {
         Id = id;
         _imagesInPath = imagesInPath;
         _parentFolderName = Directory.GetParent(_imagesInPath.First())?.Name;
         Index = index;
-        Header = SetTabHeaderContent();
-        BitmapImage = new Bitmap(CurrentImagePath);
     }
 
     #endregion
 
     #region Private Methods
 
-    private string SetTabHeaderContent()
+    private void LoadImage()
+    {
+        BitmapImage = new Bitmap(CurrentImagePath);
+        SetTabHeaderContent();
+        MessageBus.Current.SendMessage(new ResetZoomCommand());
+    }
+    
+    private void SetTabHeaderContent()
     {
         const int maxLength = 12;
-        if (_parentFolderName is null) return Path.GetFileNameWithoutExtension(CurrentImagePath);
+        if (_parentFolderName is null)
+        {
+            Path.GetFileNameWithoutExtension(CurrentImagePath);
+            return;
+        }
+
         var index = _parentFolderName is {Length: > maxLength} ? maxLength : _parentFolderName.Length;
-        return _parentFolderName[..index] + ": " +
-               Path.GetFileNameWithoutExtension(CurrentImagePath);
+        Header = _parentFolderName[..index] + ": " + Path.GetFileNameWithoutExtension(CurrentImagePath);
+    }
+
+    private static string GenerateUniqueId(string path)
+    {
+        var data = Encoding.UTF8.GetBytes(path);
+        var hashBytes = SHA256.HashData(data);
+        var hashStringBuilder = new StringBuilder(64);
+        foreach (var b in hashBytes)
+        {
+            hashStringBuilder.Append(b.ToString("x2"));
+        }
+
+        return hashStringBuilder.ToString();
     }
 
     #endregion
@@ -123,24 +132,32 @@ public class ImageTabViewModel : TabViewModelBase
     public void ResizeImageByWidth(double targetHeight) =>
         ImageSize = Helper.GetScaledSizeByWidth(_bitmapImage, (int) targetHeight);
 
-    public void ZoomImage(double deltaY)
+    public static ImageTabViewModel? CreateImageTabFromCommand(ICommandMessage command)
     {
-        const double zoomFactor = 1.1;
-        if (deltaY < 0)
+        switch (command)
         {
-            var newWidth = Math.Max(300, ImageSize.Width / zoomFactor);
-            var newHeight = Math.Max(300, ImageSize.Height / zoomFactor);
+            case OpenInNewTabCommand openInNewTabCommand:
+            {
+                var id = GenerateUniqueId(openInNewTabCommand.ImagesInPath.First());
+                var imagesInPath = openInNewTabCommand.ImagesInPath;
+                return new ImageTabViewModel(id, imagesInPath, openInNewTabCommand.Index);
+            }
+            case OpenFileCommand openFileCommand:
+            {
+                var path = openFileCommand.Path;
+                if (path != null)
+                {
+                    var imagesInPath = Helper.GetAllImagesInPath(path);
+                    var index = Array.IndexOf(imagesInPath, path);
+                    var id = GenerateUniqueId(imagesInPath.First());
+                    return new ImageTabViewModel(id, imagesInPath, index);
+                }
 
-            ImageSize = new Size(newWidth, newHeight);
-        }
-        else
-        {
-            ImageSize *= zoomFactor;
-            // newWidth = ImageSize.Width + newDelta;
-            // newHeight = ImageSize.Height + newDelta;
+                break;
+            }
         }
 
-        // ImageSize = new Size(newWidth, newHeight);
+        return null;
     }
 
     #endregion

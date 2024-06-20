@@ -13,6 +13,7 @@ using Avalonia.Threading;
 using DynamicData.Binding;
 using ImageMagick;
 using ReactiveUI;
+using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
@@ -25,16 +26,16 @@ public class FileExplorerViewModel : ViewModelBase
     private Brush? _fileExplorerBackground;
     private ObservableCollection<FileViewModel> _filesInDir = [];
     private ScrollBarVisibility _scrollBarVisibility = ScrollBarVisibility.Auto;
-    private IStorageProvider _storageProvider;
     private bool _isFileExplorerExpanded = true;
     private bool _isFileExplorerVisible = true;
     private bool _isPointerOver;
     private bool _isSearchFocused;
+    private bool _isCurrentPathEmpty;
     private int _columnsCount;
     private int _selectedIndexInFileExplorer;
+    private readonly FileExplorerHistory _pathHistory;
     private string _currentPath = "";
     private string[]? _cachedImagesPath;
-    private readonly FileExplorerHistory _pathHistory;
 
     private static string SettingsPath
     {
@@ -60,7 +61,6 @@ public class FileExplorerViewModel : ViewModelBase
 
     #region Public Members
 
-    public event EventHandler<Command>? OnSendCommandToMainView;
     public PreviewImageViewModel PreviewImageViewModel { get; init; }
 
     public FileViewModel SelectedFile => FilesInDir[SelectedIndex];
@@ -89,6 +89,12 @@ public class FileExplorerViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isPointerOver, value);
     }
 
+    public bool IsCurrentPathEmpty
+    {
+        get => _isCurrentPathEmpty;
+        set => this.RaiseAndSetIfChanged(ref _isCurrentPathEmpty, value);
+    }
+
     public bool IsFileExplorerVisible
     {
         get => _isFileExplorerVisible;
@@ -98,11 +104,7 @@ public class FileExplorerViewModel : ViewModelBase
     public bool IsFileExplorerExpanded
     {
         get => _isFileExplorerExpanded;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _isFileExplorerExpanded, value);
-            FileExplorerBackground = IsFileExplorerExpanded ? new SolidColorBrush(Colors.Transparent) : null;
-        }
+        set => this.RaiseAndSetIfChanged(ref _isFileExplorerExpanded, value);
     }
 
     public bool IsFileExplorerExpandedAndVisible => IsFileExplorerExpanded && IsFileExplorerVisible;
@@ -144,16 +146,19 @@ public class FileExplorerViewModel : ViewModelBase
 
     #region CTOR
 
-    public FileExplorerViewModel(IStorageProvider storageProvider)
+    public FileExplorerViewModel()
     {
-        _storageProvider = storageProvider;
         _pathHistory = new FileExplorerHistory();
         PreviewImageViewModel = new PreviewImageViewModel();
-        PreviewImageViewModel.OnSendCommandToFileExplorer += HandlePreviewImageCommand;
         FileExplorerBackground = new SolidColorBrush(Colors.Transparent);
+
+        this.WhenValueChanged(x => x.IsFileExplorerExpanded)
+            .Subscribe(_ =>
+                FileExplorerBackground = IsFileExplorerExpanded ? new SolidColorBrush(Colors.Transparent) : null);
 
         this.WhenValueChanged(x => x.CurrentPath)
             .Subscribe(GetFilesFromPath);
+        this.WhenAnyValue(x => x.FilesInDir.Count).Subscribe(x => { IsCurrentPathEmpty = x is 0; });
         CheckDirAndCreate(SettingsPath);
         CheckDirAndCreate(ThumbnailsPath);
 
@@ -166,6 +171,14 @@ public class FileExplorerViewModel : ViewModelBase
         {
             ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
         }
+
+        MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
+        MessageBus.Current.Listen<ClosePreviewCommand>().Subscribe(_ => ClosePreview());
+        MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => StartPreview(x.ImagesInPath));
+        MessageBus.Current.Listen<ToggleFileExplorerCommand>().Subscribe(_ => ToggleFileExplorer());
+        MessageBus.Current.Listen<ToggleFileExplorerScrollBarCommand>()
+            .Subscribe(_ => ScrollBarVisibility = ScrollBarVisibility.Auto);
+        MessageBus.Current.Listen<ToggleFileExplorerVisibilityCommand>().Subscribe(_ => ToggleFileExplorerVisibility());
     }
 
     #endregion
@@ -227,7 +240,6 @@ public class FileExplorerViewModel : ViewModelBase
     private void SetDir(FileSystemInfo directoryInfo)
     {
         var fileViewModel = new FileViewModel(directoryInfo);
-        fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
         FilesInDir.Add(fileViewModel);
     }
 
@@ -238,7 +250,7 @@ public class FileExplorerViewModel : ViewModelBase
         // Check if dir exists, if not create it
         CheckDirAndCreate(dirInCacheForCurrentFile);
         // Get all files in the directory
-        _cachedImagesPath ??= Helper.GetAllImagesInPathFromString(dirInCacheForCurrentFile);
+        _cachedImagesPath ??= Helper.GetAllImagesInPath(dirInCacheForCurrentFile);
 
         // Create an instance of the Bitmap object
         Bitmap? image;
@@ -256,40 +268,11 @@ public class FileExplorerViewModel : ViewModelBase
         }
 
         var fileViewModel = new FileViewModel(fileInfo, image);
-        fileViewModel.OnSendCommandToFileExplorer += HandleFileCommand;
 
         //TODO: Refactor to use addRange and Dispatcher.UIThread.Post here
         FilesInDir.Add(fileViewModel);
     }
 
-    private void HandleFileCommand(object? sender, Command command)
-    {
-        switch (command.Type)
-        {
-            case CommandType.Copy:
-            case CommandType.Move:
-            case CommandType.Cut:
-            case CommandType.Paste:
-            case CommandType.Delete:
-                SendCommandToMainView(command);
-                break;
-            case CommandType.ChangePath:
-                if (command.Path is null) return;
-                ChangePath(command.Path);
-                break;
-            case CommandType.OpenFolderInNewTab:
-            case CommandType.OpenImageInNewTab:
-                SendCommandToMainView(command);
-                break;
-            case CommandType.StartPreview:
-                if (command.ImagesInPath != null)
-                    StartPreview(command.ImagesInPath);
-                break;
-            case CommandType.ClosePreview:
-                ClosePreview();
-                break;
-        }
-    }
 
     public void StartPreview(string[] imagesInPath)
     {
@@ -301,16 +284,6 @@ public class FileExplorerViewModel : ViewModelBase
     {
         PreviewImageViewModel.ClosePreview();
         ScrollBarVisibility = ScrollBarVisibility.Visible;
-    }
-
-    private void HandlePreviewImageCommand(object? sender, Command command)
-    {
-        switch (command.Type)
-        {
-            case CommandType.ToggleFileExplorerScrollBar:
-                ScrollBarVisibility = ScrollBarVisibility.Auto;
-                break;
-        }
     }
 
     // private static async Task<Bitmap> LoadImageAsync(string imagePath) => await Task.Run(() => new Bitmap(imagePath));
@@ -329,7 +302,9 @@ public class FileExplorerViewModel : ViewModelBase
 
     private async void OpenPathInFileExplorer()
     {
-        var result = await _storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
+        var storageProvider = App.GetTopLevel()?.StorageProvider;
+        if (storageProvider is null) return;
+        var result = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
         {
             Title = "Open Folder",
             AllowMultiple = false,
@@ -351,13 +326,13 @@ public class FileExplorerViewModel : ViewModelBase
 
     private void SendMessageToStatusBar(string message)
     {
-        var command = new Command(CommandType.SendMessageToStatusBar, message: message);
-        SendCommandToMainView(command);
+        var command = new SendMessageToStatusBarCommand("Information", message);
+        SendCommandToMessageBus(command);
     }
 
-    private void SendCommandToMainView(Command command)
+    private static void SendCommandToMessageBus(ICommandMessage command)
     {
-        OnSendCommandToMainView?.Invoke(this, command);
+        MessageBus.Current.SendMessage(command);
     }
 
     private void GoForwardHistory()
@@ -415,14 +390,14 @@ public class FileExplorerViewModel : ViewModelBase
         }
     }
 
-    public void OpenImageTab()
+    public void OpenImageTabFromKeyboardEvent()
     {
-        var imagesInPath = Helper.GetAllImagesInPathFromFileViewModel(SelectedFile);
-        var command = SelectedFile.IsImage
-            ? new Command(CommandType.OpenImageInNewTab, imagesInPath, SelectedFile.FullPath, SelectedIndex)
-            : new Command(CommandType.OpenFolderInNewTab, imagesInPath, SelectedFile.FullPath);
+        var imagesInPath = Helper.GetAllImagesInPath(SelectedFile);
+        ICommandMessage command = SelectedFile.IsImage
+            ? new OpenInNewTabCommand(SelectedIndex, imagesInPath)
+            : new OpenInNewTabCommand(0, imagesInPath);
 
-        SendCommandToMainView(command);
+        SendCommandToMessageBus(command);
     }
 
     #endregion

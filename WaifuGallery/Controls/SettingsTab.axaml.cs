@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using WaifuGallery.ViewModels;
 
 namespace WaifuGallery.Controls;
 

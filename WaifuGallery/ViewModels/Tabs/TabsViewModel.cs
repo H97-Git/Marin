@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using ReactiveUI;
-using WaifuGallery.Models;
+using WaifuGallery.Commands;
 
 namespace WaifuGallery.ViewModels.Tabs;
 
@@ -34,17 +36,7 @@ public class TabsViewModel : ViewModelBase
     public TabViewModelBase? SelectedTab
     {
         get => _selectedTab;
-        set
-        {
-            // if (_selectedTab?.Id == value?.Id) return;
-            // IsSelectedTabSettingsTab = value is TabSettingsViewModel;
-            // if (!IsSelectedTabSettingsTab)
-            // {
-            //     ImageTabViewModel = value as ImageTabViewModel;
-            // }
-
-            this.RaiseAndSetIfChanged(ref _selectedTab, value);
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedTab, value);
     }
 
     public int SelectedTabIndex
@@ -73,8 +65,6 @@ public class TabsViewModel : ViewModelBase
 
     public Size ControlSize { get; set; }
 
-    public event EventHandler<Command>? OnSendCommandToMainView;
-
     public ICommand CloseTabCommand =>
         ReactiveCommand.Create(CloseTab);
 
@@ -86,15 +76,26 @@ public class TabsViewModel : ViewModelBase
     {
         OpenSettingsTab();
         SelectedTab = OpenTabs.First();
+        MessageBus.Current.Listen<OpenFileCommand>().Subscribe(async x => await OpenFile(x));
+        MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
+        MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeight());
+        MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidth());
+        MessageBus.Current.Listen<string>().Subscribe(Console.WriteLine);
     }
 
     #endregion
 
     #region Private Methods
 
-    private void SendCommandToMainView(Command command)
+    private void SendMessageToStatusBar(string message)
     {
-        OnSendCommandToMainView?.Invoke(this, command);
+        var command = new SendMessageToStatusBarCommand("Information", message);
+        SendCommandToMainView(command);
+    }
+
+    private void SendCommandToMainView(ICommandMessage command)
+    {
+        MessageBus.Current.SendMessage(command);
     }
 
     private void CloseTab()
@@ -116,8 +117,7 @@ public class TabsViewModel : ViewModelBase
     private void AddTab(TabViewModelBase tab)
     {
         OpenTabs.Add(tab);
-        // OpenTabs = new ObservableCollection<TabViewModelBase>(OpenTabs.OrderBy(x => x, new TabsComparer()));
-        SelectedTab = OpenTabs.Single(x => x.Id == tab.Id);
+        SelectedTab = OpenTabs.First(x => x.Id == tab.Id);
         if (SelectedTab is ImageTabViewModel)
         {
             IsSelectedTabSettingsTab = false;
@@ -132,40 +132,11 @@ public class TabsViewModel : ViewModelBase
     }
 
 
-    private static ImageTabViewModel? CreateImageTabFromCommand(Guid id, Command command)
-    {
-        var imagesInPath = command.ImagesInPath;
-        if (imagesInPath is null) return null;
-
-        var index = 0;
-        if (command.Type is CommandType.OpenImageInNewTab)
-        {
-            index = command.Index;
-        }
-
-        return new ImageTabViewModel(id, imagesInPath, index);
-    }
-
-    private void ResizeAllTabByHeight()
-    {
-        foreach (var tabViewModel in OpenTabs)
-        {
-            (tabViewModel as ImageTabViewModel)?.ResizeImageByHeight(ControlSize.Height);
-        }
-    }
-
     private void ResizeTabByHeight(ImageTabViewModel imageTabViewModel)
     {
         imageTabViewModel.ResizeImageByHeight(ControlSize.Height);
     }
 
-    private void ResizeAllTabByWidth()
-    {
-        foreach (var tabViewModel in OpenTabs)
-        {
-            (tabViewModel as ImageTabViewModel)?.ResizeImageByWidth(ControlSize.Width);
-        }
-    }
 
     private void ResizeTabByWidth(ImageTabViewModel imageTabViewModel)
     {
@@ -175,6 +146,22 @@ public class TabsViewModel : ViewModelBase
     #endregion
 
     #region Public Methods
+
+    private async Task OpenFile(OpenFileCommand command)
+    {
+        var storageProvider = App.GetTopLevel()?.StorageProvider;
+        if (storageProvider is null) return;
+        var result = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open File",
+            AllowMultiple = false,
+            FileTypeFilter = new[] {FilePickerFileTypes.ImageAll}
+        });
+
+        if (result.Count is 0) return;
+        command.Path = result[0].Path.LocalPath;
+        AddImageTab(command);
+    }
 
     public void SelectionChanged(SelectionChangedEventArgs e)
     {
@@ -202,24 +189,24 @@ public class TabsViewModel : ViewModelBase
         ResizeTabByHeight(ImageTabViewModel);
     }
 
-    public void AddImageTab(Command command)
+    private void AddImageTab(ICommandMessage command)
     {
-        var id = Guid.NewGuid();
-        var imageTabViewModel = CreateImageTabFromCommand(id, command);
+        var imageTabViewModel = ImageTabViewModel.CreateImageTabFromCommand(command);
         if (imageTabViewModel is null) return;
+        if (!Preferences.Instance.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
+
         AddTab(imageTabViewModel);
-        FitToHeight();
     }
 
 
     public void OpenSettingsTab()
     {
         if (IsSettingsTabOpen) return;
-        AddTab(new TabSettingsViewModel(Guid.Empty));
+        AddTab(new TabSettingsViewModel());
     }
 
 
-    public void CycleTab(bool reverse = false)
+    public void CycleTab(bool reverse, bool isCtrlKey)
     {
         if (OpenTabs.Count is 1) return;
         int newIndex;
@@ -235,10 +222,28 @@ public class TabsViewModel : ViewModelBase
             newIndex = (SelectedTabIndex + 1) % OpenTabs.Count;
         }
 
+        if (!isCtrlKey)
+        {
+            if (!Preferences.Instance.IsSettingsTabCycled)
+            {
+                if (OpenTabs[newIndex] is TabSettingsViewModel)
+                {
+                    if (reverse)
+                    {
+                        newIndex = newIndex is 0 ? OpenTabs.Count - 1 : newIndex - 1;
+                    }
+                    else
+                    {
+                        newIndex++;
+                    }
+                }
+            }
+        }
+
+
         SelectedTabIndex = newIndex;
     }
 
-    #endregion
 
     public void MoveTab(TabViewModelBase from, TabViewModelBase to)
     {
@@ -247,4 +252,6 @@ public class TabsViewModel : ViewModelBase
         OpenTabs.Move(fromIdx, toIdx);
         SelectedTab = from;
     }
+
+    #endregion
 }

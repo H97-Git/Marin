@@ -2,8 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using Avalonia.Media;
 using ReactiveUI;
 
@@ -11,11 +10,14 @@ namespace WaifuGallery.ViewModels;
 
 public class Preferences : ReactiveObject
 {
+    private Key FullScreenKey = Key.F11;
     private static Preferences? _instances = null;
 
     private string _theme = "Light";
     private FontFamily _defaultFont;
     private double _defaultFontSize;
+    private bool _isSettingsTabCycled;
+    private bool _isDuplicateTabsAllowed;
 
     private static readonly string SettingsPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -26,6 +28,18 @@ public class Preferences : ReactiveObject
     {
         get => _theme;
         set => this.RaiseAndSetIfChanged(ref _theme, value);
+    }
+
+    public bool IsSettingsTabCycled
+    {
+        get => _isSettingsTabCycled;
+        set => this.RaiseAndSetIfChanged(ref _isSettingsTabCycled, value);
+    }
+
+    public bool IsDuplicateTabsAllowed
+    {
+        get => _isDuplicateTabsAllowed;
+        set => this.RaiseAndSetIfChanged(ref _isDuplicateTabsAllowed, value);
     }
 
     public double DefaultFontSize

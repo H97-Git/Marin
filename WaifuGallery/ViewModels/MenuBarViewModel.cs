@@ -1,7 +1,6 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using ReactiveUI;
-using WaifuGallery.Models;
+using WaifuGallery.Commands;
 
 namespace WaifuGallery.ViewModels;
 
@@ -17,8 +16,6 @@ public class MenuBarViewModel : ViewModelBase
 
     private bool _isMenuOpen;
     private bool _isMenuVisible = true;
-
-    private Action SendCommandToMainView(Command command) => () => { OnSendCommandToMainView?.Invoke(this, command); };
 
     #endregion
 
@@ -38,34 +35,30 @@ public class MenuBarViewModel : ViewModelBase
 
     #endregion
 
-    #region Public Events
-
-    public event EventHandler<Command>? OnSendCommandToMainView;
-
-    #endregion
-
     #region Public Commands
 
     public ICommand Exit =>
-        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.Exit)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ExitCommand()); });
 
     public ICommand FitToHeightCommand =>
-        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.FitToHeight)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new FitToHeightCommand()); });
 
     public ICommand FitToWidthCommand =>
-        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.FitToWidth)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new FitToWidthCommand()); });
+
 
     public ICommand OpenFileCommand =>
-        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.OpenFile)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenFileCommand()); });
 
     public ICommand ToggleFileExplorerCommand =>
-        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.ToggleFileExplorer)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileExplorerCommand()); });
+
 
     public ICommand ToggleFileExplorerVisibilityCommand =>
-        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.ToggleFileExplorerVisibility)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileExplorerVisibilityCommand()); });
 
     public ICommand ToggleFullScreenCommand =>
-        ReactiveCommand.Create(SendCommandToMainView(new Command(CommandType.ToggleFullScreen)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFullScreenCommand()); });
 
     #endregion
 }

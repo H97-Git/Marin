@@ -34,23 +34,26 @@
                               MinWidth="150" />
                 </ui:SettingsExpander.Footer>
 
-                <ui:SettingsExpander Header="Tabs">
-                    
-                </ui:SettingsExpander>
             </ui:SettingsExpander>
-            <ui:SettingsExpander Header="App Accent Color"
-                                 IconSource="ColorLine"
-                                 Description="Set a custom accent color for the App"
-                                 IsExpanded="True">
-                <ui:SettingsExpanderItem Content="Preview">
+            <ui:SettingsExpander Header="Tabs"
+                                 IconSource=""
+                                 Description="Configure Tabs behaviours">
+                <ui:SettingsExpanderItem Content="Include settings tab when cycling">
                     <ui:SettingsExpanderItem.Footer>
-                        <TextBlock Text="Hello World" />
+                        <CheckBox IsChecked="{Binding IsSettingsTabCycled}"/>
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem>
-                    <TextBlock Text="Expander Item" />
+                <ui:SettingsExpanderItem Content="Allow duplicate tabs">
                     <ui:SettingsExpanderItem.Footer>
-                        <TextBlock Text="Expander Item Footer" />
+                        <CheckBox Content="" IsChecked="{Binding IsDuplicateTabsAllowed}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+            </ui:SettingsExpander>
+            <ui:SettingsExpander Header="Keymap">
+                <ui:SettingsExpanderItem Content="Test Key">
+                    <ui:SettingsExpanderItem.Footer>
+                        <Button Content="Click" Command="{Binding ShowDialogAsync}">
+                        </Button>
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>

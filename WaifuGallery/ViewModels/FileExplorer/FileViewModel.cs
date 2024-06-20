@@ -1,12 +1,11 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
+using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
-using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.FileExplorer;
 
@@ -129,12 +128,6 @@ public sealed class FileViewModel : ViewModelBase
 
     #endregion
 
-    #region Public Events
-
-    public event EventHandler<Command>? OnSendCommandToFileExplorer;
-
-    #endregion
-
     #region Private Methods
 
     private void ResizeThumbnail()
@@ -148,31 +141,22 @@ public sealed class FileViewModel : ViewModelBase
 
     #endregion
 
-    #region Public Methods
-
-    public Action SendActionCommandToFileExplorer(Command command) =>
-        () => { OnSendCommandToFileExplorer?.Invoke(this, command); };
-
-    public void SendCommandToFileExplorer(Command command) => OnSendCommandToFileExplorer?.Invoke(this, command);
-
-    #endregion
-
     #region Public Commands
 
     public ICommand Copy =>
-        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Copy, path: FullPath)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new CopyCommand(FullPath)); });
 
     public ICommand Cut =>
-        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Cut, path: FullPath)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new CutCommand(FullPath)); });
 
     public ICommand Delete =>
-        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Delete, path: FullPath)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new DeleteCommand()); });
 
     public ICommand Move =>
-        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Move, path: FullPath)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new MoveCommand()); });
 
     public ICommand Paste =>
-        ReactiveCommand.Create(SendActionCommandToFileExplorer(new Command(CommandType.Paste, path: FullPath)));
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new PasteCommand()); });
 
     #endregion
 }

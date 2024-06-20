@@ -21,7 +21,7 @@ public partial class MainView : UserControl
     }
 
     #endregion
-    
+
     #region Private Methods
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)

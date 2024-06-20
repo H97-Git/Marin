@@ -11,18 +11,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ActiproSoftware.Controls.Avalonia" Version="24.1.0" />
-        <PackageReference Include="Avalonia" Version="11.0.10" />
+        <PackageReference Include="Avalonia" Version="11.0.11" />
         <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.0.0.3" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.11" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.11" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.11" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.11" />
         <PackageReference Include="FluentAvaloniaUI" Version="2.0.5" />
         <PackageReference Include="HeroIcons.Avalonia" Version="1.0.2" />
-        <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.8.0" />
-        <PackageReference Include="Magick.NET.Core" Version="13.8.0" />
+        <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.9.1" />
+        <PackageReference Include="Magick.NET.Core" Version="13.9.1" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,7 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:WaifuGallery"
-             xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
              xmlns:fluent="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
              x:Class="WaifuGallery.App"
              RequestedThemeVariant="Dark">
@@ -14,7 +13,6 @@
     <Application.Styles>
         <fluent:FluentAvaloniaTheme />
         <FluentTheme />
-        <!-- <actipro:ModernTheme /> -->
         <StyleInclude Source="Resources/Styles.axaml"/>
     </Application.Styles>
 

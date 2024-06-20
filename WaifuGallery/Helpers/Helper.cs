@@ -30,9 +30,13 @@ public abstract class Helper
     /// </summary>
     /// <param name="path">Path</param>
     /// <returns>An array of FileInfo.FullName</returns>
-    public static string[] GetAllImagesInPathFromString(string path)
+    public static string[] GetAllImagesInPath(string path)
     {
-        var directoryInfo = new DirectoryInfo(path);
+        var fileAttributes = File.GetAttributes(path);
+        var directoryInfo = fileAttributes.HasFlag(FileAttributes.Directory)
+            ? new DirectoryInfo(path)
+            : Directory.GetParent(path);
+
         return GetAllImagesInPath(directoryInfo);
     }
 
@@ -41,11 +45,11 @@ public abstract class Helper
     /// </summary>
     /// <param name="fileViewModel">FileViewModel with the path</param>
     /// <returns>An array of FileInfo.FullName</returns>
-    public static string[] GetAllImagesInPathFromFileViewModel(FileViewModel fileViewModel)
+    public static string[] GetAllImagesInPath(FileViewModel fileViewModel)
     {
         // if it's an image, use the parent directory else use the full path
         var directoryInfo = fileViewModel.IsImage
-            ? new DirectoryInfo(fileViewModel.ParentPath)
+            ? new DirectoryInfo(fileViewModel.ParentPath ?? Directory.GetDirectoryRoot(fileViewModel.FullPath))
             : new DirectoryInfo(fileViewModel.FullPath);
         return GetAllImagesInPath(directoryInfo);
     }
@@ -65,13 +69,15 @@ public abstract class Helper
     /// </summary>
     /// <param name="di">The directory info</param>
     /// <returns>An array of FileInfo.FullName</returns>
-    private static string[] GetAllImagesInPath(DirectoryInfo di)
+    private static string[] GetAllImagesInPath(DirectoryInfo? di)
     {
-        return di.GetFiles()
-            .Where(fileInfo => ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
-            .OrderBy(fileInfo => fileInfo.Name, new NaturalSortComparer())
-            .Select(fileInfo => fileInfo.FullName)
-            .ToArray();
+        if (di is not null)
+            return di.GetFiles()
+                .Where(fileInfo => ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
+                .OrderBy(fileInfo => fileInfo.Name, new NaturalSortComparer())
+                .Select(fileInfo => fileInfo.FullName)
+                .ToArray();
+        return [];
     }
 
     #endregion

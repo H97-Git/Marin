@@ -2,8 +2,9 @@
 using System.IO;
 using Avalonia.Controls;
 using Avalonia.Input;
+using ReactiveUI;
+using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
-using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileExplorer;
 using WaifuGallery.ViewModels.Tabs;
 using File = System.IO.File;
@@ -12,13 +13,6 @@ namespace WaifuGallery.ViewModels;
 
 public class MainViewViewModel : ViewModelBase
 {
-    #region Private Members
-
-    private readonly MainWindow _mainWindow;
-    private CommandType _lastCommandType = CommandType.None;
-
-    #endregion
-
     #region Public Properties
 
     public MenuBarViewModel MenuBarViewModel { get; init; }
@@ -30,104 +24,23 @@ public class MainViewViewModel : ViewModelBase
 
     #region CTOR
 
-    public MainViewViewModel(MainWindow mainWindow)
+    public MainViewViewModel()
     {
-        _mainWindow = mainWindow;
         MenuBarViewModel = new MenuBarViewModel();
         TabsViewModel = new TabsViewModel();
-        FileExplorerViewModel = new FileExplorerViewModel(_mainWindow.StorageProvider);
+        FileExplorerViewModel = new FileExplorerViewModel();
         StatusBarViewModel = new StatusBarViewModel();
-        AddEventHandlers();
+        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.Close());
+        MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
+        MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
+        MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
+        MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
+        MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
     }
 
     #endregion
 
     #region Private Methods
-
-    private void AddEventHandlers()
-    {
-        MenuBarViewModel.OnSendCommandToMainView += HandleControlCommands;
-        FileExplorerViewModel.OnSendCommandToMainView += HandleControlCommands;
-        TabsViewModel.OnSendCommandToMainView += HandleControlCommands;
-    }
-
-    private void HandleControlCommands(object? sender, Command command)
-    {
-        if (sender is null) return;
-        switch (sender.GetType().Name)
-        {
-            case "MenuBarViewModel":
-                HandleMenuBarCommand(command.Type);
-                break;
-            case "FileExplorerViewModel":
-                HandleFileExplorerCommand(command);
-                break;
-        }
-    }
-
-    private void HandleMenuBarCommand(CommandType type)
-    {
-        switch (type)
-        {
-            case CommandType.Exit:
-                Environment.Exit(0);
-                break;
-            case CommandType.ToggleFullScreen:
-                StatusBarViewModel.Message = $"Toggling FullScreen...";
-                ToggleFullScreen();
-                break;
-            case CommandType.OpenFile:
-                StatusBarViewModel.Message = $"Opening File...";
-                break;
-            case CommandType.ToggleFileExplorer:
-                StatusBarViewModel.Message = $"Toggling File Explorer...";
-                FileExplorerViewModel.ToggleFileExplorer();
-                break;
-            case CommandType.ToggleFileExplorerVisibility:
-                StatusBarViewModel.Message = $"Toggling File Explorer Visibility...";
-                FileExplorerViewModel.ToggleFileExplorerVisibility();
-                break;
-            case CommandType.FitToWidth:
-                StatusBarViewModel.Message = $"FitToWidth";
-                TabsViewModel.FitToHeight();
-                break;
-            case CommandType.FitToHeight:
-                StatusBarViewModel.Message = $"FitToHeight";
-                TabsViewModel.FitToWidth();
-                break;
-            default:
-                StatusBarViewModel.Message = "Command not found!";
-                break;
-        }
-    }
-
-    private void HandleFileExplorerCommand(Command command)
-    {
-        switch (command.Type)
-        {
-            case CommandType.Copy:
-            case CommandType.Cut:
-                CopyCutFile(command);
-                break;
-            case CommandType.Rename:
-                RenameFile(command);
-                break;
-            case CommandType.Paste:
-                PasteFile(command);
-                break;
-            case CommandType.Delete:
-                DeleteFile();
-                break;
-            case CommandType.OpenImageInNewTab:
-            case CommandType.OpenFolderInNewTab:
-                TabsViewModel.AddImageTab(command);
-                break;
-            case CommandType.SendMessageToStatusBar:
-                if (command.Message is not null)
-                    StatusBarViewModel.Message = command.Message;
-                break;
-        }
-    }
 
     private void HandleMainViewKeyboardEvent(KeyEventArgs e)
     {
@@ -199,6 +112,7 @@ public class MainViewViewModel : ViewModelBase
                 }
 
                 break;
+
             case {Key: Key.J}:
             case {Key: Key.Down}:
                 FileExplorerViewModel.GoDown();
@@ -219,13 +133,14 @@ public class MainViewViewModel : ViewModelBase
                 }
 
                 break;
+
             case {Key: Key.O}:
             case {Key: Key.Space}:
-                FileExplorerViewModel.OpenImageTab();
+                FileExplorerViewModel.OpenImageTabFromKeyboardEvent();
                 break;
             case {Key: Key.P}:
                 var imagesInPath =
-                    Helper.GetAllImagesInPathFromString(FileExplorerViewModel.SelectedFile.FullPath);
+                    Helper.GetAllImagesInPath(FileExplorerViewModel.SelectedFile.FullPath);
                 FileExplorerViewModel.StartPreview(imagesInPath);
                 break;
             case {Key: Key.Escape}:
@@ -236,57 +151,64 @@ public class MainViewViewModel : ViewModelBase
 
     private void ToggleFullScreen()
     {
-        if (_mainWindow.WindowState is WindowState.Normal)
+        if (App.GetTopLevel() is not Window mainWindow) return;
+        if (mainWindow.WindowState is WindowState.Normal)
         {
-            _mainWindow.WindowState = WindowState.FullScreen;
+            mainWindow.WindowState = WindowState.FullScreen;
             MenuBarViewModel.IsMenuVisible = false;
             StatusBarViewModel.IsStatusBarVisible = false;
         }
         else
         {
-            _mainWindow.WindowState = WindowState.Normal;
+            mainWindow.WindowState = WindowState.Normal;
             MenuBarViewModel.IsMenuVisible = true;
             StatusBarViewModel.IsStatusBarVisible = true;
         }
     }
 
-    private void RenameFile(Command command)
+    private void RenameFile(RenameCommand command)
     {
-        var newName = command.Message;
-        var source = command.Path;
+        var source = command.OldName;
+        var newName = command.NewName;
         var destination = source.Replace(Path.GetFileName(source), newName);
         File.Move(source, destination);
     }
 
-    private void DeleteFile()
-    {
-        File.Delete(FileExplorerViewModel.SelectedFile.FullPath);
-    }
 
-    private void CopyCutFile(Command command)
+    private void CopyFile(CopyCommand command)
     {
-        _mainWindow.Clipboard?.SetTextAsync(command.Path);
-        _lastCommandType = command.Type;
-    }
-
-    private void PasteFile(Command command)
-    {
-        switch (_lastCommandType)
+        if (App.GetTopLevel() is Window mainWindow)
         {
-            case CommandType.Copy:
-                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(command.Path);
-                var newPath = FileExplorerViewModel.CurrentPath + "\\" + fileNameWithoutExtension;
-                if (Directory.Exists(newPath))
-                {
-                    newPath += " (1)";
-                }
-
-                File.Copy(command.Path, newPath);
-                break;
-            case CommandType.Cut:
-                File.Move(command.Path, FileExplorerViewModel.CurrentPath);
-                break;
+            mainWindow.Clipboard?.SetTextAsync(command.Path);
         }
+    }
+
+    private void CutFile(CutCommand command)
+    {
+        if (App.GetTopLevel() is Window mainWindow)
+        {
+            mainWindow.Clipboard?.SetTextAsync(command.Path);
+        }
+    }
+
+    private void PasteFile(PasteCommand command)
+    {
+        // switch (_lastCommandType)
+        // {
+        //     case CommandType.Copy:
+        //         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(command.Path);
+        //         var newPath = FileExplorerViewModel.CurrentPath + "\\" + fileNameWithoutExtension;
+        //         if (Directory.Exists(newPath))
+        //         {
+        //             newPath += " (1)";
+        //         }
+        //
+        //         File.Copy(command.Path, newPath);
+        //         
+        //     case CommandType.Cut:
+        //         File.Move(command.Path, FileExplorerViewModel.CurrentPath);
+        //         
+        // }
     }
 
     private void NewFolder()
@@ -307,18 +229,19 @@ public class MainViewViewModel : ViewModelBase
             HandleFileExplorerKeyboardEvent(e);
     }
 
-    #endregion
-
     public void HandleTabKeyEvent(KeyEventArgs e)
     {
         if (e.Key is not Key.Tab) return;
-        if (e.KeyModifiers is not KeyModifiers.Shift)
+        if (e.KeyModifiers.ToString() is "Control, Shift")
         {
-            TabsViewModel.CycleTab();
+            TabsViewModel.CycleTab(true, true);
+            e.Handled = true;
+            return;
         }
-        else
-        {
-            TabsViewModel.CycleTab(true);
-        }
+
+        TabsViewModel.CycleTab(e.KeyModifiers is KeyModifiers.Shift, e.KeyModifiers is KeyModifiers.Control);
+        e.Handled = true;
     }
+
+    #endregion
 }

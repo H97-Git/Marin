@@ -2,8 +2,9 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using ReactiveUI;
+using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
-using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Controls;
@@ -40,8 +41,8 @@ public partial class File : UserControl
     private void OnFolderDoubleClick_ChangePath(object? sender, TappedEventArgs e)
     {
         StopTimer();
-        var command = new Command(CommandType.ChangePath, path: FileViewModel?.FullPath);
-        FileViewModel?.SendCommandToFileExplorer(command);
+        var command = new ChangePathCommand(FileViewModel?.FullPath);
+        MessageBus.Current.SendMessage(command);
     }
 
     private void OnPointerPressed_StartTimerTickPreview(object? sender, PointerPressedEventArgs e)
@@ -60,11 +61,11 @@ public partial class File : UserControl
     {
         if (!_previewTimer.IsEnabled) return;
         if (FileViewModel is null) return;
-        var imagesInPath = Helper.GetAllImagesInPathFromFileViewModel(FileViewModel);
-        if (imagesInPath is {Length: 0}) return;
-        var command = new Command(CommandType.StartPreview, path: FileViewModel?.FullPath, imagesInPath: imagesInPath);
         _previewTimer.Stop();
-        FileViewModel?.SendActionCommandToFileExplorer(command);
+        var imagesInPath = Helper.GetAllImagesInPath(FileViewModel);
+        if (imagesInPath is {Length: 0}) return;
+        var command = new StartPreviewCommand(imagesInPath);
+        MessageBus.Current.SendMessage(command);
     }
 
     // private void OnPointerExited_ClosePreview(object? sender, PointerEventArgs e) =>
@@ -76,21 +77,18 @@ public partial class File : UserControl
         if (e.InitialPressMouseButton is not MouseButton.Middle) return;
         if (FileViewModel is null) return;
 
-        var imagesInPath = Helper.GetAllImagesInPathFromFileViewModel(FileViewModel);
+        var imagesInPath = Helper.GetAllImagesInPath(FileViewModel);
         if (imagesInPath is {Length: 0}) return;
 
-        Command command;
+        var index = 0;
         if (FileViewModel.IsImage)
         {
-            var index = Array.IndexOf(imagesInPath, FileViewModel.FullPath);
-            command = new Command(CommandType.OpenImageInNewTab, imagesInPath, index: index);
-        }
-        else
-        {
-            command = new Command(CommandType.OpenFolderInNewTab, imagesInPath);
+            index = Array.IndexOf(imagesInPath, FileViewModel.FullPath);
         }
 
-        FileViewModel?.SendCommandToFileExplorer(command);
+        var command = new OpenInNewTabCommand(index, imagesInPath);
+
+        MessageBus.Current.SendMessage(command);
     }
 
     private void StopTimer()

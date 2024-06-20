@@ -13,8 +13,7 @@ public class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-        var pref = Preferences.Instance;
-        SetTheme(pref.Theme);
+        SetTheme(Preferences.Instance.Theme);
     }
 
     public override async void OnFrameworkInitializationCompleted()
@@ -40,8 +39,9 @@ public class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    public static void SetTheme(string theme)
+    private static void SetTheme(string theme)
     {
+        if (theme is null) return;
         if (Current is null) return;
         if (theme.Equals("Light", StringComparison.OrdinalIgnoreCase))
         {
@@ -55,5 +55,21 @@ public class App : Application
         {
             Current.RequestedThemeVariant = ThemeVariant.Default;
         }
+    }
+
+    public static TopLevel? GetTopLevel()
+    {
+        if (Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            return desktop.MainWindow;
+        }
+
+        return null;
+    }
+
+    public static void Close()
+    {
+        Preferences.Instance.Save();
+        Environment.Exit(0);
     }
 }

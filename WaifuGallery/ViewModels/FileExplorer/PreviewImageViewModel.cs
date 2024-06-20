@@ -2,7 +2,7 @@
 using Avalonia;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
-using WaifuGallery.Models;
+using WaifuGallery.Commands;
 
 namespace WaifuGallery.ViewModels.FileExplorer;
 
@@ -53,12 +53,6 @@ public class PreviewImageViewModel : ViewModelBase
 
     #endregion
 
-    #region Public Events
-
-    public event EventHandler<Command>? OnSendCommandToFileExplorer;
-
-    #endregion
-
     #region Public Properties
 
     public Bitmap? PreviewImage
@@ -89,18 +83,16 @@ public class PreviewImageViewModel : ViewModelBase
 
     #region Private Methods
 
-    private void SendCommandToFileExplorer(Command command)
-    {
-        OnSendCommandToFileExplorer?.Invoke(this, command);
-    }
+    private void SendCommandMessageBus(ICommandMessage command) => MessageBus.Current.SendMessage(command);
 
     public void StartPreview(string[] imagesInPath)
     {
         _previewImagePaths = imagesInPath;
         if (_previewImagePaths is {Length: 0})
         {
-            var command = new Command(CommandType.SendMessageToStatusBar, message: "No images found for preview");
-            SendCommandToFileExplorer(command);
+            const string message = "No images found for preview";
+            var command = new SendMessageToStatusBarCommand("Information", message);
+            SendCommandMessageBus(command);
             return;
         }
 
@@ -150,7 +142,7 @@ public class PreviewImageViewModel : ViewModelBase
         IsPreviewImageVisible = false;
         PreviewImage = null;
         _previewImagePaths = Array.Empty<string>();
-        SendCommandToFileExplorer(new Command(CommandType.ToggleFileExplorerScrollBar));
+        SendCommandMessageBus(new ToggleFileExplorerScrollBarCommand());
     }
 
     #endregion
