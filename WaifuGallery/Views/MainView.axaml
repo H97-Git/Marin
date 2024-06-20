@@ -40,12 +40,13 @@
         <!--         IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}"> -->
         <!--     <Label Content="{Binding StatusBarViewModel.Message}" Foreground="White" /> -->
         <!-- </Border> -->
-        <Border Grid.Row="2" IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}">
+        <Border Grid.Row="2" IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}" >
             <ui:InfoBar Title="{Binding StatusBarViewModel.Title}"
                         Severity="{Binding StatusBarViewModel.Severity}"
                         Message="{Binding StatusBarViewModel.Message}"
                         IsOpen="True"
-                        IsClosable="False" />
+                        IsClosable="False"
+                        Background="{Binding StatusBarViewModel.BackgroundColor}"/>
         </Border>
     </Grid>
 </UserControl>

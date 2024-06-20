@@ -5,7 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="WaifuGallery.MainWindow"
-    Background="#1641FF"
     Icon="/Resources/avalonia-logo.ico"
     MinHeight="680"
     MinWidth="680"

@@ -11,6 +11,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData.Binding;
+using FluentAvalonia.UI.Controls;
 using ImageMagick;
 using ReactiveUI;
 using WaifuGallery.Commands;
@@ -326,7 +327,7 @@ public class FileExplorerViewModel : ViewModelBase
 
     private void SendMessageToStatusBar(string message)
     {
-        var command = new SendMessageToStatusBarCommand("Information", message);
+        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational,"Information", message);
         SendCommandToMessageBus(command);
     }
 

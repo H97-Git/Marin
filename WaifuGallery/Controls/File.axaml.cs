@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
@@ -78,7 +79,12 @@ public partial class File : UserControl
         if (FileViewModel is null) return;
 
         var imagesInPath = Helper.GetAllImagesInPath(FileViewModel);
-        if (imagesInPath is {Length: 0}) return;
+        if (imagesInPath is {Length: 0})
+        {
+            MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Warning, "Warning",
+                "No images found in folder"));
+            return;
+        }
 
         var index = 0;
         if (FileViewModel.IsImage)

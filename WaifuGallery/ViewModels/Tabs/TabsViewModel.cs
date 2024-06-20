@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
 
@@ -89,7 +90,7 @@ public class TabsViewModel : ViewModelBase
 
     private void SendMessageToStatusBar(string message)
     {
-        var command = new SendMessageToStatusBarCommand("Information", message);
+        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational,"Information", message);
         SendCommandToMainView(command);
     }
 
@@ -101,17 +102,16 @@ public class TabsViewModel : ViewModelBase
     private void CloseTab()
     {
         if (SelectedTab is null) return;
-        if (SelectedTab is TabSettingsViewModel) return;
+        if (SelectedTab is TabSettingsViewModel && !Preferences.Instance.IsTabSettingsClosable) return;
         OpenTabs.Remove(SelectedTab);
         if (OpenTabs.Count is 0)
         {
+            TabSettingsViewModel = null;
             ImageTabViewModel = null;
             return;
         }
 
         SelectedTab = OpenTabs.First();
-        // if (SelectedTab is ImageTabViewModel imageTabViewModel)
-        // ImageTabViewModel = imageTabViewModel;
     }
 
     private void AddTab(TabViewModelBase tab)

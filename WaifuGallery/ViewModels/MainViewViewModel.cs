@@ -30,7 +30,7 @@ public class MainViewViewModel : ViewModelBase
         TabsViewModel = new TabsViewModel();
         FileExplorerViewModel = new FileExplorerViewModel();
         StatusBarViewModel = new StatusBarViewModel();
-        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.Close());
+        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.CloseOnExitCommand());
         MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
         MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
         MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
@@ -86,6 +86,12 @@ public class MainViewViewModel : ViewModelBase
                 if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
                     TabsViewModel.OpenSettingsTab();
                 break;
+        }
+
+        if (e.Key == Preferences.Instance.OpenSettingsKey)
+        {
+            if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
+                TabsViewModel.OpenSettingsTab();
         }
     }
 

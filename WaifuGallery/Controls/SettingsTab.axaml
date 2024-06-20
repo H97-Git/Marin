@@ -40,7 +40,12 @@
                                  Description="Configure Tabs behaviours">
                 <ui:SettingsExpanderItem Content="Include settings tab when cycling">
                     <ui:SettingsExpanderItem.Footer>
-                        <CheckBox IsChecked="{Binding IsSettingsTabCycled}"/>
+                        <CheckBox IsChecked="{Binding IsSettingsTabCycled}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Allow Tab settings to close">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox Content="" IsChecked="{Binding IsTabSettingsClosable}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
                 <ui:SettingsExpanderItem Content="Allow duplicate tabs">
@@ -49,6 +54,7 @@
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
+
             <ui:SettingsExpander Header="Keymap">
                 <ui:SettingsExpanderItem Content="Test Key">
                     <ui:SettingsExpanderItem.Footer>

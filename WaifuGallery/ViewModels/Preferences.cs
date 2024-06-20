@@ -4,57 +4,32 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Avalonia.Input;
 using Avalonia.Media;
-using ReactiveUI;
 
 namespace WaifuGallery.ViewModels;
 
-public class Preferences : ReactiveObject
+public class Preferences
 {
-    private Key FullScreenKey = Key.F11;
-    private static Preferences? _instances = null;
-
-    private string _theme = "Light";
-    private FontFamily _defaultFont;
-    private double _defaultFontSize;
-    private bool _isSettingsTabCycled;
-    private bool _isDuplicateTabsAllowed;
+    // private FontFamily _defaultFont;
+    // private bool _isDuplicateTabsAllowed;
+    // private bool _isSettingsTabCycled;
+    // private double _defaultFontSize;
+    private static Preferences? _instances;
+    // private string _theme = "Light";
 
     private static readonly string SettingsPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "WaifuGallery",
         "settings.json");
 
-    public string Theme
-    {
-        get => _theme;
-        set => this.RaiseAndSetIfChanged(ref _theme, value);
-    }
-
-    public bool IsSettingsTabCycled
-    {
-        get => _isSettingsTabCycled;
-        set => this.RaiseAndSetIfChanged(ref _isSettingsTabCycled, value);
-    }
-
-    public bool IsDuplicateTabsAllowed
-    {
-        get => _isDuplicateTabsAllowed;
-        set => this.RaiseAndSetIfChanged(ref _isDuplicateTabsAllowed, value);
-    }
-
-    public double DefaultFontSize
-    {
-        get => _defaultFontSize;
-        set => this.RaiseAndSetIfChanged(ref _defaultFontSize, value);
-    }
+    public Key OpenSettingsKey { get; set; } = Key.F1;
+    public string Theme { get; set; }
+    public bool IsSettingsTabCycled { get; set; }
+    public bool IsTabSettingsClosable { get; set; }
+    public bool IsDuplicateTabsAllowed { get; set; }
+    public double DefaultFontSize { get; set; }
 
 
-    [JsonIgnore]
-    public FontFamily DefaultFont
-    {
-        get => _defaultFont;
-        set => this.RaiseAndSetIfChanged(ref _defaultFont, value);
-    }
+    [JsonIgnore] public FontFamily DefaultFont { get; set; }
 
     [JsonIgnore]
     public static Preferences Instance
@@ -92,7 +67,9 @@ public class Preferences : ReactiveObject
         if (dir == null) return;
         if (!Directory.Exists(dir))
             Directory.CreateDirectory(dir);
-        File.WriteAllText(SettingsPath,
-            JsonSerializer.Serialize(this, new JsonSerializerOptions {WriteIndented = true}));
+        var json = JsonSerializer.Serialize(this,
+            new JsonSerializerOptions
+                {WriteIndented = true, IgnoreReadOnlyFields = true, IgnoreReadOnlyProperties = true});
+        File.WriteAllText(SettingsPath, json);
     }
 }

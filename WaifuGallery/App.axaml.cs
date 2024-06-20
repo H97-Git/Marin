@@ -67,7 +67,7 @@ public class App : Application
         return null;
     }
 
-    public static void Close()
+    public static void CloseOnExitCommand()
     {
         Preferences.Instance.Save();
         Environment.Exit(0);

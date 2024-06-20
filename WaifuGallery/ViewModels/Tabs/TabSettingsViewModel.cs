@@ -1,6 +1,6 @@
 ﻿using System;
-using ActiproSoftware.UI.Avalonia.Themes;
 using Avalonia;
+using Avalonia.Input;
 using Avalonia.Styling;
 using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Controls;
@@ -11,22 +11,23 @@ namespace WaifuGallery.ViewModels.Tabs;
 
 public class TabSettingsViewModel : TabViewModelBase
 {
-    private readonly FluentAvaloniaTheme? _fluentAvaloniaTheme;
-
-    // private readonly ModernTheme? _modernTheme;
-    private string _currentThemeVariant = string.Empty;
+    private Key _openSettingsKey = Key.None;
     private bool _isDuplicateTabsAllowed = true;
+    private bool _isTabSettingsClosable = false;
     private bool _isSettingsTabCycled = true;
+    private readonly FluentAvaloniaTheme? _fluentAvaloniaTheme;
+    private string _currentThemeVariant = string.Empty;
 
     public TabSettingsViewModel()
     {
         Id = Guid.Empty.ToString();
         Header = "Settings";
         _fluentAvaloniaTheme = Application.Current?.Styles[0] as FluentAvaloniaTheme;
-        // _modernTheme = Application.Current?.Styles[1] as ModernTheme;
+        CurrentThemeVariant = Preferences.Instance.Theme;
         IsDuplicateTabsAllowed = Preferences.Instance.IsDuplicateTabsAllowed;
         IsSettingsTabCycled = Preferences.Instance.IsSettingsTabCycled;
-        CurrentThemeVariant = Preferences.Instance.Theme;
+        IsTabSettingsClosable = Preferences.Instance.IsTabSettingsClosable;
+        OpenSettingsKey = Preferences.Instance.OpenSettingsKey;
         this.WhenAnyValue(x => x.CurrentThemeVariant)
             .Subscribe(value =>
             {
@@ -46,6 +47,10 @@ public class TabSettingsViewModel : TabViewModelBase
             .Subscribe(value => Preferences.Instance.IsDuplicateTabsAllowed = value);
         this.WhenAnyValue(x => x.IsSettingsTabCycled)
             .Subscribe(value => Preferences.Instance.IsSettingsTabCycled = value);
+        this.WhenAnyValue(x => x.IsTabSettingsClosable)
+            .Subscribe(value => Preferences.Instance.IsTabSettingsClosable = value);
+        this.WhenAnyValue(x => x.OpenSettingsKey)
+            .Subscribe(value => Preferences.Instance.OpenSettingsKey = value);
     }
 
     public string[] ThemesVariants { get; } = ["System", "Light", "Dark"];
@@ -66,6 +71,18 @@ public class TabSettingsViewModel : TabViewModelBase
     {
         get => _isSettingsTabCycled;
         set => this.RaiseAndSetIfChanged(ref _isSettingsTabCycled, value);
+    }
+
+    public bool IsTabSettingsClosable
+    {
+        get => _isTabSettingsClosable;
+        set => this.RaiseAndSetIfChanged(ref _isTabSettingsClosable, value);
+    }
+
+    public Key OpenSettingsKey
+    {
+        get => _openSettingsKey;
+        set => this.RaiseAndSetIfChanged(ref _openSettingsKey, value);
     }
 
     public string CurrentVersion => "1.0.0";

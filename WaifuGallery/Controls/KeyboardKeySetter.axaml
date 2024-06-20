@@ -6,6 +6,8 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="WaifuGallery.Controls.KeyboardKeySetter"
              x:DataType="vm:KeyboardKeySetterViewModel">
-    <TextBox Text="{Binding KeyName}"
-             KeyDown="InputElement_OnKeyDown" />
+    <StackPanel>
+        <TextBox Text="{Binding KeyName}" KeyDown="InputElement_OnKeyDown"
+                   AttachedToVisualTree="Input_OnAttachedToVisualTree" />
+    </StackPanel>
 </UserControl>
