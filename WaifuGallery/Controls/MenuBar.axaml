@@ -9,44 +9,51 @@
              x:DataType="viewModels:MenuBarViewModel">
     <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}">
         <MenuItem Header="_File">
-            <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}">
+            <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}"
+                      Foreground="{DynamicResource Brush.Foreground }">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="FolderOpen" Foreground="GhostWhite" />
+                    <hero:HeroIcon Type="FolderOpen" Foreground="Red" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}">
+            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}"
+                      Foreground="{DynamicResource Brush.Foreground }">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="XCircle" Foreground="GhostWhite" />
+                    <hero:HeroIcon Type="XCircle" />
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>
         <MenuItem Header="_View">
-            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}">
+            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}"
+                      Foreground="{DynamicResource Brush.Foreground }">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="ArrowsPointingOut" Foreground="GhostWhite" />
+                    <hero:HeroIcon Type="ArrowsPointingOut" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}">
+            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}"
+                      Foreground="{DynamicResource Brush.Foreground }">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="ArchiveBoxArrowDown" Foreground="GhostWhite" />
+                    <hero:HeroIcon Type="ArchiveBoxArrowDown" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}">
+            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}"
+                      Foreground="{DynamicResource Brush.Foreground }">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="EyeSlash" Foreground="GhostWhite" />
+                    <hero:HeroIcon Type="EyeSlash" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}">
+            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}"
+                      Foreground="{DynamicResource Brush.Foreground }">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="ArrowsRightLeft" Foreground="GhostWhite" />
+                    <hero:HeroIcon Type="ArrowsRightLeft" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}">
+            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}"
+                      Foreground="{DynamicResource Brush.Foreground }">
                 <MenuItem.Icon>
-                    <hero:HeroIcon Type="ArrowsUpDown" Foreground="GhostWhite" />
+                    <hero:HeroIcon Type="ArrowsUpDown" />
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>

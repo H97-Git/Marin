@@ -11,11 +11,12 @@ public class StatusBarViewModel : ViewModelBase
 {
     #region Priate Members
 
-    private InfoBarSeverity _severity = InfoBarSeverity.Informational;
-    private string _title = "Information";
-    private string _message = "Welcome to WaifuGallery!";
     private IBrush _backgroundColor = new SolidColorBrush(Colors.Transparent);
+    private IBrush _foregroundColor = new SolidColorBrush(Colors.White);
+    private InfoBarSeverity _severity = InfoBarSeverity.Informational;
     private bool _isStatusBarVisible = true;
+    private string _message = "Welcome to WaifuGallery!";
+    private string _title = "Information";
 
     #endregion
 
@@ -30,10 +31,19 @@ public class StatusBarViewModel : ViewModelBase
         {
             BackgroundColor = x switch
             {
-                InfoBarSeverity.Informational => new SolidColorBrush(Colors.LightSkyBlue),
-                InfoBarSeverity.Success => new SolidColorBrush(Colors.LimeGreen),
-                InfoBarSeverity.Warning => new SolidColorBrush(Colors.DarkOrange),
-                InfoBarSeverity.Error => new SolidColorBrush(Colors.OrangeRed),
+                InfoBarSeverity.Error => new SolidColorBrush(Color.FromRgb(231, 76, 60)),
+                InfoBarSeverity.Informational => new SolidColorBrush(Color.FromRgb(52, 152, 219)),
+                InfoBarSeverity.Success => new SolidColorBrush(Color.FromRgb(46, 204, 113)),
+                InfoBarSeverity.Warning => new SolidColorBrush(Color.FromRgb(230, 126, 34)),
+                _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
+            };
+
+            Title = x switch
+            {
+                InfoBarSeverity.Error => "Error",
+                InfoBarSeverity.Informational => "Information",
+                InfoBarSeverity.Success => "Success",
+                InfoBarSeverity.Warning => "Warning",
                 _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
             };
         });
@@ -41,10 +51,9 @@ public class StatusBarViewModel : ViewModelBase
 
     private void SetMessage(SendMessageToStatusBarCommand command)
     {
-        Severity = command.Severity;
-        Title = command.Title;
-        Message = command.Message;
         IsStatusBarVisible = true;
+        Message = command.Message;
+        Severity = command.Severity;
     }
 
     #endregion
@@ -73,6 +82,12 @@ public class StatusBarViewModel : ViewModelBase
     {
         get => _backgroundColor;
         set => this.RaiseAndSetIfChanged(ref _backgroundColor, value);
+    }
+    
+    public IBrush ForegroundColor
+    {
+        get => _foregroundColor;
+        set => this.RaiseAndSetIfChanged(ref _foregroundColor, value);
     }
 
     public bool IsStatusBarVisible

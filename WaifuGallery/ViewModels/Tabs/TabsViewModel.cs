@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ public class TabsViewModel : ViewModelBase
     private TabSettingsViewModel? _tabSettingsViewModel;
     private int _selectedTabIndex;
     private bool _isSelectedTabSettingsTab = true;
+    private Dictionary<string,Matrix> _matrices = new();
     private bool IsSettingsTabOpen => OpenTabs.Any(x => x is TabSettingsViewModel);
 
     #endregion
@@ -81,7 +83,13 @@ public class TabsViewModel : ViewModelBase
         MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
         MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeight());
         MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidth());
-        MessageBus.Current.Listen<string>().Subscribe(Console.WriteLine);
+        this.WhenAnyValue(x => x.SelectedTab).Subscribe(x =>
+        {
+            if (x is ImageTabViewModel imageTabViewModel)
+            {
+                MessageBus.Current.SendMessage(new SetZoomCommand(imageTabViewModel.Matrix));
+            }
+        });
     }
 
     #endregion
@@ -90,7 +98,7 @@ public class TabsViewModel : ViewModelBase
 
     private void SendMessageToStatusBar(string message)
     {
-        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational,"Information", message);
+        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, message);
         SendCommandToMainView(command);
     }
 

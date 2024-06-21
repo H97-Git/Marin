@@ -1,7 +1,9 @@
 ﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
+using Avalonia.Threading;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.ViewModels.Tabs;
@@ -12,6 +14,8 @@ public partial class ImageTab : UserControl
 {
     private ImageTabViewModel? ImageTabViewModel => DataContext as ImageTabViewModel;
     private double MinZoom => 0.4;
+    private readonly DispatcherTimer _zoomChangedTimer;
+    private Matrix _matrixBuffer;
 
     public ImageTab()
     {
@@ -19,9 +23,26 @@ public partial class ImageTab : UserControl
         SetZoomBorder();
         MessageBus.Current.Listen<ResetZoomCommand>()
             .Subscribe(_ => ZoomBorder.ResetMatrix());
+        MessageBus.Current.Listen<SetZoomCommand>()
+            .Subscribe(x => ZoomBorder.SetMatrix(x.Matrix));
+        _zoomChangedTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(1.5),
+        };
+        _zoomChangedTimer.Tick += (sender, args) =>
+        {
+            Console.WriteLine($"[Timer Tick] {_zoomChangedTimer.IsEnabled}");
+            if (!_zoomChangedTimer.IsEnabled) return;
+            if (ImageTabViewModel is null) return;
+            Console.WriteLine(
+                $"{_matrixBuffer} == {ImageTabViewModel.Matrix} ? {_matrixBuffer == ImageTabViewModel.Matrix}");
+            if (_matrixBuffer != ImageTabViewModel.Matrix)
+                ImageTabViewModel.Matrix = _matrixBuffer;
+            _zoomChangedTimer.Stop();
+        };
     }
 
-    private void SetZoomBorder() 
+    private void SetZoomBorder()
     {
         ZoomBorder.EnablePan = true;
         ZoomBorder.KeyDown += ZoomBorder_OnKeyDown;
@@ -41,7 +62,10 @@ public partial class ImageTab : UserControl
 
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)
     {
-        Console.WriteLine($"[ZoomChanged] {e.ZoomX} {e.ZoomY} {e.OffsetX} {e.OffsetY}");
+        // Console.WriteLine($"[ZoomChanged] {e.ZoomX} {e.ZoomY} {e.OffsetX} {e.OffsetY}");
+        if (_zoomChangedTimer.IsEnabled) return;
+        _zoomChangedTimer.Start();
+        _matrixBuffer = ZoomBorder.Matrix;
         // if (e.ZoomX > 1.0 || e.ZoomY > 1.0)
         // {
         //     ZoomBorder.EnablePan = true;

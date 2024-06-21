@@ -92,7 +92,7 @@ public class PreviewImageViewModel : ViewModelBase
         if (_previewImagePaths is {Length: 0})
         {
             const string message = "No images found for preview";
-            var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Warning, "Warning", message);
+            var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Warning,  message);
             SendCommandMessageBus(command);
             return;
         }

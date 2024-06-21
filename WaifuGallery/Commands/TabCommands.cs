@@ -1,4 +1,6 @@
-﻿namespace WaifuGallery.Commands;
+﻿using Avalonia;
+
+namespace WaifuGallery.Commands;
 
 public interface ITabCommand : ICommandMessage
 {
@@ -21,6 +23,11 @@ public class FitToHeightCommand : ITabCommand
 
 public class FitToWidthCommand : ITabCommand
 {
+}
+
+public class SetZoomCommand(Matrix matrix) : ITabCommand
+{
+    public Matrix Matrix { get; } = matrix;
 }
 
 public class ResetZoomCommand : ITabCommand

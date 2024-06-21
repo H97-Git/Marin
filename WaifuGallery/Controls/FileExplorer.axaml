@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
              xmlns:controls="clr-namespace:WaifuGallery.Controls"
              xmlns:icons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
              xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
@@ -11,28 +10,29 @@
              x:DataType="fileExplorer:FileExplorerViewModel"
              Name="FileExplorerControl"
              Margin="10">
-    <!-- Margin="10,50,10,10" -->
-    <Expander Name="FileExplorerExpander"
-              IsVisible="{Binding IsFileExplorerVisible}"
-              IsExpanded="{Binding IsFileExplorerExpanded}"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Bottom"
-              IsPointerOver="{Binding IsPointerOver, Mode=OneWayToSource}"
-              Opacity="1">
+    <Expander
+        IsVisible="{Binding IsFileExplorerVisible}"
+        IsExpanded="{Binding IsFileExplorerExpanded}"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Bottom"
+        Margin="0"
+        Padding="0"
+        IsPointerOver="{Binding IsPointerOver, Mode=OneWayToSource}">
         <Expander.Header>
-            <Panel Name="FileExplorerToolbar" Opacity="1">
-                <!-- Expander.IsExpanded = false -->
-                <TextBlock Text="File Explorer" IsVisible="{Binding !IsFileExplorerExpanded}" />
-                <!-- Expander.IsExpanded = true -->
-                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,0"
-                      IsVisible="{Binding IsFileExplorerExpanded}">
+            <!-- Expander.IsExpanded = false -->
+            <TextBlock Text="File Explorer" />
+            <!-- Expander.IsExpanded = true -->
+        </Expander.Header>
+        <Grid RowDefinitions="Auto,*" Margin="10">
+            <Border Grid.Row="0" BorderBrush="Red" BorderThickness="1">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,0">
                     <Button Grid.Column="0" Command="{Binding OpenFileCommand}">
                         <icons:HeroIcon Foreground="White" Type="FolderOpen" Width="20" Height="20" />
                     </Button>
                     <TextBox Grid.Column="1" Text="{Binding CurrentPath}"
                              HorizontalAlignment="Stretch"
-                             VerticalAlignment="Center" Margin="5,0"
-                             IsFocused="{Binding IsSearchFocused,Mode=OneWayToSource}" />
+                             VerticalAlignment="Center" Margin="5,0" 
+                             IsFocused="{Binding IsSearchFocused, Mode=OneWayToSource}"/>
                     <Button Grid.Column="2" Command="{Binding GotoPreviousDirCommand}" Margin="0,0"
                             MaxWidth="45">
                         <icons:HeroIcon Foreground="White" Type="ArrowLeftCircle" Width="20" Height="20" />
@@ -46,47 +46,47 @@
                         <icons:HeroIcon Foreground="White" Type="ArrowRightCircle" Width="20" Height="20" />
                     </Button>
                 </Grid>
-            </Panel>
-        </Expander.Header>
-        <Grid Name="FileExplorerContent"
-              MinHeight="500"
-              MinWidth="500">
-            <controls:ImagePreview Name="ImagePreviewControl" DataContext="{Binding PreviewImageViewModel}" ZIndex="99" />
-            <!-- ListBox -->
-            <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"
-                     ItemsSource="{Binding FilesInDir}"
-                     Margin="0,0,20,0"
-                     SelectedIndex="{Binding SelectedIndex}"
-                     Name="FileExplorerListBox"
-                     SelectionMode="Multiple"
-                     BorderThickness="0"
-                     IsVisible="{Binding !IsCurrentPathEmpty}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <controls:File DataContext="{Binding}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-                <ListBox.Styles>
-                    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                        <Setter Property="CornerRadius" Value="5" />
-                    </Style>
-                    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                        <Setter Property="CornerRadius" Value="5" />
-                    </Style>
-                </ListBox.Styles>
-            </ListBox>
-            <TextBlock 
-                HorizontalAlignment="Center"
-                IsVisible="{Binding IsCurrentPathEmpty}" 
-                Text="No folders or images found in the current directory."
-                VerticalAlignment="Center"
-                />
+            </Border>
+            <Border Grid.Row="1" BorderBrush="Red" BorderThickness="1">
+                <Grid Name="FileExplorerContent">
+                    <controls:ImagePreview Name="ImagePreviewControl" DataContext="{Binding PreviewImageViewModel}"
+                                           ZIndex="99" />
+                    <!-- ListBox -->
+                    <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"
+                             ItemsSource="{Binding FilesInDir}"
+                             Margin="0,0,20,0"
+                             SelectedIndex="{Binding SelectedIndex}"
+                             Name="FileExplorerListBox"
+                             SelectionMode="Multiple"
+                             BorderThickness="0"
+                             IsVisible="{Binding !IsCurrentPathEmpty}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <controls:File DataContext="{Binding}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.Styles>
+                            <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                                <Setter Property="CornerRadius" Value="5" />
+                            </Style>
+                            <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                                <Setter Property="CornerRadius" Value="5" />
+                            </Style>
+                        </ListBox.Styles>
+                    </ListBox>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        IsVisible="{Binding IsCurrentPathEmpty}"
+                        Text="No folders or images found in the current directory."
+                        VerticalAlignment="Center" />
+                </Grid>
+            </Border>
         </Grid>
     </Expander>
 </UserControl>

@@ -327,7 +327,7 @@ public class FileExplorerViewModel : ViewModelBase
 
     private void SendMessageToStatusBar(string message)
     {
-        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational,"Information", message);
+        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, message);
         SendCommandToMessageBus(command);
     }
 

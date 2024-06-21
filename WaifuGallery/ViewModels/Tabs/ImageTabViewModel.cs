@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -15,7 +16,7 @@ public class ImageTabViewModel : TabViewModelBase
 {
     #region Private Members
 
-    private Bitmap _bitmapImage;
+    private Bitmap? _bitmapImage;
     private Size _imageSize;
     private readonly string[] _imagesInPath;
     private readonly string? _parentFolderName;
@@ -41,7 +42,7 @@ public class ImageTabViewModel : TabViewModelBase
 
     #region Public Properties
 
-    public Bitmap BitmapImage
+    public Bitmap? BitmapImage
     {
         get => _bitmapImage;
         set => this.RaiseAndSetIfChanged(ref _bitmapImage, value);
@@ -52,6 +53,8 @@ public class ImageTabViewModel : TabViewModelBase
         get => _imageSize;
         private set => this.RaiseAndSetIfChanged(ref _imageSize, value);
     }
+
+    public Matrix Matrix { get; set; }
 
     #endregion
 
@@ -75,7 +78,7 @@ public class ImageTabViewModel : TabViewModelBase
         SetTabHeaderContent();
         MessageBus.Current.SendMessage(new ResetZoomCommand());
     }
-    
+
     private void SetTabHeaderContent()
     {
         const int maxLength = 12;

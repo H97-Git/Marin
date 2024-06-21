@@ -24,9 +24,9 @@
                 </DockPanel>
 
             </Grid>
-            <ui:SettingsExpander Header="App Theme"
+            <ui:SettingsExpander Header="Theme Variant"
                                  IconSource="DarkTheme"
-                                 Description="Change the current app theme">
+                                 Description="Change the current theme variant">
 
                 <ui:SettingsExpander.Footer>
                     <ComboBox SelectedItem="{Binding CurrentThemeVariant}"
@@ -54,7 +54,14 @@
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
-
+            <ui:SettingsExpander Header="FullScreen">
+                <ui:SettingsExpanderItem Content="Test Key">
+                    <ui:SettingsExpanderItem.Footer>
+                        <Button Content="Click" Command="{Binding ShowDialogAsync}">
+                        </Button>
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+            </ui:SettingsExpander>
             <ui:SettingsExpander Header="Keymap">
                 <ui:SettingsExpanderItem Content="Test Key">
                     <ui:SettingsExpanderItem.Footer>

@@ -17,7 +17,16 @@
                 BorderThickness="3"
                 IsVisible="{Binding IsPreviewImageVisible}">
             <Grid>
-                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="{Binding PreviewCounter}" ZIndex="1" MaxHeight="40" />
+                <Panel
+                    Background="Black" 
+                    HorizontalAlignment="Left"
+                    MaxHeight="40"
+                    Opacity=".2"
+                    VerticalAlignment="Top"
+                    ZIndex="1">
+                    <TextBlock Foreground="Lime" Text="{Binding PreviewCounter}" Opacity="1" />
+                </Panel>
+
                 <Image Name="PreviewImage"
                        Stretch="UniformToFill"
                        Source="{Binding PreviewImage}"

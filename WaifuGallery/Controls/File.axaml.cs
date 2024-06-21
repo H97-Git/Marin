@@ -81,7 +81,7 @@ public partial class File : UserControl
         var imagesInPath = Helper.GetAllImagesInPath(FileViewModel);
         if (imagesInPath is {Length: 0})
         {
-            MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Warning, "Warning",
+            MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Warning,
                 "No images found in folder"));
             return;
         }
