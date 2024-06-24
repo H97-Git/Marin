@@ -10,7 +10,11 @@ public abstract class Helper
 {
     #region Public Members
 
+    public static readonly string[] ArchiveFileExtensions = [".zip", ".rar", ".7z"];
     public static readonly string[] ImageFileExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
+    public static readonly string[] VideoFileExtensions = [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".flv"];
+    public static readonly string[] AllFileExtensions =
+        ArchiveFileExtensions.Concat(ImageFileExtensions).Concat(VideoFileExtensions).ToArray();
 
     public static Size GetScaledSizeByWidth(Bitmap image, int targetWidth)
     {
@@ -58,6 +62,11 @@ public abstract class Helper
     {
         var files = Directory.GetFiles(fileSystemInfo.FullName, "*.*", SearchOption.AllDirectories);
         return files.Select(file => new FileInfo(file)).Select(fileInfo => fileInfo.Length).Sum();
+    }
+
+    public static bool IsDirectoryEmpty(FileSystemInfo fileSystemInfo)
+    {
+        return !Directory.EnumerateFileSystemEntries(fileSystemInfo.FullName).Any();
     }
 
     #endregion

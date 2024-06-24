@@ -33,10 +33,9 @@
                               ItemsSource="{Binding ThemesVariants}"
                               MinWidth="150" />
                 </ui:SettingsExpander.Footer>
-
             </ui:SettingsExpander>
             <ui:SettingsExpander Header="Tabs"
-                                 IconSource=""
+                                 IconSource="{StaticResource CalendarEmptyIcon}"
                                  Description="Configure Tabs behaviours">
                 <ui:SettingsExpanderItem Content="Include settings tab when cycling">
                     <ui:SettingsExpanderItem.Footer>
@@ -54,7 +53,8 @@
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
-            <ui:SettingsExpander Header="FullScreen">
+            <ui:SettingsExpander Header="FullScreen"
+                                 IconSource="{StaticResource FullScreenMaximizeIcon}">
                 <ui:SettingsExpanderItem Content="Test Key">
                     <ui:SettingsExpanderItem.Footer>
                         <Button Content="Click" Command="{Binding ShowDialogAsync}">
@@ -62,7 +62,8 @@
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
-            <ui:SettingsExpander Header="Keymap">
+            <ui:SettingsExpander Header="Keymap"
+                                 IconSource="{StaticResource KeyboardIcon}">
                 <ui:SettingsExpanderItem Content="Test Key">
                     <ui:SettingsExpanderItem.Footer>
                         <Button Content="Click" Command="{Binding ShowDialogAsync}">

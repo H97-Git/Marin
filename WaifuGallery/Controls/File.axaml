@@ -4,45 +4,46 @@
     x:Class="WaifuGallery.Controls.File"
     x:DataType="viewModels:FileViewModel"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:icons="clr-namespace:HeroIconsAvalonia.Controls;assembly=HeroIconsAvalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns="https://github.com/avaloniaui"
     xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
-    xmlns:viewModels1="clr-namespace:WaifuGallery.ViewModels">
+    xmlns:pref="clr-namespace:WaifuGallery.ViewModels"
+    xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Grid RowDefinitions="*,Auto" Width="165">
         <Grid.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Move/Rename" Command="{Binding  Move}">
                     <MenuItem.Icon>
-                        <icons:HeroIcon Type="Clipboard" Foreground="GhostWhite" />
+                        <ui:SymbolIcon Symbol="Rename" FontSize="64" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Copy" Command="{Binding  Copy}">
                     <MenuItem.Icon>
-                        <icons:HeroIcon Type="Clipboard" Foreground="GhostWhite" />
+                        <ui:SymbolIcon Symbol="Copy" FontSize="64" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Cut" Command="{Binding Cut}">
                     <MenuItem.Icon>
-                        <icons:HeroIcon Type="Scissors" Foreground="GhostWhite" />
+                        <ui:SymbolIcon Symbol="Cut" FontSize="64" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Paste" Command="{Binding  Paste}">
                     <MenuItem.Icon>
-                        <icons:HeroIcon Type="ClipboardDocumentCheck" Foreground="GhostWhite" />
+                        <ui:SymbolIcon Symbol="Paste" FontSize="12" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Delete" Command="{Binding  Delete}">
                     <MenuItem.Icon>
-                        <icons:HeroIcon Type="Trash" Foreground="GhostWhite" />
+                        <ui:SymbolIcon Symbol="Delete" FontSize="64"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
         </Grid.ContextMenu>
         <ToolTip.Tip>
             <StackPanel>
-                <TextBlock FontFamily="{Binding Source={x:Static viewModels1:Preferences.Instance}, Path=.DefaultFont}" FontSize="16" Text="{Binding FileName}" />
+                <TextBlock FontFamily="{Binding Source={x:Static pref:Preferences.Instance}, Path=.DefaultFont}"
+                           FontSize="16" Text="{Binding FileName}" />
                 <TextBlock Text="{Binding ParentPath}" />
                 <TextBlock Text="{Binding CreatedTime}" />
                 <TextBlock Text="{Binding LastAccessTime}" />
@@ -67,12 +68,7 @@
                 CornerRadius="5"
                 Height="100"
                 IsVisible="{Binding !IsImage}">
-            <!-- <PathIcon Height="100" Width="100" Data="{StaticResource FolderRegular}" /> -->
-            <icons:HeroIcon
-                Foreground="White"
-                Type="Folder"
-                Width="90"
-                Height="90" />
+            <ui:SymbolIcon Symbol="{Binding Symbol}" FontSize="120" />
         </Border>
         <!-- File Name -->
         <TextBlock Grid.Row="1"

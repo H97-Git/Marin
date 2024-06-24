@@ -211,7 +211,7 @@ public class FileExplorerViewModel : ViewModelBase
     {
         var dirs = currentDir.GetDirectories();
         var imagesFileInfo = currentDir.GetFiles()
-            .Where(file => Helper.ImageFileExtensions.Contains(file.Extension.ToLower()))
+            .Where(file => Helper.AllFileExtensions.Contains(file.Extension.ToLower()))
             .OrderBy(f => f.Name, new NaturalSortComparer())
             .ToArray();
         // If dir not empty call SetDirs
@@ -240,6 +240,7 @@ public class FileExplorerViewModel : ViewModelBase
 
     private void SetDir(FileSystemInfo directoryInfo)
     {
+        if(directoryInfo.Name.First() is '.') return;
         var fileViewModel = new FileViewModel(directoryInfo);
         FilesInDir.Add(fileViewModel);
     }
@@ -254,13 +255,16 @@ public class FileExplorerViewModel : ViewModelBase
         _cachedImagesPath ??= Helper.GetAllImagesInPath(dirInCacheForCurrentFile);
 
         // Create an instance of the Bitmap object
-        Bitmap? image;
+        Bitmap? image = null;
         var thumbnailPath = _cachedImagesPath.FirstOrDefault(x => Path.GetFileName(x) == fileInfo.Name);
         // If cache is empty or the thumbnail can't be found in cache create a new thumbnail
         if (_cachedImagesPath is {Length: 0} || !File.Exists(thumbnailPath))
         {
-            var outputFileInfo = new FileInfo(dirInCacheForCurrentFile + "\\" + fileInfo.Name);
-            image = await GenerateBitmapThumb(fileInfo, outputFileInfo);
+            if (Helper.ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
+            {
+                var outputFileInfo = new FileInfo(dirInCacheForCurrentFile + "\\" + fileInfo.Name);
+                image = await GenerateBitmapThumb(fileInfo, outputFileInfo);
+            }
         }
         // Else (the thumbnail can be found in cache) use the thumbnail from cache
         else
@@ -286,9 +290,6 @@ public class FileExplorerViewModel : ViewModelBase
         PreviewImageViewModel.ClosePreview();
         ScrollBarVisibility = ScrollBarVisibility.Visible;
     }
-
-    // private static async Task<Bitmap> LoadImageAsync(string imagePath) => await Task.Run(() => new Bitmap(imagePath));
-    private async Task ClearFilesListAsync() => await Task.Run(() => FilesInDir.Clear());
 
     private static async Task<Bitmap> GenerateBitmapThumb(FileInfo sourceFileInfo, FileInfo outputFileInfo)
     {

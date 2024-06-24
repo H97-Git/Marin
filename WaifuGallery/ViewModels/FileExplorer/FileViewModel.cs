@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media.Imaging;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
@@ -15,13 +16,15 @@ public sealed class FileViewModel : ViewModelBase
 
     private Bitmap? _thumbnail;
     private Size _imageSize;
-    private bool _isImage;
+    private Symbol _symbol = Symbol.Folder;
     private bool _isFileReadOnly;
+    private bool _isImage;
+    private bool _isDirectoryEmpty;
+    private long _sizeInBytes;
     private readonly FileSystemInfo _fileSystemInfo;
     private readonly string _fileName = string.Empty;
     private string _createdTime = string.Empty;
     private string _lastAccessTime = string.Empty;
-    private long _sizeInBytes;
 
     #endregion
 
@@ -35,6 +38,12 @@ public sealed class FileViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _thumbnail, value);
             ResizeThumbnail();
         }
+    }
+
+    public Symbol Symbol
+    {
+        get => _symbol;
+        set => this.RaiseAndSetIfChanged(ref _symbol, value);
     }
 
     public bool IsImage
@@ -105,25 +114,50 @@ public sealed class FileViewModel : ViewModelBase
     public FileViewModel(FileSystemInfo fileSystemInfo, Bitmap? thumbnail = null)
     {
         _fileSystemInfo = fileSystemInfo;
-        switch (fileSystemInfo)
+        switch (_fileSystemInfo)
         {
             case DirectoryInfo directoryInfo:
                 ParentPath = directoryInfo.Parent?.FullName;
-                SizeInBytes = Helper.GetDirectorySizeInByte(fileSystemInfo);
+                SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
+                _isDirectoryEmpty = Helper.IsDirectoryEmpty(_fileSystemInfo);
+                Symbol = _isDirectoryEmpty ? Symbol.Folder : Symbol.FolderFilled;
                 break;
             case FileInfo fileInfo:
                 ParentPath = fileInfo.DirectoryName;
                 SizeInBytes = fileInfo.Length;
                 IsFileReadOnly = fileInfo.IsReadOnly;
+                switch (fileInfo.Extension)
+                {
+                    case ".jpg":
+                    case ".jpeg":
+                    case ".png":
+                    case ".bmp":
+                    case ".gif":
+                        IsImage = true;
+                        break;
+                    case ".mp4":
+                    case ".avi":
+                    case ".mkv":
+                    case ".mov":
+                    case ".wmv":
+                    case ".webm":
+                    case ".flv":
+                        Symbol = Symbol.Video;
+                        break;
+                    case ".zip":
+                    case ".rar":
+                    case ".7z":
+                        Symbol = Symbol.ZipFolder;
+                        break;
+                }
                 break;
         }
 
-        CreatedTime = fileSystemInfo.CreationTime.ToString(CultureInfo.InvariantCulture);
-        LastAccessTime = fileSystemInfo.LastAccessTime.ToString(CultureInfo.InvariantCulture);
-        FileName = fileSystemInfo.Name;
+        FileName = _fileSystemInfo.Name;
+        CreatedTime = _fileSystemInfo.CreationTime.ToString(CultureInfo.InvariantCulture);
+        LastAccessTime = _fileSystemInfo.LastAccessTime.ToString(CultureInfo.InvariantCulture);
         if (thumbnail is null) return;
         Thumbnail = thumbnail;
-        IsImage = true;
     }
 
     #endregion
