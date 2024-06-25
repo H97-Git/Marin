@@ -23,7 +23,6 @@ public class TabsViewModel : ViewModelBase
     private TabSettingsViewModel? _tabSettingsViewModel;
     private int _selectedTabIndex;
     private bool _isSelectedTabSettingsTab = true;
-    private Dictionary<string,Matrix> _matrices = new();
     private bool IsSettingsTabOpen => OpenTabs.Any(x => x is TabSettingsViewModel);
 
     #endregion
@@ -81,15 +80,8 @@ public class TabsViewModel : ViewModelBase
         SelectedTab = OpenTabs.First();
         MessageBus.Current.Listen<OpenFileCommand>().Subscribe(async x => await OpenFile(x));
         MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
-        MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeight());
-        MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidth());
-        this.WhenAnyValue(x => x.SelectedTab).Subscribe(x =>
-        {
-            if (x is ImageTabViewModel imageTabViewModel)
-            {
-                MessageBus.Current.SendMessage(new SetZoomCommand(imageTabViewModel.Matrix));
-            }
-        });
+        MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
+        MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidthAndResetZoom());
     }
 
     #endregion
@@ -99,10 +91,10 @@ public class TabsViewModel : ViewModelBase
     private void SendMessageToStatusBar(string message)
     {
         var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, message);
-        SendCommandToMainView(command);
+        SendCommandToMessageBus(command);
     }
 
-    private void SendCommandToMainView(ICommandMessage command)
+    private void SendCommandToMessageBus(ICommandMessage command)
     {
         MessageBus.Current.SendMessage(command);
     }
@@ -130,7 +122,6 @@ public class TabsViewModel : ViewModelBase
         {
             IsSelectedTabSettingsTab = false;
             ImageTabViewModel = SelectedTab as ImageTabViewModel;
-            FitToHeight();
         }
         else
         {
@@ -138,7 +129,6 @@ public class TabsViewModel : ViewModelBase
             TabSettingsViewModel = SelectedTab as TabSettingsViewModel;
         }
     }
-
 
     private void ResizeTabByHeight(ImageTabViewModel imageTabViewModel)
     {
@@ -175,9 +165,19 @@ public class TabsViewModel : ViewModelBase
     {
         if (SelectedTab is ImageTabViewModel imageTabViewModel)
         {
-            ImageTabViewModel = imageTabViewModel;
             IsSelectedTabSettingsTab = false;
-            FitToHeight();
+            ImageTabViewModel = imageTabViewModel;
+            if (ImageTabViewModel.IsDefaultZoom)
+            {
+                // Only use default zoom on image first load.
+                // Since SelectionChanged is called after the image is loaded.
+                // We can set the flag here.
+                ImageTabViewModel.IsDefaultZoom = false;
+            }
+            else
+            {
+                MessageBus.Current.SendMessage(new SetZoomCommand(ImageTabViewModel.Matrix));
+            }
         }
         else
         {
@@ -185,16 +185,18 @@ public class TabsViewModel : ViewModelBase
         }
     }
 
-    public void FitToWidth()
+    public void FitToWidthAndResetZoom()
     {
         if (ImageTabViewModel is null) return;
         ResizeTabByWidth(ImageTabViewModel);
+        MessageBus.Current.SendMessage(new ResetZoomCommand());
     }
 
-    public void FitToHeight()
+    public void FitToHeightAndResetZoom()
     {
         if (ImageTabViewModel is null) return;
         ResizeTabByHeight(ImageTabViewModel);
+        MessageBus.Current.SendMessage(new ResetZoomCommand());
     }
 
     private void AddImageTab(ICommandMessage command)
@@ -206,13 +208,11 @@ public class TabsViewModel : ViewModelBase
         AddTab(imageTabViewModel);
     }
 
-
     public void OpenSettingsTab()
     {
         if (IsSettingsTabOpen) return;
         AddTab(new TabSettingsViewModel());
     }
-
 
     public void CycleTab(bool reverse, bool isCtrlKey)
     {
@@ -251,7 +251,6 @@ public class TabsViewModel : ViewModelBase
 
         SelectedTabIndex = newIndex;
     }
-
 
     public void MoveTab(TabViewModelBase from, TabViewModelBase to)
     {

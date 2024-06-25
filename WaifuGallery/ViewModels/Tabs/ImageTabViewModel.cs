@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -55,6 +54,7 @@ public class ImageTabViewModel : TabViewModelBase
     }
 
     public Matrix Matrix { get; set; }
+    public bool IsDefaultZoom { get; set; } = true;
 
     #endregion
 
@@ -76,7 +76,7 @@ public class ImageTabViewModel : TabViewModelBase
     {
         BitmapImage = new Bitmap(CurrentImagePath);
         SetTabHeaderContent();
-        MessageBus.Current.SendMessage(new ResetZoomCommand());
+        MessageBus.Current.SendMessage(new FitToHeightCommand());
     }
 
     private void SetTabHeaderContent()

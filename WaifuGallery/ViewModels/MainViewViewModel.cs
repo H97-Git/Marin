@@ -56,10 +56,10 @@ public class MainViewViewModel : ViewModelBase
                 FileExplorerViewModel.ToggleFileExplorerVisibility();
                 break;
             case {Key: Key.H, KeyModifiers: KeyModifiers.Shift}:
-                TabsViewModel.FitToHeight();
+                TabsViewModel.FitToHeightAndResetZoom();
                 break;
             case {Key: Key.W, KeyModifiers: KeyModifiers.Shift}:
-                TabsViewModel.FitToWidth();
+                TabsViewModel.FitToWidthAndResetZoom();
                 break;
             case {Key: Key.H}:
             case {Key: Key.Left}:
