@@ -94,7 +94,8 @@ public class ImageTabViewModel : TabViewModelBase
 
     private static string GenerateUniqueId(string path)
     {
-        var data = Encoding.UTF8.GetBytes(path);
+        var salt = new Random().Next();
+        var data = Encoding.UTF8.GetBytes(path + salt);
         var hashBytes = SHA256.HashData(data);
         var hashStringBuilder = new StringBuilder(64);
         foreach (var b in hashBytes)
