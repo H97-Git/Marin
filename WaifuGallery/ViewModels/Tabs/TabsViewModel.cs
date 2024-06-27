@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +21,9 @@ public class TabsViewModel : ViewModelBase
     private ImageTabViewModel? _currentImageTabViewModel;
     private TabSettingsViewModel? _tabSettingsViewModel;
     private int _selectedTabIndex;
-    private bool _isSelectedTabSettingsTab = true;
+    private bool _isSettingsTabVisible = true;
+    private bool _isImageTabVisible;
+    private bool _isTabHeadersVisible = true;
     private bool IsSettingsTabOpen => OpenTabs.Any(x => x is TabSettingsViewModel);
 
     #endregion
@@ -47,10 +48,22 @@ public class TabsViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedTabIndex, value);
     }
 
-    public bool IsSelectedTabSettingsTab
+    public bool IsSettingsTabVisible
     {
-        get => _isSelectedTabSettingsTab;
-        set => this.RaiseAndSetIfChanged(ref _isSelectedTabSettingsTab, value);
+        get => _isSettingsTabVisible;
+        set => this.RaiseAndSetIfChanged(ref _isSettingsTabVisible, value);
+    }
+
+    public bool IsImageTabVisible
+    {
+        get => _isImageTabVisible;
+        set => this.RaiseAndSetIfChanged(ref _isImageTabVisible, value);
+    }
+
+    public bool IsTabHeadersVisible
+    {
+        get => _isTabHeadersVisible;
+        set => this.RaiseAndSetIfChanged(ref _isTabHeadersVisible, value);
     }
 
     public ImageTabViewModel? ImageTabViewModel
@@ -82,6 +95,7 @@ public class TabsViewModel : ViewModelBase
         MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
         MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
         MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidthAndResetZoom());
+        MessageBus.Current.Listen<OpenSettingsTabCommand>().Subscribe(_ => OpenSettingsTab());
     }
 
     #endregion
@@ -108,6 +122,8 @@ public class TabsViewModel : ViewModelBase
         {
             TabSettingsViewModel = null;
             ImageTabViewModel = null;
+            IsSettingsTabVisible = false;
+            IsImageTabVisible = false;
             return;
         }
 
@@ -120,12 +136,14 @@ public class TabsViewModel : ViewModelBase
         SelectedTab = OpenTabs.First(x => x.Id == tab.Id);
         if (SelectedTab is ImageTabViewModel)
         {
-            IsSelectedTabSettingsTab = false;
+            IsSettingsTabVisible = false;
+            IsImageTabVisible = true;
             ImageTabViewModel = SelectedTab as ImageTabViewModel;
         }
         else
         {
-            IsSelectedTabSettingsTab = true;
+            IsSettingsTabVisible = true;
+            IsImageTabVisible = false;
             TabSettingsViewModel = SelectedTab as TabSettingsViewModel;
         }
     }
@@ -165,7 +183,8 @@ public class TabsViewModel : ViewModelBase
     {
         if (SelectedTab is ImageTabViewModel imageTabViewModel)
         {
-            IsSelectedTabSettingsTab = false;
+            IsImageTabVisible = true;
+            IsSettingsTabVisible = false;
             ImageTabViewModel = imageTabViewModel;
             if (ImageTabViewModel.IsDefaultZoom)
             {
@@ -181,7 +200,8 @@ public class TabsViewModel : ViewModelBase
         }
         else
         {
-            IsSelectedTabSettingsTab = true;
+            IsImageTabVisible = false;
+            IsSettingsTabVisible = true;
         }
     }
 

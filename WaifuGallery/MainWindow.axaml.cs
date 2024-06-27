@@ -1,12 +1,12 @@
 using System;
+using Avalonia.Controls;
 using Avalonia.Input;
-using FluentAvalonia.UI.Windowing;
 using WaifuGallery.ViewModels;
 using WaifuGallery.Views;
 
 namespace WaifuGallery;
 
-public partial class MainWindow : AppWindow
+public partial class MainWindow : Window
 {
     private MainViewViewModel? MainViewViewModel => (Content as MainView)?.DataContext as MainViewViewModel;
 

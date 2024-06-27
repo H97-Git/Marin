@@ -1,38 +1,40 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
-             xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
+﻿<UserControl Name="ImagePreviewControl"
+             PointerPressed="ImagePreview_OnPointerPressed"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="WaifuGallery.Controls.ImagePreview"
              x:DataType="fileExplorer:PreviewImageViewModel"
-             PointerPressed="ImagePreview_OnPointerPressed">
-    <Canvas Name="PreviewCanvas" ClipToBounds="True">
-        <Border Canvas.Left="{Binding PreviewImagePosition.X}"
-                Canvas.Top="{Binding PreviewImagePosition.Y}"
-                CornerRadius="5"
-                ClipToBounds="True"
-                BorderBrush="Gray"
-                BorderThickness="3"
-                IsVisible="{Binding IsPreviewImageVisible}">
-            <Grid>
-                <Panel
-                    Background="Black" 
-                    HorizontalAlignment="Left"
-                    MaxHeight="40"
-                    Opacity=".2"
-                    VerticalAlignment="Top"
-                    ZIndex="1">
-                    <TextBlock Foreground="Lime" Text="{Binding PreviewCounter}" Opacity="1" />
-                </Panel>
-
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="https://github.com/avaloniaui">
+    <Design.DataContext>
+        <fileExplorer:PreviewImageViewModel></fileExplorer:PreviewImageViewModel>
+    </Design.DataContext>
+    <Canvas Name="PreviewCanvas">
+        <Grid
+            IsVisible="{Binding IsPreviewImageVisible}"
+            Canvas.Left="{Binding PreviewImagePosition.X}"
+            Canvas.Top="{Binding PreviewImagePosition.Y}"
+            ClipToBounds="True">
+            <Panel
+                Background="Transparent"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                ZIndex="1"
+                Margin="5">
+                <Border Background="Black" CornerRadius="3" Opacity="0.8">
+                    <TextBlock Foreground="Lime" Text="{Binding PreviewCounter}" />
+                </Border>
+            </Panel>
+            <Border CornerRadius="12" ClipToBounds="True">
                 <Image Name="PreviewImage"
+                       ClipToBounds="True"
                        Stretch="UniformToFill"
                        Source="{Binding PreviewImage}"
                        Width="{Binding PreviewImageSize.Width}"
                        Height="{Binding PreviewImageSize.Height}" />
-            </Grid>
-        </Border>
+            </Border>
+        </Grid>
     </Canvas>
 </UserControl>

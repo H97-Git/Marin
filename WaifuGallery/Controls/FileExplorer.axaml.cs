@@ -34,10 +34,10 @@ public partial class FileExplorer : UserControl
     private void OnPointerMoved_ChangePreviewPosition(object? sender, PointerEventArgs e)
     {
         // if (e.KeyModifiers is not KeyModifiers.Control) return;
-        if (sender is not Grid grid) return;
+        if (sender is not Control control) return;
         if (FileExplorerViewModel?.PreviewImageViewModel is null) return;
-        var point = e.GetPosition(grid);
-        var newPoint = CalcNewPoint(grid.Bounds.Size, point,
+        var point = e.GetPosition(control);
+        var newPoint = CalcNewPoint(control.Bounds.Size, point,
             FileExplorerViewModel.PreviewImageViewModel.PreviewImageSize);
 
         // FileExplorerViewModel?.SendMessageToStatusBar(

@@ -9,6 +9,22 @@ public class FileExplorerHistory
     private int _currentIndex = -1;
     private readonly object _lockObj = new();
 
+    public bool IsLast()
+    {
+        lock (_lockObj)
+        {
+            return _currentIndex == _history.Count - 1;
+        }
+    }
+    
+    public bool IsFirst()
+    {
+        lock (_lockObj)
+        {
+            return _currentIndex == 0;
+        }
+    }
+
     public void AddPath(string path)
     {
         lock (_lockObj)

@@ -50,6 +50,9 @@ public class MenuBarViewModel : ViewModelBase
     public ICommand OpenFileCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenFileCommand()); });
 
+    public ICommand OpenSettingsTabCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenSettingsTabCommand()); });
+
     public ICommand ToggleFileExplorerCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileExplorerCommand()); });
 

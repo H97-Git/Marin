@@ -1,9 +1,11 @@
 ﻿using System;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
+using WaifuGallery.Helpers;
 
 namespace WaifuGallery.ViewModels.FileExplorer;
 
@@ -48,6 +50,12 @@ public class PreviewImageViewModel : ViewModelBase
 
     public PreviewImageViewModel()
     {
+        if (Design.IsDesignMode)
+        {
+            var i = Helper.GetAllImagesInPath("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
+            StartPreview(i);
+        }
+
         PreviewImageSize = new Size(300, 300);
         PreviewImagePosition = new Point(0, 0);
     }
@@ -92,7 +100,7 @@ public class PreviewImageViewModel : ViewModelBase
         if (_previewImagePaths is {Length: 0})
         {
             const string message = "No images found for preview";
-            var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Warning,  message);
+            var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Warning, message);
             SendCommandMessageBus(command);
             return;
         }

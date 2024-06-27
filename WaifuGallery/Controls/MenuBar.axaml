@@ -1,77 +1,59 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+﻿<UserControl mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="300"
+             x:Class="WaifuGallery.Controls.MenuBar"
+             x:DataType="viewModels:MenuBarViewModel"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="300"
-             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
              xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             x:Class="WaifuGallery.Controls.MenuBar"
-             x:DataType="viewModels:MenuBarViewModel">
-    <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}" Background="Gainsboro">
+             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="https://github.com/avaloniaui">
+    <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}">
         <MenuItem Header="_File">
-            <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}"
-                      Foreground="{DynamicResource Brush.Foreground }">
+            <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}">
                 <MenuItem.Icon>
                     <ui:SymbolIcon Symbol="OpenFile" FontSize="120" />
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="_Settings..." Command="{Binding OpenSettingsTabCommand}">
+                <MenuItem.Icon>
+                    <ui:SymbolIcon Symbol="Settings" FontSize="120" />
+                </MenuItem.Icon>
+            </MenuItem>
             <Separator />
-            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}"
-                      Foreground="{DynamicResource Brush.Foreground }">
+            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}">
                 <MenuItem.Icon>
                     <ui:SymbolIcon Symbol="Clear" FontSize="120" />
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>
         <MenuItem Header="_View">
-            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}"
-                      Foreground="{DynamicResource Brush.Foreground }">
+            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}">
                 <MenuItem.Icon>
                     <ui:SymbolIcon Symbol="FullScreen" FontSize="120" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}"
-                      Foreground="{DynamicResource Brush.Foreground }">
+            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}">
                 <MenuItem.Icon>
                     <ui:SymbolIcon Symbol="CalendarToday" FontSize="120" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}"
-                      Foreground="{DynamicResource Brush.Foreground }">
+            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}">
                 <MenuItem.Icon>
                     <ui:SymbolIcon Symbol="View" FontSize="120" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}"
-                      Foreground="{DynamicResource Brush.Foreground }">
+            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}">
                 <MenuItem.Icon>
                     <ui:SymbolIcon Symbol="Remote" FontSize="120" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}"
-                      Foreground="{DynamicResource Brush.Foreground }">
+            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}">
                 <MenuItem.Icon>
                     <ui:SymbolIcon Symbol="Sort" FontSize="120" />
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>
-        <Menu.Styles>
-            <!-- <Style Selector="Menu"> -->
-            <!--     <Setter Property="Background" Value="#2E2E2E" /> -->
-            <!-- </Style> -->
-            <!-- <Style Selector="MenuItem"> -->
-            <!--     <Setter Property="Background" Value="#2E2E2E" /> -->
-            <!--     <Setter Property="Foreground" Value="WhiteSmoke" /> -->
-            <!-- </Style> -->
-            <!-- <Style Selector="MenuItem:selected"> -->
-            <!--     <Setter Property="Background" Value="#2E2E2E" /> -->
-            <!--     <Setter Property="Foreground" Value="WhiteSmoke" /> -->
-            <!-- </Style> -->
-            <!-- <Style Selector=":is(Border)"> -->
-            <!--     <Setter Property="Background" Value="Red" /> -->
-            <!-- </Style> -->
-        </Menu.Styles>
     </Menu>
 </UserControl>

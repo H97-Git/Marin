@@ -35,7 +35,7 @@ public class FileExplorerViewModel : ViewModelBase
     private int _columnsCount;
     private int _selectedIndexInFileExplorer;
     private readonly FileExplorerHistory _pathHistory;
-    private string _currentPath = "";
+    private string _currentPath = string.Empty;
     private string[]? _cachedImagesPath;
 
     private static string SettingsPath

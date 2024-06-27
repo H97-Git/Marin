@@ -41,7 +41,6 @@ public class App : Application
 
     private static void SetTheme(string theme)
     {
-        if (theme is null) return;
         if (Current is null) return;
         if (theme.Equals("Light", StringComparison.OrdinalIgnoreCase))
         {

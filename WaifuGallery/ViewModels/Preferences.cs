@@ -26,8 +26,11 @@ public class Preferences
     public bool IsSettingsTabCycled { get; set; }
     public bool IsTabSettingsClosable { get; set; }
     public bool IsDuplicateTabsAllowed { get; set; }
+    public bool ShouldHideStatusBar { get; set; }
+    public bool ShouldHideFileExplorer { get; set; }
+    public bool ShouldHideMenuBar { get; set; }
+    public bool ShouldHideTabsHeader { get; set; }
     public double DefaultFontSize { get; set; }
-
 
     [JsonIgnore] public FontFamily DefaultFont { get; set; }
 

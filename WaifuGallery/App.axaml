@@ -11,8 +11,8 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <fluent:FluentAvaloniaTheme />
         <FluentTheme />
+        <fluent:FluentAvaloniaTheme />
         <StyleInclude Source="Resources/Styles.axaml"/>
     </Application.Styles>
 

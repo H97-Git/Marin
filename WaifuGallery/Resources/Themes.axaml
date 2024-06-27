@@ -2,19 +2,25 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
-            <Color x:Key="Color.Red">#FFFF6059</Color>
-            <Color x:Key="Color.Background">#EFEFEF</Color>
+            <Color x:Key="Color.Accent">#4433FF</Color>
+            <Color x:Key="Color.Background">#E2E2E2</Color>
             <Color x:Key="Color.Foreground">#0E0E0E</Color>
+            <Color x:Key="Color.Red">#FFFF6059</Color>
+            <Color x:Key="Color.TextBoxBackground">#E2E2E2</Color>
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Dark">
-            <Color x:Key="Color.Red">#FFFF5E56</Color>
+            <Color x:Key="Color.Accent">#3A3AFF</Color>
             <Color x:Key="Color.Background">#0E0E0E</Color>
             <Color x:Key="Color.Foreground">#EFEFEF</Color>
+            <Color x:Key="Color.Red">#FFFF5E56</Color>
+            <Color x:Key="Color.TextBoxBackground">#0E0E0E</Color>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
     <SolidColorBrush x:Key="Brush.Error" Color="{DynamicResource Color.Red}" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="{DynamicResource Color.Accent}" />
     <SolidColorBrush x:Key="Brush.Foreground" Color="{DynamicResource Color.Foreground}" />
     <SolidColorBrush x:Key="Brush.Background" Color="{DynamicResource Color.Background}" />
+    <SolidColorBrush x:Key="Brush.TextBoxBackground" Color="{DynamicResource Color.TextBoxBackground}" />
 </ResourceDictionary>

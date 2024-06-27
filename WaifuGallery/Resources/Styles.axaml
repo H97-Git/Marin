@@ -1,5 +1,91 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:WaifuGallery.ViewModels">
-
+        xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <StackPanel Margin="10">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,0" Width="500"
+                  Classes="fileExplorerToolBar">
+                <Button>
+                    <ui:SymbolIcon Symbol="OpenFolder" />
+                </Button>
+                <TextBox
+                    Grid.Column="1" Text="C://Windows"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center" Margin="5,0" />
+                <Button
+                    Grid.Column="2">
+                    <ui:SymbolIcon Symbol="Back" />
+                </Button>
+                <Button
+                    Grid.Column="3">
+                    <ui:SymbolIcon Symbol="Up" />
+                </Button>
+                <Button
+                    Grid.Column="4">
+                    <ui:SymbolIcon Symbol="Forward" />
+                </Button>
+            </Grid>
+        </StackPanel>
+    </Design.PreviewWith>
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource Brush.Background}"></Setter>
+    </Style>
+    <Style Selector="ListBox#FileExplorerListBox">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Expander /template/ Border">
+        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
+    </Style>
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+        <!-- <Setter Property="BorderBrush" Value="#4433FF" /> -->
+    </Style>
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+        <!-- <Setter Property="BorderBrush" Value="#4433FF" /> -->
+    </Style>
+    <Style Selector="ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+        <!-- <Setter Property="MinHeight" Value="145" /> -->
+    </Style>
+    <Style Selector="TextBox /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="Red" />
+        <Setter Property="BorderThickness" Value="0,0,0,0"></Setter>
+    </Style>
+    <Style Selector="Grid.fileExplorerToolBar">
+    </Style>
+    <Style Selector="Grid.fileExplorerToolBar TextBox">
+        <!-- <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}" /> -->
+        <!-- <Setter Property="CornerRadius" Value="10" /> -->
+        <!-- <Setter Property="BorderThickness" Value="1" /> -->
+        <!-- <Setter Property="BorderBrush" Value="#4433FF" /> -->
+        <Setter Property="Margin" Value="0,0,5,0" />
+    </Style>
+    <Style Selector="Grid.fileExplorerToolBar Button">
+        <Setter Property="Margin" Value="0,0,5,0" />
+        <!-- <Setter Property="Background" Value="{DynamicResource Brush.Background}" /> -->
+        <!-- <Setter Property="BorderBrush" Value="#4433FF" /> -->
+        <!-- <Setter Property="BorderThickness" Value="1" /> -->
+        <!-- <Setter Property="CornerRadius" Value="10" /> -->
+        <!-- <Setter Property="FontSize" Value="25" /> -->
+        <!-- <Setter Property="Foreground" Value="#4433FF" /> -->
+        <!-- <Setter Property="Height" Value="35" /> -->
+        <!-- <Setter Property="Width" Value="50" /> -->
+        <!-- <Style Selector="^:pointerover /template/ ContentPresenter"> -->
+        <!--     <Setter Property="Background" Value="#4433FF" /> -->
+        <!--     <Setter Property="Foreground" Value="White" /> -->
+        <!-- </Style> -->
+    </Style>
+    <Style Selector="ListBox#FileExplorerListBox ListBoxItem:selected /template/ Rectangle#SelectionIndicator">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="Button.rotating">
+        <Style.Animations>
+            <Animation Duration="0:0:1" IterationCount="Infinite">
+                <KeyFrame Cue="0%">
+                    <Setter Property="RotateTransform.Angle" Value="0.0" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="RotateTransform.Angle" Value="360.0" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
 </Styles>

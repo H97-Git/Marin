@@ -2,6 +2,7 @@
 using System.IO;
 using Avalonia.Controls;
 using Avalonia.Input;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
@@ -161,23 +162,46 @@ public class MainViewViewModel : ViewModelBase
         if (mainWindow.WindowState is WindowState.Normal)
         {
             mainWindow.WindowState = WindowState.FullScreen;
-            MenuBarViewModel.IsMenuVisible = false;
-            StatusBarViewModel.IsStatusBarVisible = false;
+            if (Preferences.Instance.ShouldHideMenuBar)
+                MenuBarViewModel.IsMenuVisible = false;
+            if (Preferences.Instance.ShouldHideTabsHeader)
+                TabsViewModel.IsTabHeadersVisible = false;
+            if (Preferences.Instance.ShouldHideFileExplorer)
+                FileExplorerViewModel.IsFileExplorerVisible = false;
+            if (Preferences.Instance.ShouldHideStatusBar)
+                StatusBarViewModel.IsStatusBarVisible = false;
         }
         else
         {
             mainWindow.WindowState = WindowState.Normal;
             MenuBarViewModel.IsMenuVisible = true;
+            TabsViewModel.IsTabHeadersVisible = true;
+            FileExplorerViewModel.IsFileExplorerVisible = true;
             StatusBarViewModel.IsStatusBarVisible = true;
         }
     }
 
     private void RenameFile(RenameCommand command)
     {
-        var source = command.OldName;
-        var newName = command.NewName;
-        var destination = source.Replace(Path.GetFileName(source), newName);
-        File.Move(source, destination);
+        var source = command.Path;
+        var destination = source.Replace(Path.GetFileName(source), command.NewName);
+        try
+        {
+            if (File.Exists(source))
+            {
+                File.Move(source, destination);
+            }
+            else
+            {
+                MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Error,
+                    "File does not exist!"));
+            }
+        }
+        catch (Exception e)
+        {
+            MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Error,
+                "Failed to rename file: " + e.Message));
+        }
     }
 
 

@@ -17,6 +17,7 @@ public class StatusBarViewModel : ViewModelBase
     private bool _isStatusBarVisible = true;
     private string _message = "Welcome to WaifuGallery!";
     private string _title = "Information";
+    private int _countDuplicates = 0;
 
     #endregion
 
@@ -52,8 +53,18 @@ public class StatusBarViewModel : ViewModelBase
     private void SetMessage(SendMessageToStatusBarCommand command)
     {
         IsStatusBarVisible = true;
-        Message = command.Message;
         Severity = command.Severity;
+        Message = Message.Replace($" ({_countDuplicates})", "");
+        if (command.Message == Message)
+        {
+            _countDuplicates++;
+            Message = $"{Message} ({_countDuplicates})";
+        }
+        else
+        {
+            _countDuplicates = 0;
+            Message = command.Message;
+        }
     }
 
     #endregion
@@ -83,7 +94,7 @@ public class StatusBarViewModel : ViewModelBase
         get => _backgroundColor;
         set => this.RaiseAndSetIfChanged(ref _backgroundColor, value);
     }
-    
+
     public IBrush ForegroundColor
     {
         get => _foregroundColor;
