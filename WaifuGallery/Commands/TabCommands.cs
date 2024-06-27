@@ -2,14 +2,14 @@
 
 namespace WaifuGallery.Commands;
 
-public interface ITabCommand : ICommandMessage
-{
-}
+public interface ITabCommand : ICommandMessage;
 
 public class OpenFileCommand : ITabCommand
 {
     public string? Path { get; set; }
 }
+
+public class OpenSettingsTabCommand : ITabCommand;
 
 public class OpenInNewTabCommand(int index, string[] imagesInPath) : IFileExplorerCommand
 {
@@ -17,19 +17,13 @@ public class OpenInNewTabCommand(int index, string[] imagesInPath) : IFileExplor
     public string[] ImagesInPath { get; } = imagesInPath;
 }
 
-public class FitToHeightCommand : ITabCommand
-{
-}
+public class FitToHeightCommand : ITabCommand;
 
-public class FitToWidthCommand : ITabCommand
-{
-}
+public class FitToWidthCommand : ITabCommand;
 
 public class SetZoomCommand(Matrix matrix) : ITabCommand
 {
     public Matrix Matrix { get; } = matrix;
 }
 
-public class ResetZoomCommand : ITabCommand
-{
-}
+public class ResetZoomCommand : ITabCommand;

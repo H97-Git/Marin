@@ -2,9 +2,7 @@
 
 namespace WaifuGallery.Commands;
 
-public class ExitCommand : ICommandMessage
-{
-}
+public class ExitCommand : ICommandMessage;
 
 public class SendMessageToStatusBarCommand(InfoBarSeverity severity, string message) : ICommandMessage
 {
@@ -14,6 +12,4 @@ public class SendMessageToStatusBarCommand(InfoBarSeverity severity, string mess
     public string Message { get; } = message;
 }
 
-public class ToggleFullScreenCommand : ICommandMessage
-{
-}
+public class ToggleFullScreenCommand : ICommandMessage;

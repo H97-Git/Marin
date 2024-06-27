@@ -1,5 +1,3 @@
 ﻿namespace WaifuGallery.Commands;
 
-public interface ICommandMessage
-{
-}
+public interface ICommandMessage;
