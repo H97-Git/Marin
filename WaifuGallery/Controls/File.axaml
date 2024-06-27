@@ -10,10 +10,13 @@
     xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
     xmlns:pref="clr-namespace:WaifuGallery.ViewModels"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
-    <Grid RowDefinitions="*,Auto" Width="165">
+    <Design.DataContext>
+        <viewModels:FileViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="Auto,Auto,Auto" Width="165" Height="135" Margin="0,10,0,0">
         <Grid.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Move/Rename" Command="{Binding  Move}">
+                <MenuItem Header="Rename" Command="{Binding  Rename}">
                     <MenuItem.Icon>
                         <ui:SymbolIcon Symbol="Rename" FontSize="64" />
                     </MenuItem.Icon>
@@ -64,20 +67,23 @@
         </Border>
         <!-- Folder Icon -->
         <Border Grid.Row="0"
-                Background="#3A3AFF"
+                Background="{DynamicResource Brush.Accent}"
                 CornerRadius="5"
                 Height="100"
                 IsVisible="{Binding !IsImage}">
             <ui:SymbolIcon Symbol="{Binding Symbol}" FontSize="120" />
         </Border>
         <!-- File Name -->
-        <TextBlock Grid.Row="1"
+        <TextBox Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" MaxWidth="170"
+                   Margin="0,10,0,0" Text="{Binding FileName}" IsVisible="True"
+                   KeyDown="Rename_OnKeyDown" />
+        <TextBlock Grid.Row="2"
                    HorizontalAlignment="Center"
-                   Margin="0,5,0,0"
                    MaxWidth="170"
+                   Margin="0,10,0,0"
                    Text="{Binding FileName}"
+                   IsVisible="{Binding !IsRenaming}"
                    TextTrimming="CharacterEllipsis"
                    VerticalAlignment="Bottom" />
-
     </Grid>
 </UserControl>

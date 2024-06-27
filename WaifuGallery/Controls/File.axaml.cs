@@ -104,4 +104,13 @@ public partial class File : UserControl
     }
 
     #endregion
+
+    private void Rename_OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter) return;
+        if (FileViewModel is null) return;
+        var command = new RenameCommand(FileViewModel.FullPath, FileViewModel.FileName);
+        MessageBus.Current.SendMessage(command);
+        FileViewModel.IsRenaming = false;
+    }
 }

@@ -15,14 +15,15 @@ public sealed class FileViewModel : ViewModelBase
     #region Private Members
 
     private Bitmap? _thumbnail;
+    private FileSystemInfo _fileSystemInfo;
     private Size _imageSize;
     private Symbol _symbol = Symbol.Folder;
-    private bool _isFileReadOnly;
-    private bool _isImage;
     private bool _isDirectoryEmpty;
+    private bool _isFileReadOnly;
+    private bool _isRenaming;
+    private bool _isImage;
     private long _sizeInBytes;
-    private readonly FileSystemInfo _fileSystemInfo;
-    private readonly string _fileName = string.Empty;
+    private string _fileName = string.Empty;
     private string _createdTime = string.Empty;
     private string _lastAccessTime = string.Empty;
 
@@ -52,6 +53,12 @@ public sealed class FileViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _isImage, value);
     }
 
+    public bool IsRenaming
+    {
+        get => _isRenaming;
+        set => this.RaiseAndSetIfChanged(ref _isRenaming, value);
+    }
+
     public Size ImageSize
     {
         get => _imageSize;
@@ -61,7 +68,7 @@ public sealed class FileViewModel : ViewModelBase
     public string FileName
     {
         get => _fileName;
-        private init => this.RaiseAndSetIfChanged(ref _fileName, value);
+        set => this.RaiseAndSetIfChanged(ref _fileName, value);
     }
 
     public string LastAccessTime
@@ -79,7 +86,7 @@ public sealed class FileViewModel : ViewModelBase
     private long SizeInBytes
     {
         get => _sizeInBytes;
-        init => this.RaiseAndSetIfChanged(ref _sizeInBytes, value);
+        set => this.RaiseAndSetIfChanged(ref _sizeInBytes, value);
     }
 
     public bool IsFileReadOnly
@@ -105,13 +112,24 @@ public sealed class FileViewModel : ViewModelBase
     }
 
     public string FullPath => _fileSystemInfo.FullName;
-    public string? ParentPath { get; }
+    public string? ParentPath { get; set; }
 
     #endregion
 
     #region CTOR
 
+    public FileViewModel()
+    {
+        var directoryInfo = new DirectoryInfo(@"C:\oxford-iiit-pet\images");
+        Initialize(directoryInfo);
+    }
+
     public FileViewModel(FileSystemInfo fileSystemInfo, Bitmap? thumbnail = null)
+    {
+        Initialize(fileSystemInfo, thumbnail);
+    }
+
+    private void Initialize(FileSystemInfo fileSystemInfo, Bitmap? thumbnail = null)
     {
         _fileSystemInfo = fileSystemInfo;
         switch (_fileSystemInfo)
@@ -186,8 +204,8 @@ public sealed class FileViewModel : ViewModelBase
     public ICommand Delete =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new DeleteCommand()); });
 
-    public ICommand Move =>
-        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new MoveCommand()); });
+    public ICommand Rename =>
+        ReactiveCommand.Create(() => { IsRenaming = true; });
 
     public ICommand Paste =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new PasteCommand()); });
