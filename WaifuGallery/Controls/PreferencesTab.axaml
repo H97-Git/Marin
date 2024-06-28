@@ -6,7 +6,11 @@
              x:Class="WaifuGallery.Controls.PreferencesTab"
              xmlns:ui="using:FluentAvalonia.UI.Controls"
              xmlns:tabs="clr-namespace:WaifuGallery.ViewModels.Tabs"
+             xmlns:helpers="clr-namespace:WaifuGallery.Helpers"
              x:DataType="tabs:PreferencesTabViewModel">
+    <UserControl.Resources>
+        <helpers:DepthToBooleanConverter x:Key="DepthToBooleanConverter" />
+    </UserControl.Resources>
     <ScrollViewer>
         <StackPanel Spacing="8" Margin="10">
             <DockPanel HorizontalAlignment="Left" Margin="10">
@@ -20,25 +24,48 @@
                     <TextBlock Text="{Binding CurrentAvaloniaVersion}" />
                 </StackPanel>
             </DockPanel>
+            <ui:SettingsExpander Header="File Explorer"
+                                 Description="Configure Tabs behaviours"
+                                 IconSource="{StaticResource OpenFolderIcon}">
+                <ui:SettingsExpanderItem Content="Save last path on exit ?">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox IsChecked="{Binding ShouldSaveLastPathOnExit}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Image Preview depth">
+                    <ui:SettingsExpanderItem.Footer>
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Content="0"
+                                         IsChecked="{Binding PreviewDepth, Converter={StaticResource DepthToBooleanConverter}, ConverterParameter=0}" />
+                            <RadioButton Content="1"
+                                         IsChecked="{Binding PreviewDepth, Converter={StaticResource DepthToBooleanConverter}, ConverterParameter=1}" />
+                            <RadioButton Content="2"
+                                         IsChecked="{Binding PreviewDepth, Converter={StaticResource DepthToBooleanConverter}, ConverterParameter=2}" />
+                            <RadioButton Content="3"
+                                         IsChecked="{Binding PreviewDepth, Converter={StaticResource DepthToBooleanConverter}, ConverterParameter=3}" />
+                        </StackPanel>
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+            </ui:SettingsExpander>
             <ui:SettingsExpander Header="FullScreen"
                                  Description="Hide UI elements when fullscreen"
                                  IconSource="{StaticResource FullScreenMaximizeIcon}">
-                <ui:SettingsExpanderItem Content="Hide Menu Bar">
+                <ui:SettingsExpanderItem Content="Menu Bar">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldHideMenuBar}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Hide Tabs header">
+                <ui:SettingsExpanderItem Content="Tabs header">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldHideTabsHeader}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Hide File Explorer">
+                <ui:SettingsExpanderItem Content="File Explorer">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldHideFileExplorer}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Hide Status Bar">
+                <ui:SettingsExpanderItem Content="Status Bar">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldHideStatusBar}" />
                     </ui:SettingsExpanderItem.Footer>

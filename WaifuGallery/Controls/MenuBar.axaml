@@ -35,7 +35,7 @@
             <Separator />
             <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="CalendarToday" FontSize="120" />
+                    <ui:SymbolIcon Symbol="NewWindow" FontSize="120" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}">

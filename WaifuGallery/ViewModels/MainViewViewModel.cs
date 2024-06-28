@@ -119,9 +119,7 @@ public class MainViewViewModel : ViewModelBase
                 FileExplorerViewModel.OpenImageTabFromKeyboardEvent();
                 break;
             case {Key: Key.P}:
-                var imagesInPath =
-                    Helper.GetAllImagesInPath(FileExplorerViewModel.SelectedFile.FullPath);
-                FileExplorerViewModel.StartPreview(imagesInPath);
+                FileExplorerViewModel.StartPreview(FileExplorerViewModel.SelectedFile.FullPath);
                 break;
             case {Key: Key.Escape}:
                 FileExplorerViewModel.ClosePreview();

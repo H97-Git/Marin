@@ -16,6 +16,7 @@ public class MenuBarViewModel : ViewModelBase
 
     private bool _isMenuOpen;
     private bool _isMenuVisible = true;
+    private double _toggleFileExplorerIconAngle = 0;
 
     #endregion
 
@@ -31,6 +32,12 @@ public class MenuBarViewModel : ViewModelBase
     {
         get => _isMenuVisible;
         set => this.RaiseAndSetIfChanged(ref _isMenuVisible, value);
+    }
+    
+    public double ToggleFileExplorerIconAngle
+    {
+        get => _toggleFileExplorerIconAngle;
+        set => this.RaiseAndSetIfChanged(ref _toggleFileExplorerIconAngle, value);
     }
 
     #endregion
@@ -54,7 +61,11 @@ public class MenuBarViewModel : ViewModelBase
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenSettingsTabCommand()); });
 
     public ICommand ToggleFileExplorerCommand =>
-        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileExplorerCommand()); });
+        ReactiveCommand.Create(() =>
+        {
+            ToggleFileExplorerIconAngle = ToggleFileExplorerIconAngle == 0 ? 180 : 0;
+            MessageBus.Current.SendMessage(new ToggleFileExplorerCommand());
+        });
 
 
     public ICommand ToggleFileExplorerVisibilityCommand =>

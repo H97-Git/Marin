@@ -31,7 +31,6 @@ public class FileExplorerViewModel : ViewModelBase
     private bool _isFileExplorerVisible = true;
     private bool _isPointerOver;
     private bool _isSearchFocused;
-    private bool _isCurrentPathEmpty;
     private int _columnsCount;
     private int _selectedIndexInFileExplorer;
     private readonly FileExplorerHistory _pathHistory;
@@ -220,16 +219,17 @@ public class FileExplorerViewModel : ViewModelBase
         _pathHistory = new FileExplorerHistory();
         PreviewImageViewModel = new PreviewImageViewModel();
         FileExplorerBackground = new SolidColorBrush(Colors.Transparent);
-        this.WhenValueChanged(x => x.IsFileExplorerExpanded)
+        this.WhenAnyValue(x => x.CurrentPath)
+            .Subscribe(GetFilesFromPath);
+        this.WhenAnyValue(x => x.IsFileExplorerExpanded)
             .Subscribe(_ =>
                 FileExplorerBackground = IsFileExplorerExpanded ? new SolidColorBrush(Colors.Transparent) : null);
-        this.WhenValueChanged(x => x.CurrentPath)
-            .Subscribe(GetFilesFromPath);
-        this.WhenAnyValue(x => x.FilesInDir.Count).Subscribe(x => { IsCurrentPathEmpty = x is 0; });
+        this.WhenAnyValue(x => x.PreviewImageViewModel.IsPreviewImageVisible)
+            .Subscribe(b => ScrollBarVisibility = b ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto);
         Helper.CheckDirAndCreate(SettingsPath);
         Helper.CheckDirAndCreate(ThumbnailsPath);
 
-        if (Settings.Instance.FileExplorerLastPath is not null)
+        if (Settings.Instance.ShouldSaveLastPathOnExit && Settings.Instance.FileExplorerLastPath is not null)
         {
             ChangePath(Settings.Instance.FileExplorerLastPath);
         }
@@ -247,11 +247,8 @@ public class FileExplorerViewModel : ViewModelBase
         }
 
         MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
-        MessageBus.Current.Listen<ClosePreviewCommand>().Subscribe(_ => ClosePreview());
-        MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => StartPreview(x.ImagesInPath));
+        MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => StartPreview(x.Path));
         MessageBus.Current.Listen<ToggleFileExplorerCommand>().Subscribe(_ => ToggleFileExplorer());
-        MessageBus.Current.Listen<ToggleFileExplorerScrollBarCommand>()
-            .Subscribe(_ => ScrollBarVisibility = ScrollBarVisibility.Auto);
         MessageBus.Current.Listen<ToggleFileExplorerVisibilityCommand>().Subscribe(_ => ToggleFileExplorerVisibility());
     }
 
@@ -285,12 +282,6 @@ public class FileExplorerViewModel : ViewModelBase
     {
         get => _isPointerOver;
         set => this.RaiseAndSetIfChanged(ref _isPointerOver, value);
-    }
-
-    public bool IsCurrentPathEmpty
-    {
-        get => _isCurrentPathEmpty;
-        set => this.RaiseAndSetIfChanged(ref _isCurrentPathEmpty, value);
     }
 
     public bool IsFileExplorerVisible
@@ -344,9 +335,9 @@ public class FileExplorerViewModel : ViewModelBase
 
     #region Public Methods
 
-    public void StartPreview(string[] imagesInPath)
+    public void StartPreview(string path)
     {
-        PreviewImageViewModel.StartPreview(imagesInPath);
+        PreviewImageViewModel.StartPreview(path);
         ScrollBarVisibility = ScrollBarVisibility.Disabled;
     }
 

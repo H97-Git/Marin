@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Avalonia;
@@ -16,16 +17,39 @@ public abstract class Helper
     /// Get all images in path and sort them in natural order: 1, 2, 3, 10, 11, 12
     /// </summary>
     /// <param name="di">The directory info</param>
+    /// <param name="di">The directory info</param>
     /// <returns>An array of FileInfo.FullName</returns>
-    private static string[] GetAllImagesInPath(DirectoryInfo? di)
+    private static string[] GetAllImagesInPath(DirectoryInfo? di, int depth)
     {
-        if (di is not null)
-            return di.GetFiles()
-                .Where(fileInfo => ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
-                .OrderBy(fileInfo => fileInfo.Name, new NaturalSortComparer())
-                .Select(fileInfo => fileInfo.FullName)
-                .ToArray();
-        return [];
+        if (di is null || depth < 0)
+            return Array.Empty<string>();
+
+        return GetImagesRecursive(di, depth).ToArray();
+    }
+
+    private static IEnumerable<string> GetImagesRecursive(DirectoryInfo di, int depth)
+    {
+        // Get images in the current directory
+        var images = di.GetFiles()
+            .Where(fileInfo => ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
+            .OrderBy(fileInfo => fileInfo.Name, new NaturalSortComparer())
+            .Select(fileInfo => fileInfo.FullName);
+
+        foreach (var image in images)
+        {
+            yield return image;
+        }
+
+        // If depth is greater than 0, get images from subdirectories
+        if (depth <= 0) yield break;
+        foreach (var subDir in di.GetDirectories())
+        {
+            var subDirImages = GetImagesRecursive(subDir, depth - 1);
+            foreach (var subDirImage in subDirImages)
+            {
+                yield return subDirImage;
+            }
+        }
     }
 
     #endregion
@@ -56,14 +80,14 @@ public abstract class Helper
     /// </summary>
     /// <param name="path">Path</param>
     /// <returns>An array of FileInfo.FullName</returns>
-    public static string[] GetAllImagesInPath(string path)
+    public static string[] GetAllImagesInPath(string path, int depth = 0)
     {
         var fileAttributes = File.GetAttributes(path);
         var directoryInfo = fileAttributes.HasFlag(FileAttributes.Directory)
             ? new DirectoryInfo(path)
             : Directory.GetParent(path);
 
-        return GetAllImagesInPath(directoryInfo);
+        return GetAllImagesInPath(directoryInfo, depth);
     }
 
     /// <summary>
@@ -77,7 +101,7 @@ public abstract class Helper
         var directoryInfo = fileViewModel.IsImage
             ? new DirectoryInfo(fileViewModel.ParentPath ?? Directory.GetDirectoryRoot(fileViewModel.FullPath))
             : new DirectoryInfo(fileViewModel.FullPath);
-        return GetAllImagesInPath(directoryInfo);
+        return GetAllImagesInPath(directoryInfo, 0);
     }
 
     public static long GetDirectorySizeInByte(FileSystemInfo fileSystemInfo)

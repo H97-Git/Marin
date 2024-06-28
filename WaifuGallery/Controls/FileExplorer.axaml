@@ -64,7 +64,7 @@
                          Name="FileExplorerListBox"
                          SelectionMode="Multiple"
                          BorderThickness="0"
-                         IsVisible="{Binding !IsCurrentPathEmpty}">
+                         IsVisible="{Binding !!FilesInDir.Count}">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -78,8 +78,8 @@
                 </ListBox>
                 <TextBlock
                     HorizontalAlignment="Center"
-                    IsVisible="{Binding IsCurrentPathEmpty}"
-                    Text="No folders or images found in the current directory."
+                    IsVisible="{Binding !FilesInDir.Count}"
+                    Text="No folders or files found in the current directory."
                     VerticalAlignment="Center" />
             </Panel>
         </Grid>

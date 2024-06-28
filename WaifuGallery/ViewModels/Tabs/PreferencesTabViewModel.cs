@@ -14,13 +14,15 @@ public class PreferencesTabViewModel : TabViewModelBase
     #region Private Fields
 
     private Key _openSettingsKey = Key.None;
-    private bool _isDuplicateTabsAllowed = true;
+    private bool _isDuplicateTabsAllowed;
     private bool _isTabSettingsClosable;
-    private bool _isSettingsTabCycled = true;
+    private bool _isSettingsTabCycled;
     private bool _shouldHideStatusBar;
     private bool _shouldHideFileExplorer;
     private bool _shouldHideMenuBar;
     private bool _shouldHideTabsHeader;
+    private bool _shouldSaveLastPathOnExit;
+    private int _previewDepth;
     private string _currentThemeVariant = string.Empty;
 
     #endregion
@@ -38,6 +40,8 @@ public class PreferencesTabViewModel : TabViewModelBase
         ShouldHideTabsHeader = Settings.Instance.ShouldHideTabsHeader;
         ShouldHideFileExplorer = Settings.Instance.ShouldHideFileExplorer;
         ShouldHideStatusBar = Settings.Instance.ShouldHideStatusBar;
+        ShouldSaveLastPathOnExit = Settings.Instance.ShouldSaveLastPathOnExit;
+        PreviewDepth = Settings.Instance.PreviewDepth;
     }
 
     #endregion
@@ -81,6 +85,10 @@ public class PreferencesTabViewModel : TabViewModelBase
             .Subscribe(value => Settings.Instance.ShouldHideFileExplorer = value);
         this.WhenAnyValue(x => x.ShouldHideStatusBar)
             .Subscribe(value => Settings.Instance.ShouldHideStatusBar = value);
+        this.WhenAnyValue(x => x.ShouldSaveLastPathOnExit)
+            .Subscribe(value => Settings.Instance.ShouldSaveLastPathOnExit = value);
+        this.WhenAnyValue(x => x.PreviewDepth)
+            .Subscribe(value => Settings.Instance.PreviewDepth = value);
     }
 
     #endregion
@@ -131,10 +139,22 @@ public class PreferencesTabViewModel : TabViewModelBase
         set => this.RaiseAndSetIfChanged(ref _shouldHideTabsHeader, value);
     }
 
+    public bool ShouldSaveLastPathOnExit
+    {
+        get => _shouldSaveLastPathOnExit;
+        set => this.RaiseAndSetIfChanged(ref _shouldSaveLastPathOnExit, value);
+    }
+
     public bool IsTabSettingsClosable
     {
         get => _isTabSettingsClosable;
         set => this.RaiseAndSetIfChanged(ref _isTabSettingsClosable, value);
+    }
+
+    public int PreviewDepth
+    {
+        get => _previewDepth;
+        set => this.RaiseAndSetIfChanged(ref _previewDepth, value);
     }
 
     public Key OpenSettingsKey

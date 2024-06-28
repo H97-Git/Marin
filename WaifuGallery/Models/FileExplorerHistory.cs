@@ -9,7 +9,6 @@ public class FileExplorerHistory
 
     private readonly List<string> _history = [];
     private int _currentIndex = -1;
-    private readonly object _lockObj = new();
 
     #endregion
 
@@ -17,7 +16,7 @@ public class FileExplorerHistory
 
     public bool IsLast()
     {
-        lock (_lockObj)
+        lock (_history)
         {
             return _currentIndex == _history.Count - 1;
         }
@@ -25,7 +24,7 @@ public class FileExplorerHistory
 
     public bool IsFirst()
     {
-        lock (_lockObj)
+        lock (_history)
         {
             return _currentIndex == 0;
         }
@@ -33,7 +32,7 @@ public class FileExplorerHistory
 
     public void AddPath(string path)
     {
-        lock (_lockObj)
+        lock (_history)
         {
             if (_currentIndex < _history.Count - 1)
             {
@@ -51,7 +50,7 @@ public class FileExplorerHistory
 
     public string GoBack()
     {
-        lock (_lockObj)
+        lock (_history)
         {
             if (_currentIndex <= 0)
             {
@@ -68,7 +67,7 @@ public class FileExplorerHistory
 
     public string GoForward()
     {
-        lock (_lockObj)
+        lock (_history)
         {
             if (_currentIndex >= _history.Count - 1)
             {
@@ -85,7 +84,7 @@ public class FileExplorerHistory
 
     public string GetCurrentPath()
     {
-        lock (_lockObj)
+        lock (_history)
         {
             return _currentIndex >= 0 && _currentIndex < _history.Count
                 ? _history[_currentIndex]

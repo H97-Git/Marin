@@ -66,6 +66,8 @@ public class Settings
     public bool ShouldHideMenuBar { get; set; }
     public bool ShouldHideStatusBar { get; set; }
     public bool ShouldHideTabsHeader { get; set; }
+    public bool ShouldSaveLastPathOnExit { get; set; }
+    public int PreviewDepth { get; set; }
     public string Theme { get; set; } = "System";
     public string? FileExplorerLastPath { get; set; }
 

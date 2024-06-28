@@ -54,8 +54,7 @@ public class PreviewImageViewModel : ViewModelBase
     public PreviewImageViewModel()
     {
         if (!Design.IsDesignMode) return;
-        var i = Helper.GetAllImagesInPath("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
-        StartPreview(i);
+        StartPreview("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
     }
 
     #endregion
@@ -96,9 +95,10 @@ public class PreviewImageViewModel : ViewModelBase
 
     #region Public Methods
 
-    public void StartPreview(string[] imagesInPath)
+    public void StartPreview(string path)
     {
-        _previewImagePaths = imagesInPath;
+        
+        _previewImagePaths = Helper.GetAllImagesInPath(path,Settings.Instance.PreviewDepth);
         if (_previewImagePaths is {Length: 0})
         {
             const string message = "No images found for preview";
@@ -153,7 +153,6 @@ public class PreviewImageViewModel : ViewModelBase
         IsPreviewImageVisible = false;
         PreviewImage = null;
         _previewImagePaths = Array.Empty<string>();
-        SendCommandMessageBus(new ToggleFileExplorerScrollBarCommand());
     }
 
     #endregion

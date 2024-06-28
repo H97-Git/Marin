@@ -45,9 +45,7 @@ public partial class File : UserControl
         if (!_previewTimer.IsEnabled) return;
         if (FileViewModel is null) return;
         _previewTimer.Stop();
-        var imagesInPath = Helper.GetAllImagesInPath(FileViewModel);
-        if (imagesInPath is {Length: 0}) return;
-        var command = new StartPreviewCommand(imagesInPath);
+        var command = new StartPreviewCommand(FileViewModel.FullPath);
         MessageBus.Current.SendMessage(command);
     }
 
