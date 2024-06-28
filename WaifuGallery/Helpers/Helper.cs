@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Avalonia;
 using Avalonia.Media.Imaging;
+using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Helpers;
@@ -80,13 +82,30 @@ public abstract class Helper
 
     public static long GetDirectorySizeInByte(FileSystemInfo fileSystemInfo)
     {
-        var files = Directory.GetFiles(fileSystemInfo.FullName, "*.*", SearchOption.AllDirectories);
-        return files.Select(file => new FileInfo(file)).Select(fileInfo => fileInfo.Length).Sum();
+        try
+        {
+            if (DirSizeCache.TryGetValueDirSizeCache(fileSystemInfo.FullName, out var size)) return size;
+            var files = Directory.GetFiles(fileSystemInfo.FullName, "*.*", SearchOption.AllDirectories);
+            size = files.Select(file => new FileInfo(file)).Select(fileInfo => fileInfo.Length).Sum();
+            DirSizeCache.AddOrUpdateDirSizeCache(fileSystemInfo.FullName, size);
+            return size;
+        }
+        catch (Exception)
+        {
+            return 0;
+        }
     }
 
     public static bool IsDirectoryEmpty(FileSystemInfo fileSystemInfo)
     {
-        return !Directory.EnumerateFileSystemEntries(fileSystemInfo.FullName).Any();
+        try
+        {
+            return !Directory.EnumerateFileSystemEntries(fileSystemInfo.FullName).Any();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public static void CheckDirAndCreate(string path)

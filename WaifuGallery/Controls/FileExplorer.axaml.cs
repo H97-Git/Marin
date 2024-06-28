@@ -22,7 +22,6 @@ public partial class FileExplorer : UserControl
         FileExplorerViewModel?.PreviewImageViewModel.ZoomPreview(e.Delta.Y);
     }
 
-
     private void OnPointerMoved_ChangePreviewPosition(object? sender, PointerEventArgs e)
     {
         // if (e.KeyModifiers is not KeyModifiers.Control) return;

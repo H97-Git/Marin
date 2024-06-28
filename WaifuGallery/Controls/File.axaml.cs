@@ -93,6 +93,7 @@ public partial class File : UserControl
         var command = new RenameCommand(FileViewModel.FullPath, FileViewModel.FileName);
         MessageBus.Current.SendMessage(command);
         FileViewModel.IsRenaming = false;
+        e.Handled = true;
     }
 
     #endregion

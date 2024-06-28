@@ -67,6 +67,7 @@ public class Settings
     public bool ShouldHideStatusBar { get; set; }
     public bool ShouldHideTabsHeader { get; set; }
     public string Theme { get; set; } = "System";
+    public string? FileExplorerLastPath { get; set; }
 
     [JsonIgnore] public FontFamily? DefaultFont { get; set; }
 

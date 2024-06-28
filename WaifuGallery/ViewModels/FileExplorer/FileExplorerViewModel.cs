@@ -82,6 +82,7 @@ public class FileExplorerViewModel : ViewModelBase
             return;
         }
 
+        Settings.Instance.FileExplorerLastPath = path;
         FilesInDir.Clear();
         _cachedImagesPath = null;
         SetDirsAndFiles(currentPathDirectoryInfo);
@@ -89,7 +90,8 @@ public class FileExplorerViewModel : ViewModelBase
 
     private void SetDirsAndFiles(DirectoryInfo currentDir)
     {
-        var dirs = currentDir.GetDirectories();
+        var dirs = currentDir.GetDirectories().Where(f => f.Name.First() is not '.' && f.Name.First() is not '$')
+            .ToArray();
         var imagesFileInfo = currentDir.GetFiles()
             .Where(file => Helper.AllFileExtensions.Contains(file.Extension.ToLower()))
             .OrderBy(f => f.Name, new NaturalSortComparer())
@@ -227,14 +229,21 @@ public class FileExplorerViewModel : ViewModelBase
         Helper.CheckDirAndCreate(SettingsPath);
         Helper.CheckDirAndCreate(ThumbnailsPath);
 
-        if (OperatingSystem.IsWindows())
+        if (Settings.Instance.FileExplorerLastPath is not null)
         {
-            ChangePath(@"C:\oxford-iiit-pet\images");
+            ChangePath(Settings.Instance.FileExplorerLastPath);
         }
-
-        if (OperatingSystem.IsLinux())
+        else
         {
-            ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
+            if (OperatingSystem.IsWindows())
+            {
+                ChangePath(@"C:\oxford-iiit-pet\images");
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
+            }
         }
 
         MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
