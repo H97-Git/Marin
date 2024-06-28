@@ -9,27 +9,19 @@ namespace WaifuGallery.Controls;
 
 public partial class FileExplorer : UserControl
 {
+    #region Private Fields
+
     private FileExplorerViewModel? FileExplorerViewModel => DataContext as FileExplorerViewModel;
 
-    public FileExplorer()
-    {
-        InitializeComponent();
-        ImagePreviewControl.PointerWheelChanged += InputElement_OnPointerWheelChanged;
-        FileExplorerContent.PointerMoved += OnPointerMoved_ChangePreviewPosition;
-    }
+    #endregion
+
+    #region Private Methods
 
     private void InputElement_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
         FileExplorerViewModel?.PreviewImageViewModel.ZoomPreview(e.Delta.Y);
     }
 
-    public override void Render(DrawingContext context)
-    {
-        if (FileExplorerViewModel is null) return;
-        var fileExplorerWidth = (int) FileExplorerListBox.Bounds.Size.Width;
-        const int fileWidth = 174;
-        FileExplorerViewModel.ColumnsCount = fileExplorerWidth / fileWidth;
-    }
 
     private void OnPointerMoved_ChangePreviewPosition(object? sender, PointerEventArgs e)
     {
@@ -58,4 +50,30 @@ public partial class FileExplorer : UserControl
         var yClamp = Math.Clamp(pointerPosition.Y - offset, 0, y);
         return new Point(xClamp, yClamp);
     }
+
+    #endregion
+
+    #region Ctor
+
+    public FileExplorer()
+    {
+        InitializeComponent();
+        ImagePreviewControl.PointerWheelChanged += InputElement_OnPointerWheelChanged;
+        FileExplorerContent.PointerMoved += OnPointerMoved_ChangePreviewPosition;
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    public override void Render(DrawingContext context)
+    {
+        if (FileExplorerViewModel is null) return;
+        var fileExplorerWidth = (int) FileExplorerListBox.Bounds.Size.Width;
+        //Todo: This should be taken from settings (or something like that) since this value doesn't reflect the actual desired size of the control.
+        const int fileWidth = 174;
+        FileExplorerViewModel.ColumnsCount = fileExplorerWidth / fileWidth;
+    }
+
+    #endregion
 }

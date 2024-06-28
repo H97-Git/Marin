@@ -9,37 +9,51 @@ using WaifuGallery.Controls;
 
 namespace WaifuGallery.ViewModels.Tabs;
 
-public class TabSettingsViewModel : TabViewModelBase
+public class PreferencesTabViewModel : TabViewModelBase
 {
+    #region Private Fields
+
     private Key _openSettingsKey = Key.None;
     private bool _isDuplicateTabsAllowed = true;
     private bool _isTabSettingsClosable;
     private bool _isSettingsTabCycled = true;
-    private bool _shouldHideStatusBar = false;
-    private bool _shouldHideFileExplorer = false;
-    private bool _shouldHideMenuBar = false;
-    private bool _shouldHideTabsHeader = false;
-    private readonly FluentAvaloniaTheme? _fluentAvaloniaTheme;
+    private bool _shouldHideStatusBar;
+    private bool _shouldHideFileExplorer;
+    private bool _shouldHideMenuBar;
+    private bool _shouldHideTabsHeader;
     private string _currentThemeVariant = string.Empty;
 
-    public TabSettingsViewModel()
+    #endregion
+
+    #region Private Methods
+
+    private void InitializePreferences()
+    {
+        CurrentThemeVariant = Settings.Instance.Theme;
+        IsDuplicateTabsAllowed = Settings.Instance.IsDuplicateTabsAllowed;
+        IsSettingsTabCycled = Settings.Instance.IsSettingsTabCycled;
+        IsTabSettingsClosable = Settings.Instance.IsTabSettingsClosable;
+        OpenSettingsKey = Settings.Instance.OpenSettingsKey;
+        ShouldHideMenuBar = Settings.Instance.ShouldHideMenuBar;
+        ShouldHideTabsHeader = Settings.Instance.ShouldHideTabsHeader;
+        ShouldHideFileExplorer = Settings.Instance.ShouldHideFileExplorer;
+        ShouldHideStatusBar = Settings.Instance.ShouldHideStatusBar;
+    }
+
+    #endregion
+
+    #region CTOR
+
+    public PreferencesTabViewModel()
     {
         Id = Guid.Empty.ToString();
         Header = "Settings";
-        _fluentAvaloniaTheme = Application.Current?.Styles[0] as FluentAvaloniaTheme;
-        CurrentThemeVariant = Preferences.Instance.Theme;
-        IsDuplicateTabsAllowed = Preferences.Instance.IsDuplicateTabsAllowed;
-        IsSettingsTabCycled = Preferences.Instance.IsSettingsTabCycled;
-        IsTabSettingsClosable = Preferences.Instance.IsTabSettingsClosable;
-        OpenSettingsKey = Preferences.Instance.OpenSettingsKey;
-        ShouldHideMenuBar = Preferences.Instance.ShouldHideMenuBar;
-        ShouldHideTabsHeader = Preferences.Instance.ShouldHideTabsHeader;
-        ShouldHideFileExplorer = Preferences.Instance.ShouldHideFileExplorer;
-        ShouldHideStatusBar = Preferences.Instance.ShouldHideStatusBar;
+        var fluentAvaloniaTheme = Application.Current?.Styles[0] as FluentAvaloniaTheme;
+        InitializePreferences();
         this.WhenAnyValue(x => x.CurrentThemeVariant)
             .Subscribe(value =>
             {
-                Preferences.Instance.Theme = value;
+                Settings.Instance.Theme = value;
                 var themeVariant = value switch
                 {
                     "Light" => ThemeVariant.Light,
@@ -48,26 +62,30 @@ public class TabSettingsViewModel : TabViewModelBase
                 };
                 if (Application.Current != null)
                     Application.Current.RequestedThemeVariant = themeVariant;
-                if (_fluentAvaloniaTheme != null)
-                    _fluentAvaloniaTheme.PreferSystemTheme = value == "System";
+                if (fluentAvaloniaTheme != null)
+                    fluentAvaloniaTheme.PreferSystemTheme = value == "System";
             });
         this.WhenAnyValue(x => x.IsDuplicateTabsAllowed)
-            .Subscribe(value => Preferences.Instance.IsDuplicateTabsAllowed = value);
+            .Subscribe(value => Settings.Instance.IsDuplicateTabsAllowed = value);
         this.WhenAnyValue(x => x.IsSettingsTabCycled)
-            .Subscribe(value => Preferences.Instance.IsSettingsTabCycled = value);
+            .Subscribe(value => Settings.Instance.IsSettingsTabCycled = value);
         this.WhenAnyValue(x => x.IsTabSettingsClosable)
-            .Subscribe(value => Preferences.Instance.IsTabSettingsClosable = value);
+            .Subscribe(value => Settings.Instance.IsTabSettingsClosable = value);
         this.WhenAnyValue(x => x.OpenSettingsKey)
-            .Subscribe(value => Preferences.Instance.OpenSettingsKey = value);
+            .Subscribe(value => Settings.Instance.OpenSettingsKey = value);
         this.WhenAnyValue(x => x.ShouldHideMenuBar)
-            .Subscribe(value => Preferences.Instance.ShouldHideMenuBar = value);
+            .Subscribe(value => Settings.Instance.ShouldHideMenuBar = value);
         this.WhenAnyValue(x => x.ShouldHideTabsHeader)
-            .Subscribe(value => Preferences.Instance.ShouldHideTabsHeader = value);
+            .Subscribe(value => Settings.Instance.ShouldHideTabsHeader = value);
         this.WhenAnyValue(x => x.ShouldHideFileExplorer)
-            .Subscribe(value => Preferences.Instance.ShouldHideFileExplorer = value);
+            .Subscribe(value => Settings.Instance.ShouldHideFileExplorer = value);
         this.WhenAnyValue(x => x.ShouldHideStatusBar)
-            .Subscribe(value => Preferences.Instance.ShouldHideStatusBar = value);
+            .Subscribe(value => Settings.Instance.ShouldHideStatusBar = value);
     }
+
+    #endregion
+
+    #region Public Properties
 
     public string[] ThemesVariants { get; } = ["System", "Light", "Dark"];
 
@@ -126,13 +144,15 @@ public class TabSettingsViewModel : TabViewModelBase
     }
 
     public string CurrentVersion => "0.0.1";
-    // typeof(Program).Assembly.GetName().Version?.ToString();
 
-    public string CurrentAvaloniaVersion =>
+    public string? CurrentAvaloniaVersion =>
         typeof(Application).Assembly.GetName().Version?.ToString();
 
+    #endregion
 
-    public async void ShowDialogAsync()
+    #region Public Methods
+
+    public async void ShowSetKeyDialogAsync()
     {
         var dialog = new ContentDialog()
         {
@@ -149,4 +169,6 @@ public class TabSettingsViewModel : TabViewModelBase
 
         _ = await dialog.ShowAsync();
     }
+
+    #endregion
 }

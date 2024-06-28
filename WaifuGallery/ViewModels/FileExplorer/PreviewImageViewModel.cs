@@ -11,22 +11,19 @@ namespace WaifuGallery.ViewModels.FileExplorer;
 
 public class PreviewImageViewModel : ViewModelBase
 {
-    #region Private Members
+    #region Private Fields
 
     private Bitmap? _previewImage;
-    private Point _previewImagePosition;
-    private Size _previewImageSize;
+    private Point _previewImagePosition = new(0, 0);
+    private Size _previewImageSize = new(300, 300);
     private bool _isPreviewImageVisible;
     private int _previewImageIndex;
     private string[] _previewImagePaths = [];
     private string _previewImageCounter = "0/0";
 
-    public string PreviewCounter
-    {
-        get => _previewImageCounter;
-        set => this.RaiseAndSetIfChanged(ref _previewImageCounter, value);
-    }
+    #endregion
 
+    #region Private Properties
 
     private int PreviewImageIndex
     {
@@ -46,18 +43,19 @@ public class PreviewImageViewModel : ViewModelBase
 
     #endregion
 
+    #region Private Methods
+
+    private void SendCommandMessageBus(ICommandMessage command) => MessageBus.Current.SendMessage(command);
+
+    #endregion
+
     #region CTOR
 
     public PreviewImageViewModel()
     {
-        if (Design.IsDesignMode)
-        {
-            var i = Helper.GetAllImagesInPath("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
-            StartPreview(i);
-        }
-
-        PreviewImageSize = new Size(300, 300);
-        PreviewImagePosition = new Point(0, 0);
+        if (!Design.IsDesignMode) return;
+        var i = Helper.GetAllImagesInPath("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
+        StartPreview(i);
     }
 
     #endregion
@@ -88,11 +86,15 @@ public class PreviewImageViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isPreviewImageVisible, value);
     }
 
+    public string PreviewCounter
+    {
+        get => _previewImageCounter;
+        set => this.RaiseAndSetIfChanged(ref _previewImageCounter, value);
+    }
+
     #endregion
 
-    #region Private Methods
-
-    private void SendCommandMessageBus(ICommandMessage command) => MessageBus.Current.SendMessage(command);
+    #region Public Methods
 
     public void StartPreview(string[] imagesInPath)
     {

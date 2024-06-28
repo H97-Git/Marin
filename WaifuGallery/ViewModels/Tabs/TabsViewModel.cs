@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -14,17 +13,93 @@ namespace WaifuGallery.ViewModels.Tabs;
 
 public class TabsViewModel : ViewModelBase
 {
-    #region Private Members
+    #region Private Fields
 
     private ObservableCollection<TabViewModelBase> _openTabs = [];
     private TabViewModelBase? _selectedTab;
     private ImageTabViewModel? _currentImageTabViewModel;
-    private TabSettingsViewModel? _tabSettingsViewModel;
+    private PreferencesTabViewModel? _tabSettingsViewModel;
     private int _selectedTabIndex;
     private bool _isSettingsTabVisible = true;
     private bool _isImageTabVisible;
     private bool _isTabHeadersVisible = true;
-    private bool IsSettingsTabOpen => OpenTabs.Any(x => x is TabSettingsViewModel);
+    private bool IsSettingsTabOpen => OpenTabs.Any(x => x is PreferencesTabViewModel);
+
+    #endregion
+
+    #region Private Methods
+
+    private void SendMessageToStatusBar(string message)
+    {
+        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, message);
+        SendCommandToMessageBus(command);
+    }
+
+    private void SendCommandToMessageBus(ICommandMessage command)
+    {
+        MessageBus.Current.SendMessage(command);
+    }
+
+    private void CloseTab()
+    {
+        if (SelectedTab is null) return;
+        if (SelectedTab is PreferencesTabViewModel && !Settings.Instance.IsTabSettingsClosable) return;
+        OpenTabs.Remove(SelectedTab);
+        if (OpenTabs.Count is 0)
+        {
+            TabSettingsViewModel = null;
+            ImageTabViewModel = null;
+            IsSettingsTabVisible = false;
+            IsImageTabVisible = false;
+            return;
+        }
+
+        SelectedTab = OpenTabs.First();
+    }
+
+    private void AddTab(TabViewModelBase tab)
+    {
+        OpenTabs.Add(tab);
+        SelectedTab = OpenTabs.First(x => x.Id == tab.Id);
+        if (SelectedTab is ImageTabViewModel)
+        {
+            IsSettingsTabVisible = false;
+            IsImageTabVisible = true;
+            ImageTabViewModel = SelectedTab as ImageTabViewModel;
+        }
+        else
+        {
+            IsSettingsTabVisible = true;
+            IsImageTabVisible = false;
+            TabSettingsViewModel = SelectedTab as PreferencesTabViewModel;
+        }
+    }
+
+    private void ResizeTabByHeight(ImageTabViewModel imageTabViewModel)
+    {
+        imageTabViewModel.ResizeImageByHeight(ControlSize.Height);
+    }
+
+
+    private void ResizeTabByWidth(ImageTabViewModel imageTabViewModel)
+    {
+        imageTabViewModel.ResizeImageByWidth(ControlSize.Width);
+    }
+
+    #endregion
+
+    #region CTOR
+
+    public TabsViewModel()
+    {
+        OpenSettingsTab();
+        SelectedTab = OpenTabs.First();
+        MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFile);
+        MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
+        MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
+        MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidthAndResetZoom());
+        MessageBus.Current.Listen<OpenSettingsTabCommand>().Subscribe(_ => OpenSettingsTab());
+    }
 
     #endregion
 
@@ -72,7 +147,7 @@ public class TabsViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _currentImageTabViewModel, value);
     }
 
-    public TabSettingsViewModel? TabSettingsViewModel
+    public PreferencesTabViewModel? TabSettingsViewModel
     {
         get => _tabSettingsViewModel;
         set => this.RaiseAndSetIfChanged(ref _tabSettingsViewModel, value);
@@ -85,85 +160,9 @@ public class TabsViewModel : ViewModelBase
 
     #endregion
 
-    #region CTOR
-
-    public TabsViewModel()
-    {
-        OpenSettingsTab();
-        SelectedTab = OpenTabs.First();
-        MessageBus.Current.Listen<OpenFileCommand>().Subscribe(async x => await OpenFile(x));
-        MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
-        MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
-        MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidthAndResetZoom());
-        MessageBus.Current.Listen<OpenSettingsTabCommand>().Subscribe(_ => OpenSettingsTab());
-    }
-
-    #endregion
-
-    #region Private Methods
-
-    private void SendMessageToStatusBar(string message)
-    {
-        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, message);
-        SendCommandToMessageBus(command);
-    }
-
-    private void SendCommandToMessageBus(ICommandMessage command)
-    {
-        MessageBus.Current.SendMessage(command);
-    }
-
-    private void CloseTab()
-    {
-        if (SelectedTab is null) return;
-        if (SelectedTab is TabSettingsViewModel && !Preferences.Instance.IsTabSettingsClosable) return;
-        OpenTabs.Remove(SelectedTab);
-        if (OpenTabs.Count is 0)
-        {
-            TabSettingsViewModel = null;
-            ImageTabViewModel = null;
-            IsSettingsTabVisible = false;
-            IsImageTabVisible = false;
-            return;
-        }
-
-        SelectedTab = OpenTabs.First();
-    }
-
-    private void AddTab(TabViewModelBase tab)
-    {
-        OpenTabs.Add(tab);
-        SelectedTab = OpenTabs.First(x => x.Id == tab.Id);
-        if (SelectedTab is ImageTabViewModel)
-        {
-            IsSettingsTabVisible = false;
-            IsImageTabVisible = true;
-            ImageTabViewModel = SelectedTab as ImageTabViewModel;
-        }
-        else
-        {
-            IsSettingsTabVisible = true;
-            IsImageTabVisible = false;
-            TabSettingsViewModel = SelectedTab as TabSettingsViewModel;
-        }
-    }
-
-    private void ResizeTabByHeight(ImageTabViewModel imageTabViewModel)
-    {
-        imageTabViewModel.ResizeImageByHeight(ControlSize.Height);
-    }
-
-
-    private void ResizeTabByWidth(ImageTabViewModel imageTabViewModel)
-    {
-        imageTabViewModel.ResizeImageByWidth(ControlSize.Width);
-    }
-
-    #endregion
-
     #region Public Methods
 
-    private async Task OpenFile(OpenFileCommand command)
+    private async void OpenFile(OpenFileCommand command)
     {
         var storageProvider = App.GetTopLevel()?.StorageProvider;
         if (storageProvider is null) return;
@@ -223,7 +222,7 @@ public class TabsViewModel : ViewModelBase
     {
         var imageTabViewModel = ImageTabViewModel.CreateImageTabFromCommand(command);
         if (imageTabViewModel is null) return;
-        if (!Preferences.Instance.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
+        if (!Settings.Instance.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
 
         AddTab(imageTabViewModel);
     }
@@ -231,7 +230,7 @@ public class TabsViewModel : ViewModelBase
     public void OpenSettingsTab()
     {
         if (IsSettingsTabOpen) return;
-        AddTab(new TabSettingsViewModel());
+        AddTab(new PreferencesTabViewModel());
     }
 
     public void CycleTab(bool reverse, bool isCtrlKey)
@@ -252,9 +251,9 @@ public class TabsViewModel : ViewModelBase
 
         if (!isCtrlKey)
         {
-            if (!Preferences.Instance.IsSettingsTabCycled)
+            if (!Settings.Instance.IsSettingsTabCycled)
             {
-                if (OpenTabs[newIndex] is TabSettingsViewModel)
+                if (OpenTabs[newIndex] is PreferencesTabViewModel)
                 {
                     if (reverse)
                     {

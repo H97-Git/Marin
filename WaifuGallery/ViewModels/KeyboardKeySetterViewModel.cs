@@ -6,8 +6,14 @@ namespace WaifuGallery.ViewModels;
 
 public class KeyboardKeySetterViewModel : ViewModelBase
 {
+    #region Private Fields
+
     private Key _key = Key.None;
     private string _keyName = string.Empty;
+
+    #endregion
+
+    #region CTOR
 
     public KeyboardKeySetterViewModel()
     {
@@ -66,6 +72,10 @@ public class KeyboardKeySetterViewModel : ViewModelBase
         });
     }
 
+    #endregion
+
+    #region Public Properties
+
     public Key Key
     {
         get => _key;
@@ -77,4 +87,6 @@ public class KeyboardKeySetterViewModel : ViewModelBase
         get => _keyName;
         set => this.RaiseAndSetIfChanged(ref _keyName, value);
     }
+
+    #endregion
 }

@@ -2,6 +2,8 @@
 
 namespace WaifuGallery.Commands;
 
+public interface ICommandMessage;
+
 public class ExitCommand : ICommandMessage;
 
 public class SendMessageToStatusBarCommand(InfoBarSeverity severity, string message) : ICommandMessage

@@ -60,7 +60,7 @@
         </Grid>
         <!-- Settings Tab -->
         <Grid Grid.Row="1" IsVisible="{Binding IsSettingsTabVisible}">
-            <controls:SettingsTab DataContext="{Binding  TabSettingsViewModel}" />
+            <controls:PreferencesTab DataContext="{Binding  TabSettingsViewModel}" />
         </Grid>
     </Grid>
 </UserControl>

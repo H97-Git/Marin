@@ -8,10 +8,7 @@ namespace WaifuGallery.Controls;
 
 public partial class KeyboardKeySetter : UserControl
 {
-    public KeyboardKeySetter()
-    {
-        InitializeComponent();
-    }
+    #region Private Methods
 
     private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -27,10 +24,18 @@ public partial class KeyboardKeySetter : UserControl
         // We will set the focus into our input field just after it got attached to the visual tree.
         if (sender is TextBox textBox)
         {
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                textBox.Focus(NavigationMethod.Unspecified, KeyModifiers.None);
-            });
+            Dispatcher.UIThread.InvokeAsync(() => { textBox.Focus(NavigationMethod.Unspecified, KeyModifiers.None); });
         }
     }
+
+    #endregion
+
+    #region CTOR
+
+    public KeyboardKeySetter()
+    {
+        InitializeComponent();
+    }
+
+    #endregion
 }

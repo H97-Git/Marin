@@ -3,10 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="WaifuGallery.Controls.SettingsTab"
+             x:Class="WaifuGallery.Controls.PreferencesTab"
              xmlns:ui="using:FluentAvalonia.UI.Controls"
              xmlns:tabs="clr-namespace:WaifuGallery.ViewModels.Tabs"
-             x:DataType="tabs:TabSettingsViewModel">
+             x:DataType="tabs:PreferencesTabViewModel">
     <ScrollViewer>
         <StackPanel Spacing="8" Margin="10">
             <DockPanel HorizontalAlignment="Left" Margin="10">
@@ -17,6 +17,7 @@
                 <StackPanel Spacing="0" Margin="15 0">
                     <TextBlock Text="Waifu Gallery Preferences" />
                     <TextBlock Text="{Binding CurrentVersion}" />
+                    <TextBlock Text="{Binding CurrentAvaloniaVersion}" />
                 </StackPanel>
             </DockPanel>
             <ui:SettingsExpander Header="FullScreen"
@@ -48,7 +49,7 @@
                                  IconSource="{StaticResource KeyboardIcon}">
                 <ui:SettingsExpanderItem Content="Test Key">
                     <ui:SettingsExpanderItem.Footer>
-                        <Button Content="Click" Command="{Binding ShowDialogAsync}">
+                        <Button Content="Click" Command="{Binding ShowSetKeyDialogAsync}">
                         </Button>
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>

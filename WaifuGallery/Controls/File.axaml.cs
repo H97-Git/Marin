@@ -12,28 +12,10 @@ namespace WaifuGallery.Controls;
 
 public partial class File : UserControl
 {
-    #region Private Members
+    #region Private Fields
 
     private FileViewModel? FileViewModel => DataContext as FileViewModel;
     private readonly DispatcherTimer _previewTimer;
-
-    #endregion
-
-    #region CTOR
-
-    public File()
-    {
-        _previewTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromSeconds(.5),
-        };
-        _previewTimer.Tick += OnPreviewTimerTick;
-        InitializeComponent();
-        FileControl.DoubleTapped += OnFolderDoubleClick_ChangePath;
-        // FileControl.PointerExited += OnPointerExited_ClosePreview;
-        FileControl.PointerPressed += OnPointerPressed_StartTimerTickPreview;
-        FileControl.PointerReleased += OnPointerReleased_OpenInNewTab;
-    }
 
     #endregion
 
@@ -103,7 +85,6 @@ public partial class File : UserControl
             _previewTimer.Stop();
     }
 
-    #endregion
 
     private void Rename_OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -113,4 +94,24 @@ public partial class File : UserControl
         MessageBus.Current.SendMessage(command);
         FileViewModel.IsRenaming = false;
     }
+
+    #endregion
+
+    #region CTOR
+
+    public File()
+    {
+        _previewTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(.5),
+        };
+        _previewTimer.Tick += OnPreviewTimerTick;
+        InitializeComponent();
+        FileControl.DoubleTapped += OnFolderDoubleClick_ChangePath;
+        // FileControl.PointerExited += OnPointerExited_ClosePreview;
+        FileControl.PointerPressed += OnPointerPressed_StartTimerTickPreview;
+        FileControl.PointerReleased += OnPointerReleased_OpenInNewTab;
+    }
+
+    #endregion
 }

@@ -6,8 +6,14 @@ namespace WaifuGallery.Controls;
 
 public partial class ImagePreview : UserControl
 {
+    #region Private Fields
+
     private PreviewImageViewModel? PreviewImageViewModel => DataContext as PreviewImageViewModel;
     public ImagePreview() => InitializeComponent();
+
+    #endregion
+
+    #region Private Methods
 
     private void ImagePreview_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
@@ -26,4 +32,6 @@ public partial class ImagePreview : UserControl
         if (properties.IsLeftButtonPressed || properties.IsRightButtonPressed)
             PreviewImageViewModel?.ClosePreview();
     }
+
+    #endregion
 }

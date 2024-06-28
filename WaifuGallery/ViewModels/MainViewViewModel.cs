@@ -14,33 +14,6 @@ namespace WaifuGallery.ViewModels;
 
 public class MainViewViewModel : ViewModelBase
 {
-    #region Public Properties
-
-    public MenuBarViewModel MenuBarViewModel { get; init; }
-    public TabsViewModel TabsViewModel { get; init; }
-    public FileExplorerViewModel FileExplorerViewModel { get; init; }
-    public StatusBarViewModel StatusBarViewModel { get; init; }
-
-    #endregion
-
-    #region CTOR
-
-    public MainViewViewModel()
-    {
-        MenuBarViewModel = new MenuBarViewModel();
-        TabsViewModel = new TabsViewModel();
-        FileExplorerViewModel = new FileExplorerViewModel();
-        StatusBarViewModel = new StatusBarViewModel();
-        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.CloseOnExitCommand());
-        MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
-        MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
-        MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
-        MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
-        MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
-    }
-
-    #endregion
-
     #region Private Methods
 
     private void HandleMainViewKeyboardEvent(KeyEventArgs e)
@@ -89,7 +62,7 @@ public class MainViewViewModel : ViewModelBase
                 break;
         }
 
-        if (e.Key == Preferences.Instance.OpenSettingsKey)
+        if (e.Key == Settings.Instance.OpenSettingsKey)
         {
             if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
                 TabsViewModel.OpenSettingsTab();
@@ -162,13 +135,13 @@ public class MainViewViewModel : ViewModelBase
         if (mainWindow.WindowState is WindowState.Normal)
         {
             mainWindow.WindowState = WindowState.FullScreen;
-            if (Preferences.Instance.ShouldHideMenuBar)
+            if (Settings.Instance.ShouldHideMenuBar)
                 MenuBarViewModel.IsMenuVisible = false;
-            if (Preferences.Instance.ShouldHideTabsHeader)
+            if (Settings.Instance.ShouldHideTabsHeader)
                 TabsViewModel.IsTabHeadersVisible = false;
-            if (Preferences.Instance.ShouldHideFileExplorer)
+            if (Settings.Instance.ShouldHideFileExplorer)
                 FileExplorerViewModel.IsFileExplorerVisible = false;
-            if (Preferences.Instance.ShouldHideStatusBar)
+            if (Settings.Instance.ShouldHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = false;
         }
         else
@@ -245,6 +218,29 @@ public class MainViewViewModel : ViewModelBase
     {
         Directory.CreateDirectory(Path.Combine(FileExplorerViewModel.CurrentPath, "New Folder"));
     }
+
+    #endregion
+
+    #region CTOR
+
+    public MainViewViewModel()
+    {
+        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.CloseOnExitCommand());
+        MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
+        MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
+        MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
+        MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
+        MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
+    }
+
+    #endregion
+
+    #region Public Properties
+
+    public MenuBarViewModel MenuBarViewModel { get; set; } = new();
+    public TabsViewModel TabsViewModel { get; set; } = new();
+    public FileExplorerViewModel FileExplorerViewModel { get; set; } = new();
+    public StatusBarViewModel StatusBarViewModel { get; } = new();
 
     #endregion
 

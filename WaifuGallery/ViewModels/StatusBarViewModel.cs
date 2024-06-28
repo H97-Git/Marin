@@ -4,12 +4,11 @@ using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
 
-
 namespace WaifuGallery.ViewModels;
 
 public class StatusBarViewModel : ViewModelBase
 {
-    #region Priate Members
+    #region Priate Fields
 
     private IBrush _backgroundColor = new SolidColorBrush(Colors.Transparent);
     private IBrush _foregroundColor = new SolidColorBrush(Colors.White);
@@ -17,7 +16,28 @@ public class StatusBarViewModel : ViewModelBase
     private bool _isStatusBarVisible = true;
     private string _message = "Welcome to WaifuGallery!";
     private string _title = "Information";
-    private int _countDuplicates = 0;
+    private int _countDuplicates;
+
+    #endregion
+
+    #region Private Methods
+
+    private void SetMessage(SendMessageToStatusBarCommand command)
+    {
+        IsStatusBarVisible = true;
+        Severity = command.Severity;
+        Message = Message.Replace($" ({_countDuplicates})", "");
+        if (command.Message == Message)
+        {
+            _countDuplicates++;
+            Message = $"{Message} ({_countDuplicates})";
+        }
+        else
+        {
+            _countDuplicates = 0;
+            Message = command.Message;
+        }
+    }
 
     #endregion
 
@@ -48,23 +68,6 @@ public class StatusBarViewModel : ViewModelBase
                 _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
             };
         });
-    }
-
-    private void SetMessage(SendMessageToStatusBarCommand command)
-    {
-        IsStatusBarVisible = true;
-        Severity = command.Severity;
-        Message = Message.Replace($" ({_countDuplicates})", "");
-        if (command.Message == Message)
-        {
-            _countDuplicates++;
-            Message = $"{Message} ({_countDuplicates})";
-        }
-        else
-        {
-            _countDuplicates = 0;
-            Message = command.Message;
-        }
     }
 
     #endregion

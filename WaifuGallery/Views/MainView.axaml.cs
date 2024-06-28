@@ -8,19 +8,9 @@ namespace WaifuGallery.Views;
 
 public partial class MainView : UserControl
 {
-    #region Private Members
+    #region Private Fields
 
     private MainViewViewModel? MainViewModel => DataContext as MainViewViewModel;
-
-    #endregion
-
-    #region CTOR
-
-    public MainView()
-    {
-        InitializeComponent();
-        FileExplorerPanel.PointerReleased += InputElement_OnPointerReleased;
-    }
 
     #endregion
 
@@ -53,8 +43,6 @@ public partial class MainView : UserControl
         MainViewModel?.HandleTabKeyEvent(e);
     }
 
-    #endregion
-
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
         if (MainViewModel != null)
@@ -67,4 +55,16 @@ public partial class MainView : UserControl
                 _ => MainViewModel.StatusBarViewModel.Severity
             };
     }
+
+    #endregion
+
+    #region CTOR
+
+    public MainView()
+    {
+        InitializeComponent();
+        FileExplorerPanel.PointerReleased += InputElement_OnPointerReleased;
+    }
+
+    #endregion
 }

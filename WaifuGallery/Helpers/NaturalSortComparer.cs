@@ -7,6 +7,13 @@ namespace WaifuGallery.Helpers;
 
 public class NaturalSortComparer : IComparer<string>
 {
+    private static int? GetNumericValue(string s)
+    {
+        var match = Regex.Match(s, @"\d+");
+        int result;
+        var numValue = match.Success ? int.TryParse(match.Value, out result) : int.TryParse(s, out result);
+        return numValue ? result : null;
+    }
     public int Compare(string? x, string? y)
     {
         if (x is null && y is null) return 0;
@@ -63,13 +70,5 @@ public class NaturalSortComparer : IComparer<string>
         //     return compareNumeric;
         //
         // return string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static int? GetNumericValue(string s)
-    {
-        var match = Regex.Match(s, @"\d+");
-        int result;
-        var numValue = match.Success ? int.TryParse(match.Value, out result) : int.TryParse(s, out result);
-        return numValue ? result : null;
     }
 }

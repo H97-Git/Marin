@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -8,22 +9,16 @@ namespace WaifuGallery.Controls;
 
 public partial class TabsControl : UserControl
 {
+    #region Private Fields
+
     private TabsViewModel? TabsViewModel => DataContext as TabsViewModel;
     private bool _pressedTab;
     private Point _pressedTabPosition;
     private bool _startDrag;
 
-    public TabsControl()
-    {
-        InitializeComponent();
-        ImagesTabControl.SelectionChanged += ImagesTabControl_OnSelectionChanged;
-    }
+    #endregion
 
-    protected override void OnSizeChanged(SizeChangedEventArgs e)
-    {
-        if (TabsViewModel is null) return;
-        TabsViewModel.ControlSize = TabsUserControl.Bounds.Size;
-    }
+    #region Private Methods
 
     private void ImagesTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) =>
         TabsViewModel?.SelectionChanged(e);
@@ -99,4 +94,27 @@ public partial class TabsControl : UserControl
         _startDrag = false;
         e.Handled = true;
     }
+
+    private void ImagesTabControl_OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        Console.WriteLine(e.Key);
+    }
+
+    #endregion
+
+    #region CTOR
+
+    public TabsControl()
+    {
+        InitializeComponent();
+        ImagesTabControl.SelectionChanged += ImagesTabControl_OnSelectionChanged;
+    }
+
+    protected override void OnSizeChanged(SizeChangedEventArgs e)
+    {
+        if (TabsViewModel is null) return;
+        TabsViewModel.ControlSize = TabsUserControl.Bounds.Size;
+    }
+
+    #endregion
 }

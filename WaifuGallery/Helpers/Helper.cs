@@ -8,11 +8,32 @@ namespace WaifuGallery.Helpers;
 
 public abstract class Helper
 {
+    #region Private Methods
+
+    /// <summary>
+    /// Get all images in path and sort them in natural order: 1, 2, 3, 10, 11, 12
+    /// </summary>
+    /// <param name="di">The directory info</param>
+    /// <returns>An array of FileInfo.FullName</returns>
+    private static string[] GetAllImagesInPath(DirectoryInfo? di)
+    {
+        if (di is not null)
+            return di.GetFiles()
+                .Where(fileInfo => ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
+                .OrderBy(fileInfo => fileInfo.Name, new NaturalSortComparer())
+                .Select(fileInfo => fileInfo.FullName)
+                .ToArray();
+        return [];
+    }
+
+    #endregion
+
     #region Public Members
 
     public static readonly string[] ArchiveFileExtensions = [".zip", ".rar", ".7z"];
     public static readonly string[] ImageFileExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
     public static readonly string[] VideoFileExtensions = [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".flv"];
+
     public static readonly string[] AllFileExtensions =
         ArchiveFileExtensions.Concat(ImageFileExtensions).Concat(VideoFileExtensions).ToArray();
 
@@ -27,7 +48,6 @@ public abstract class Helper
         var correspondingWidth = targetHeight * image.Size.AspectRatio;
         return new Size(correspondingWidth, targetHeight);
     }
-
 
     /// <summary>
     /// Use a string path to get all images
@@ -69,24 +89,13 @@ public abstract class Helper
         return !Directory.EnumerateFileSystemEntries(fileSystemInfo.FullName).Any();
     }
 
-    #endregion
-
-    #region Private Methods
-
-    /// <summary>
-    /// Get all images in path and sort them in natural order: 1, 2, 3, 10, 11, 12
-    /// </summary>
-    /// <param name="di">The directory info</param>
-    /// <returns>An array of FileInfo.FullName</returns>
-    private static string[] GetAllImagesInPath(DirectoryInfo? di)
+    public static void CheckDirAndCreate(string path)
     {
-        if (di is not null)
-            return di.GetFiles()
-                .Where(fileInfo => ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
-                .OrderBy(fileInfo => fileInfo.Name, new NaturalSortComparer())
-                .Select(fileInfo => fileInfo.FullName)
-                .ToArray();
-        return [];
+        var di = new DirectoryInfo(path);
+        if (!di.Exists)
+        {
+            di.Create();
+        }
     }
 
     #endregion

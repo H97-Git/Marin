@@ -10,18 +10,14 @@ namespace WaifuGallery.Controls;
 
 public partial class ImageTab : UserControl
 {
+    #region Private Fields
+
     private ImageTabViewModel? ImageTabViewModel => DataContext as ImageTabViewModel;
     private static double MinZoom => 0.4;
 
-    public ImageTab()
-    {
-        InitializeComponent();
-        SetZoomProperties();
-        MessageBus.Current.Listen<ResetZoomCommand>()
-            .Subscribe(_ => ZoomBorder.ResetMatrix());
-        MessageBus.Current.Listen<SetZoomCommand>()
-            .Subscribe(x => ZoomBorder.SetMatrix(x.Matrix));
-    }
+    #endregion
+
+    #region Private Methods
 
     private void SetZoomProperties()
     {
@@ -76,4 +72,20 @@ public partial class ImageTab : UserControl
                 break;
         }
     }
+
+    #endregion
+
+    #region CTOR
+
+    public ImageTab()
+    {
+        InitializeComponent();
+        SetZoomProperties();
+        MessageBus.Current.Listen<ResetZoomCommand>()
+            .Subscribe(_ => ZoomBorder.ResetMatrix());
+        MessageBus.Current.Listen<SetZoomCommand>()
+            .Subscribe(x => ZoomBorder.SetMatrix(x.Matrix));
+    }
+
+    #endregion
 }

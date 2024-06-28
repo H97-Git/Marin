@@ -13,13 +13,17 @@ namespace WaifuGallery.ViewModels.Tabs;
 
 public class ImageTabViewModel : TabViewModelBase
 {
-    #region Private Members
+    #region Private Fields
 
     private Bitmap? _bitmapImage;
     private Size _imageSize;
     private readonly string[] _imagesInPath;
     private readonly string? _parentFolderName;
     private int _index;
+
+    #endregion
+
+    #region Private Properties
 
     private int Index
     {
@@ -36,37 +40,6 @@ public class ImageTabViewModel : TabViewModelBase
     }
 
     private string CurrentImagePath => _imagesInPath[Index];
-
-    #endregion
-
-    #region Public Properties
-
-    public Bitmap? BitmapImage
-    {
-        get => _bitmapImage;
-        set => this.RaiseAndSetIfChanged(ref _bitmapImage, value);
-    }
-
-    public Size ImageSize
-    {
-        get => _imageSize;
-        private set => this.RaiseAndSetIfChanged(ref _imageSize, value);
-    }
-
-    public Matrix Matrix { get; set; }
-    public bool IsDefaultZoom { get; set; } = true;
-
-    #endregion
-
-    #region CTOR
-
-    private ImageTabViewModel(string id, string[] imagesInPath, int index)
-    {
-        Id = id;
-        _imagesInPath = imagesInPath;
-        _parentFolderName = Directory.GetParent(_imagesInPath.First())?.Name;
-        Index = index;
-    }
 
     #endregion
 
@@ -108,6 +81,37 @@ public class ImageTabViewModel : TabViewModelBase
 
     #endregion
 
+    #region CTOR
+
+    private ImageTabViewModel(string id, string[] imagesInPath, int index)
+    {
+        Id = id;
+        _imagesInPath = imagesInPath;
+        _parentFolderName = Directory.GetParent(_imagesInPath.First())?.Name;
+        Index = index;
+    }
+
+    #endregion
+
+    #region Public Properties
+
+    public Bitmap? BitmapImage
+    {
+        get => _bitmapImage;
+        set => this.RaiseAndSetIfChanged(ref _bitmapImage, value);
+    }
+
+    public Size ImageSize
+    {
+        get => _imageSize;
+        private set => this.RaiseAndSetIfChanged(ref _imageSize, value);
+    }
+
+    public Matrix Matrix { get; set; }
+    public bool IsDefaultZoom { get; set; } = true;
+
+    #endregion
+
     #region Public Methods
 
     public void LoadPreviousImage()
@@ -131,10 +135,10 @@ public class ImageTabViewModel : TabViewModelBase
     }
 
     public void ResizeImageByHeight(double targetHeight) =>
-        ImageSize = Helper.GetScaledSizeByHeight(_bitmapImage, (int) targetHeight);
+        ImageSize = Helper.GetScaledSizeByHeight(BitmapImage, (int) targetHeight);
 
     public void ResizeImageByWidth(double targetHeight) =>
-        ImageSize = Helper.GetScaledSizeByWidth(_bitmapImage, (int) targetHeight);
+        ImageSize = Helper.GetScaledSizeByWidth(BitmapImage, (int) targetHeight);
 
     public static ImageTabViewModel? CreateImageTabFromCommand(ICommandMessage command)
     {
@@ -149,15 +153,11 @@ public class ImageTabViewModel : TabViewModelBase
             case OpenFileCommand openFileCommand:
             {
                 var path = openFileCommand.Path;
-                if (path != null)
-                {
-                    var imagesInPath = Helper.GetAllImagesInPath(path);
-                    var index = Array.IndexOf(imagesInPath, path);
-                    var id = GenerateUniqueId(imagesInPath.First());
-                    return new ImageTabViewModel(id, imagesInPath, index);
-                }
-
-                break;
+                if (path == null) return null;
+                var imagesInPath = Helper.GetAllImagesInPath(path);
+                var index = Array.IndexOf(imagesInPath, path);
+                var id = GenerateUniqueId(imagesInPath.First());
+                return new ImageTabViewModel(id, imagesInPath, index);
             }
         }
 

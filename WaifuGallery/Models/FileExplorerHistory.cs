@@ -5,9 +5,15 @@ namespace WaifuGallery.Models;
 
 public class FileExplorerHistory
 {
+    #region Private Fields
+
     private readonly List<string> _history = [];
     private int _currentIndex = -1;
     private readonly object _lockObj = new();
+
+    #endregion
+
+    #region Public Methods
 
     public bool IsLast()
     {
@@ -16,7 +22,7 @@ public class FileExplorerHistory
             return _currentIndex == _history.Count - 1;
         }
     }
-    
+
     public bool IsFirst()
     {
         lock (_lockObj)
@@ -86,4 +92,6 @@ public class FileExplorerHistory
                 : throw new IndexOutOfRangeException();
         }
     }
+
+    #endregion
 }

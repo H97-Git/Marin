@@ -10,34 +10,7 @@ namespace WaifuGallery;
 
 public class App : Application
 {
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-        SetTheme(Preferences.Instance.Theme);
-    }
-
-    public override async void OnFrameworkInitializationCompleted()
-    {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            // var splash = new SplashScreenWindow();
-            //
-            // desktop.MainWindow = splash;
-            // splash.Show();
-            //
-            // await splash.InitApp();
-
-            var main = new MainWindow();
-            desktop.MainWindow = main;
-            desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            desktop.ShutdownRequested += (_, _) => { Preferences.Instance.Save(); };
-            main.Show();
-
-            // splash.Close();
-        }
-
-        base.OnFrameworkInitializationCompleted();
-    }
+    #region Private Methods
 
     private static void SetTheme(string theme)
     {
@@ -56,6 +29,10 @@ public class App : Application
         }
     }
 
+    #endregion
+
+    #region Public Methods
+
     public static TopLevel? GetTopLevel()
     {
         if (Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -68,7 +45,38 @@ public class App : Application
 
     public static void CloseOnExitCommand()
     {
-        Preferences.Instance.Save();
+        Settings.Instance.Save();
         Environment.Exit(0);
     }
+
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+        SetTheme(Settings.Instance.Theme);
+    }
+
+    public override async void OnFrameworkInitializationCompleted()
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            // var splash = new SplashScreenWindow();
+            //
+            // desktop.MainWindow = splash;
+            // splash.Show();
+            //
+            // await splash.InitApp();
+
+            var main = new MainWindow();
+            desktop.MainWindow = main;
+            desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            desktop.ShutdownRequested += (_, _) => { Settings.Instance.Save(); };
+            main.Show();
+
+            // splash.Close();
+        }
+
+        base.OnFrameworkInitializationCompleted();
+    }
+
+    #endregion
 }
