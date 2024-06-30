@@ -82,10 +82,12 @@ public abstract class Helper
     /// <returns>An array of FileInfo.FullName</returns>
     public static string[] GetAllImagesInPath(string path, int depth = 0)
     {
-        var fileAttributes = File.GetAttributes(path);
-        var directoryInfo = fileAttributes.HasFlag(FileAttributes.Directory)
-            ? new DirectoryInfo(path)
-            : Directory.GetParent(path);
+        var directoryInfo = IsPathFile(path) switch
+        {
+            PathType.File => Directory.GetParent(path),
+            PathType.Directory => new DirectoryInfo(path),
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
         return GetAllImagesInPath(directoryInfo, depth);
     }
@@ -97,7 +99,7 @@ public abstract class Helper
     /// <returns>An array of FileInfo.FullName</returns>
     public static string[] GetAllImagesInPath(FileViewModel fileViewModel)
     {
-        // if it's an image, use the parent directory else use the full path
+        // if it's an image use the parent directory else use the full path
         var directoryInfo = fileViewModel.IsImage
             ? new DirectoryInfo(fileViewModel.ParentPath ?? Directory.GetDirectoryRoot(fileViewModel.FullPath))
             : new DirectoryInfo(fileViewModel.FullPath);
@@ -132,14 +134,56 @@ public abstract class Helper
         }
     }
 
-    public static void CheckDirAndCreate(string path)
+    public static PathType IsPathFile(string path) => File.Exists(path) ? PathType.File :
+        Directory.Exists(path) ? PathType.Directory : PathType.None;
+
+
+    /// <summary>
+    /// https://learn.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="recursive"></param>
+    /// <exception cref="DirectoryNotFoundException"></exception>
+    public static void CopyDirectory(string source, string destination, bool recursive)
     {
-        var di = new DirectoryInfo(path);
-        if (!di.Exists)
+        // Get information about the source directory
+        var dir = new DirectoryInfo(source);
+
+        // Check if the source directory exists
+        if (!dir.Exists)
+            throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+        // Cache directories before we start copying
+        var dirs = dir.GetDirectories();
+
+        // Create the destination directory
+        Directory.CreateDirectory(Directory.Exists(Path.Combine(destination, dir.Name))
+            ? Path.Combine(destination, dir.Name + "_copy")
+            : Path.Combine(destination, dir.Name));
+
+        // Get the files in the source directory and copy to the destination directory
+        foreach (var file in dir.GetFiles())
         {
-            di.Create();
+            var targetFilePath = Path.Combine(destination, file.Name);
+            file.CopyTo(targetFilePath);
+        }
+
+        // If recursive and copying subdirectories, recursively call this method
+        if (!recursive) return;
+        foreach (var subDir in dirs)
+        {
+            var newDestinationDir = Path.Combine(destination, subDir.Name);
+            CopyDirectory(subDir.FullName, newDestinationDir, true);
         }
     }
 
     #endregion
+}
+
+public enum PathType
+{
+    File,
+    Directory,
+    None
 }

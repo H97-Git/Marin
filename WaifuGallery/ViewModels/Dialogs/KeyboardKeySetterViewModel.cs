@@ -2,7 +2,7 @@
 using Avalonia.Input;
 using ReactiveUI;
 
-namespace WaifuGallery.ViewModels;
+namespace WaifuGallery.ViewModels.Dialogs;
 
 public class KeyboardKeySetterViewModel : ViewModelBase
 {

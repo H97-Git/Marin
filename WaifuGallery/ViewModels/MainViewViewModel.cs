@@ -1,19 +1,25 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
-using WaifuGallery.Helpers;
+using WaifuGallery.Controls.Dialogs;
+using WaifuGallery.ViewModels.Dialogs;
 using WaifuGallery.ViewModels.FileExplorer;
 using WaifuGallery.ViewModels.Tabs;
+using WaifuGallery.Helpers;
 using File = System.IO.File;
 
 namespace WaifuGallery.ViewModels;
 
 public class MainViewViewModel : ViewModelBase
 {
+    private readonly DataObject _clipBoardDataObject = new();
+    private bool _isDialogOpen = false;
+
     #region Private Methods
 
     private void HandleMainViewKeyboardEvent(KeyEventArgs e)
@@ -71,7 +77,6 @@ public class MainViewViewModel : ViewModelBase
 
     private void HandleFileExplorerKeyboardEvent(KeyEventArgs e)
     {
-        if (FileExplorerViewModel.IsSearchFocused) return;
         switch (e)
         {
             case {Key: Key.Back}:
@@ -122,6 +127,7 @@ public class MainViewViewModel : ViewModelBase
                 FileExplorerViewModel.StartPreview(FileExplorerViewModel.SelectedFile.FullPath);
                 break;
             case {Key: Key.Escape}:
+                if (!FileExplorerViewModel.PreviewImageViewModel.IsPreviewImageVisible) return;
                 FileExplorerViewModel.ClosePreview();
                 break;
         }
@@ -156,65 +162,149 @@ public class MainViewViewModel : ViewModelBase
     {
         var source = command.Path;
         var destination = source.Replace(Path.GetFileName(source), command.NewName);
+        if (!File.Exists(source) && !Directory.Exists(source))
+        {
+            SendMessageToStatusBar(InfoBarSeverity.Error, "File or Directory does not exist!");
+            return;
+        }
+
         try
         {
-            if (File.Exists(source))
-            {
-                File.Move(source, destination);
-            }
-            else
-            {
-                MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Error,
-                    "File does not exist!"));
-            }
+            Directory.Move(source, destination);
         }
         catch (Exception e)
         {
-            MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Error,
-                "Failed to rename file: " + e.Message));
+            SendMessageToStatusBar(InfoBarSeverity.Error, "Failed to rename: " + e.Message);
+            return;
         }
-    }
 
+        SendMessageToStatusBar(InfoBarSeverity.Success, "File renamed successfully!");
+    }
 
     private void CopyFile(CopyCommand command)
     {
-        if (App.GetTopLevel() is Window mainWindow)
-        {
-            mainWindow.Clipboard?.SetTextAsync(command.Path);
-        }
+        if (App.GetTopLevel()?.Clipboard is not { } clipboard) return;
+        _clipBoardDataObject.Set(DataFormats.FileNames, command);
+        clipboard.SetTextAsync(command.Path);
     }
 
     private void CutFile(CutCommand command)
     {
-        if (App.GetTopLevel() is Window mainWindow)
+        if (App.GetTopLevel()?.Clipboard is not { } clipboard) return;
+        _clipBoardDataObject.Set(DataFormats.FileNames, command);
+        clipboard.SetTextAsync(command.Path);
+    }
+
+    private void DeleteFile(DeleteCommand command)
+    {
+        var path = command.Path;
+        if (!File.Exists(path) && !Directory.Exists(path))
         {
-            mainWindow.Clipboard?.SetTextAsync(command.Path);
+            SendMessageToStatusBar(InfoBarSeverity.Warning, "File or Directory does not exist!");
+            return;
         }
+
+        try
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+            else
+            {
+                File.Delete(path);
+            }
+        }
+        catch (Exception e)
+        {
+            SendMessageToStatusBar(InfoBarSeverity.Error, "Failed to delete: " + e.Message);
+            return;
+        }
+
+        MessageBus.Current.SendMessage(new RefreshFileExplorerCommand());
+        SendMessageToStatusBar(InfoBarSeverity.Success, "File deleted successfully!");
     }
 
     private void PasteFile(PasteCommand command)
     {
-        // switch (_lastCommandType)
-        // {
-        //     case CommandType.Copy:
-        //         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(command.Path);
-        //         var newPath = FileExplorerViewModel.CurrentPath + "\\" + fileNameWithoutExtension;
-        //         if (Directory.Exists(newPath))
-        //         {
-        //             newPath += " (1)";
-        //         }
-        //
-        //         File.Copy(command.Path, newPath);
-        //         
-        //     case CommandType.Cut:
-        //         File.Move(command.Path, FileExplorerViewModel.CurrentPath);
-        //         
-        // }
+        var sourceFileCommand = _clipBoardDataObject.Get(DataFormats.FileNames) as FileCommand;
+        var destination = command.Path;
+        switch (sourceFileCommand)
+        {
+            case CopyCommand:
+                if (File.Exists(sourceFileCommand.Path))
+                {
+                    if (sourceFileCommand.Path == destination)
+                    {
+                        destination += "_copy";
+                    }
+
+                    File.Copy(sourceFileCommand.Path, destination);
+                }
+                else
+                {
+                    Helper.CopyDirectory(sourceFileCommand.Path, destination, true);
+                }
+
+                break;
+            case CutCommand:
+                if (File.Exists(sourceFileCommand.Path))
+                {
+                    File.Move(sourceFileCommand.Path, destination);
+                }
+                else
+                {
+                    var s = Path.Combine(destination, Path.GetFileName(sourceFileCommand.Path));
+                    Directory.Move(sourceFileCommand.Path, s);
+                }
+
+                break;
+        }
+
+        MessageBus.Current.SendMessage(new RefreshFileExplorerCommand());
+        SendMessageToStatusBar(InfoBarSeverity.Success, "Pasted successfully!");
     }
 
-    private void NewFolder()
+    private async void NewFolder(NewFolderCommand command)
     {
-        Directory.CreateDirectory(Path.Combine(FileExplorerViewModel.CurrentPath, "New Folder"));
+        try
+        {
+            _isDialogOpen = true;
+            var newFolderName = await ShowNewFolderDialogAsync();
+            Directory.CreateDirectory(Path.Combine(command.Path, newFolderName));
+        }
+        catch (Exception e)
+        {
+            SendMessageToStatusBar(InfoBarSeverity.Error, "Failed to create folder: " + e.Message);
+            return;
+        }
+        finally
+        {
+            _isDialogOpen = false;
+        }
+
+        MessageBus.Current.SendMessage(new RefreshFileExplorerCommand());
+        SendMessageToStatusBar(InfoBarSeverity.Success, "Folder created successfully!");
+    }
+
+    private async Task<string> ShowNewFolderDialogAsync()
+    {
+        var dialog = new ContentDialog()
+        {
+            Title = "New folder name:",
+            PrimaryButtonText = "Ok",
+            SecondaryButtonText = "Cancel",
+        };
+
+        var viewModel = new NewFolderViewModel();
+        dialog.Content = new NewFolder()
+        {
+            DataContext = viewModel,
+            OnEnterPressed = (_, _) => { dialog.Hide(); }
+        };
+
+        await dialog.ShowAsync();
+        return viewModel.NewFolderName;
     }
 
     #endregion
@@ -229,6 +319,8 @@ public class MainViewViewModel : ViewModelBase
         MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
         MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
         MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
+        MessageBus.Current.Listen<DeleteCommand>().Subscribe(DeleteFile);
+        MessageBus.Current.Listen<NewFolderCommand>().Subscribe(NewFolder);
     }
 
     #endregion
@@ -246,6 +338,7 @@ public class MainViewViewModel : ViewModelBase
 
     public void HandleKeyBoardEvent(KeyEventArgs e)
     {
+        if (_isDialogOpen) return;
         if (FileExplorerViewModel.IsSearchFocused) return;
         HandleMainViewKeyboardEvent(e);
 

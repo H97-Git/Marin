@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
-using ImageMagick;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
@@ -33,9 +29,8 @@ public class FileExplorerViewModel : ViewModelBase
     private bool _isSearchFocused;
     private int _columnsCount;
     private int _selectedIndexInFileExplorer;
-    private readonly FileExplorerHistory _pathHistory;
+    private readonly FileExplorerHistory _pathHistory = new();
     private string _currentPath = string.Empty;
-    private string[]? _cachedImagesPath;
 
     #endregion
 
@@ -46,18 +41,9 @@ public class FileExplorerViewModel : ViewModelBase
         get
         {
             if (OperatingSystem.IsWindows())
-                return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\WaifuGallery";
-            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.WaifuGallery";
-        }
-    }
-
-    private static string ThumbnailsPath
-    {
-        get
-        {
-            if (OperatingSystem.IsWindows())
-                return SettingsPath + "\\thumbnails";
-            return SettingsPath + "/thumbnails";
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "WaifuGallery");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".WaifuGallery");
         }
     }
 
@@ -77,13 +63,12 @@ public class FileExplorerViewModel : ViewModelBase
         var currentPathDirectoryInfo = new DirectoryInfo(path);
         if (!currentPathDirectoryInfo.Exists)
         {
-            SendMessageToStatusBar("The path does not exist");
+            SendMessageToStatusBar(InfoBarSeverity.Error, "The path does not exist");
             return;
         }
 
         Settings.Instance.FileExplorerLastPath = path;
         FilesInDir.Clear();
-        _cachedImagesPath = null;
         SetDirsAndFiles(currentPathDirectoryInfo);
     }
 
@@ -107,7 +92,7 @@ public class FileExplorerViewModel : ViewModelBase
     {
         foreach (var dir in dirs)
         {
-            Dispatcher.UIThread.Post(() => SetDir(dir));
+            Dispatcher.UIThread.Post(() => FilesInDir.Add(new FileViewModel(dir)));
         }
     }
 
@@ -115,59 +100,8 @@ public class FileExplorerViewModel : ViewModelBase
     {
         foreach (var file in files)
         {
-            Dispatcher.UIThread.Post(() => SetFile(file));
+            Dispatcher.UIThread.Post(() => FilesInDir.Add(new FileViewModel(file)));
         }
-    }
-
-    private void SetDir(FileSystemInfo directoryInfo)
-    {
-        if (directoryInfo.Name.First() is '.') return;
-        var fileViewModel = new FileViewModel(directoryInfo);
-        FilesInDir.Add(fileViewModel);
-    }
-
-    private async void SetFile(FileInfo fileInfo)
-    {
-        // The path to the directory in the cache that contains thumbnails for this file
-        var dirInCacheForCurrentFile = ThumbnailsPath + "\\" + fileInfo.Directory?.Name;
-        // Check if dir exists, if not create it
-        Helper.CheckDirAndCreate(dirInCacheForCurrentFile);
-        // Get all files in the directory
-        _cachedImagesPath ??= Helper.GetAllImagesInPath(dirInCacheForCurrentFile);
-
-        // Create an instance of the Bitmap object
-        Bitmap? image = null;
-        var thumbnailPath = _cachedImagesPath.FirstOrDefault(x => Path.GetFileName(x) == fileInfo.Name);
-        // If cache is empty or the thumbnail can't be found in cache create a new thumbnail
-        if (_cachedImagesPath is {Length: 0} || !File.Exists(thumbnailPath))
-        {
-            if (Helper.ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
-            {
-                var outputFileInfo = new FileInfo(dirInCacheForCurrentFile + "\\" + fileInfo.Name);
-                image = await GenerateBitmapThumb(fileInfo, outputFileInfo);
-            }
-        }
-        // Else (the thumbnail can be found in cache) use the thumbnail from cache
-        else
-        {
-            image = new Bitmap(thumbnailPath);
-        }
-
-        var fileViewModel = new FileViewModel(fileInfo, image);
-
-        //TODO: Refactor to use addRange and Dispatcher.UIThread.Post here
-        FilesInDir.Add(fileViewModel);
-    }
-
-    private static async Task<Bitmap> GenerateBitmapThumb(FileInfo sourceFileInfo, FileInfo outputFileInfo)
-    {
-        using var image = new MagickImage(sourceFileInfo);
-        image.Resize(new MagickGeometry(100, 100)
-        {
-            IgnoreAspectRatio = false
-        });
-        await image.WriteAsync(outputFileInfo);
-        return new Bitmap(outputFileInfo.FullName);
     }
 
     private async void OpenPathInFileExplorer()
@@ -183,17 +117,6 @@ public class FileExplorerViewModel : ViewModelBase
         if (result.Count is 0) return;
         var path = result[0].Path;
         ChangePath(path.LocalPath);
-    }
-
-    private void SendMessageToStatusBar(string message)
-    {
-        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, message);
-        SendCommandToMessageBus(command);
-    }
-
-    private static void SendCommandToMessageBus(ICommandMessage command)
-    {
-        MessageBus.Current.SendMessage(command);
     }
 
     private void GoForwardHistory()
@@ -216,8 +139,6 @@ public class FileExplorerViewModel : ViewModelBase
 
     public FileExplorerViewModel()
     {
-        _pathHistory = new FileExplorerHistory();
-        PreviewImageViewModel = new PreviewImageViewModel();
         FileExplorerBackground = new SolidColorBrush(Colors.Transparent);
         this.WhenAnyValue(x => x.CurrentPath)
             .Subscribe(GetFilesFromPath);
@@ -226,8 +147,6 @@ public class FileExplorerViewModel : ViewModelBase
                 FileExplorerBackground = IsFileExplorerExpanded ? new SolidColorBrush(Colors.Transparent) : null);
         this.WhenAnyValue(x => x.PreviewImageViewModel.IsPreviewImageVisible)
             .Subscribe(b => ScrollBarVisibility = b ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto);
-        Helper.CheckDirAndCreate(SettingsPath);
-        Helper.CheckDirAndCreate(ThumbnailsPath);
 
         if (Settings.Instance.ShouldSaveLastPathOnExit && Settings.Instance.FileExplorerLastPath is not null)
         {
@@ -250,13 +169,14 @@ public class FileExplorerViewModel : ViewModelBase
         MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => StartPreview(x.Path));
         MessageBus.Current.Listen<ToggleFileExplorerCommand>().Subscribe(_ => ToggleFileExplorer());
         MessageBus.Current.Listen<ToggleFileExplorerVisibilityCommand>().Subscribe(_ => ToggleFileExplorerVisibility());
+        MessageBus.Current.Listen<RefreshFileExplorerCommand>().Subscribe(_ => GetFilesFromPath(CurrentPath));
     }
 
     #endregion
 
     #region Public Properties
 
-    public PreviewImageViewModel PreviewImageViewModel { get; init; }
+    public PreviewImageViewModel PreviewImageViewModel { get; init; } = new();
 
     public FileViewModel SelectedFile => FilesInDir[SelectedIndex];
 
@@ -387,11 +307,11 @@ public class FileExplorerViewModel : ViewModelBase
     public void OpenImageTabFromKeyboardEvent()
     {
         var imagesInPath = Helper.GetAllImagesInPath(SelectedFile);
-        ICommandMessage command = SelectedFile.IsImage
+        var command = SelectedFile.IsImage
             ? new OpenInNewTabCommand(SelectedIndex, imagesInPath)
             : new OpenInNewTabCommand(0, imagesInPath);
 
-        SendCommandToMessageBus(command);
+        MessageBus.Current.SendMessage(command);
     }
 
     #endregion
@@ -402,6 +322,12 @@ public class FileExplorerViewModel : ViewModelBase
     public ICommand GotoNextDirCommand => ReactiveCommand.Create(GoForwardHistory);
     public ICommand GotoPreviousDirCommand => ReactiveCommand.Create(GoBackwardHistory);
     public ICommand OpenFileCommand => ReactiveCommand.Create(OpenPathInFileExplorer);
+
+    public ICommand Paste =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new PasteCommand(CurrentPath)); });
+
+    public ICommand CreateNewFolder =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new NewFolderCommand(CurrentPath)); });
 
     #endregion
 }

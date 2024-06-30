@@ -31,13 +31,7 @@ public class TabsViewModel : ViewModelBase
 
     private void SendMessageToStatusBar(string message)
     {
-        var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, message);
-        SendCommandToMessageBus(command);
-    }
-
-    private void SendCommandToMessageBus(ICommandMessage command)
-    {
-        MessageBus.Current.SendMessage(command);
+        SendMessageToStatusBar(InfoBarSeverity.Informational, message);
     }
 
     private void CloseTab()

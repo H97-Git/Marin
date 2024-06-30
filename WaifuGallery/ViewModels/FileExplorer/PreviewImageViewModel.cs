@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
-using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 
 namespace WaifuGallery.ViewModels.FileExplorer;
@@ -40,12 +39,6 @@ public class PreviewImageViewModel : ViewModelBase
             PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
         }
     }
-
-    #endregion
-
-    #region Private Methods
-
-    private void SendCommandMessageBus(ICommandMessage command) => MessageBus.Current.SendMessage(command);
 
     #endregion
 
@@ -102,8 +95,7 @@ public class PreviewImageViewModel : ViewModelBase
         if (_previewImagePaths is {Length: 0})
         {
             const string message = "No images found for preview";
-            var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Warning, message);
-            SendCommandMessageBus(command);
+            SendMessageToStatusBar(InfoBarSeverity.Warning,message);
             return;
         }
 

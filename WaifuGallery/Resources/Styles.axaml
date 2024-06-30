@@ -7,7 +7,7 @@
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,0" Width="500"
                   Classes="fileExplorerToolBar">
                 <Button>
-                    <ui:SymbolIcon Symbol="OpenFolder" />
+                    <Svg Path="/Resources/SVGs/regular/frame-corners.svg" />
                 </Button>
                 <TextBox
                     Grid.Column="1" Text="C://Windows"
@@ -28,11 +28,15 @@
             </Grid>
         </StackPanel>
     </Design.PreviewWith>
+    <Style Selector="Svg">
+        <Setter Property="Css" Value="{DynamicResource SvgCss}" />
+    </Style>
     <Style Selector="Window">
         <Setter Property="Background" Value="{DynamicResource Brush.Background}"></Setter>
     </Style>
     <Style Selector="ContentPresenter">
-        <Setter Property="FontFamily" Value="{Binding Source={x:Static viewModels:Settings.Instance}, Path=DefaultFont}" />
+        <Setter Property="FontFamily"
+                Value="{Binding Source={x:Static viewModels:Settings.Instance}, Path=DefaultFont}" />
     </Style>
     <Style Selector="ListBox#FileExplorerListBox">
         <Setter Property="Background" Value="Transparent" />
@@ -80,7 +84,7 @@
     <Style Selector="ListBox#FileExplorerListBox ListBoxItem:selected /template/ Rectangle#SelectionIndicator">
         <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="Button.rotating">
+    <Style Selector="Control.rotating">
         <Style.Animations>
             <Animation Duration="0:0:1" IterationCount="Infinite">
                 <KeyFrame Cue="0%">

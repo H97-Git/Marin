@@ -31,24 +31,27 @@
             RowDefinitions="Auto,*"
             MinHeight="500"
             MinWidth="500">
-            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="10" Classes="fileExplorerToolBar">
-                <Button Grid.Column="0" Command="{Binding OpenFileCommand}">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Margin="10" Classes="fileExplorerToolBar">
+                <Button Grid.Column="0" Command="{Binding OpenFileCommand}" ToolTip.Tip="Open folder">
                     <ui:SymbolIcon Symbol="OpenFolder" FontSize="16" />
                 </Button>
-                <TextBox Grid.Column="1" Text="{Binding CurrentPath}"
+                <Button Grid.Column="1" Command="{Binding CreateNewFolder}" ToolTip.Tip="Create new folder">
+                    <ui:SymbolIcon Symbol="NewFolder" FontSize="16" />
+                </Button>
+                <TextBox Grid.Column="2" Text="{Binding CurrentPath}"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Center"
                          IsFocused="{Binding IsSearchFocused, Mode=OneWayToSource}" />
-                <Button Grid.Column="2"
-                        Command="{Binding GotoPreviousDirCommand}">
+                <Button Grid.Column="3"
+                        Command="{Binding GotoPreviousDirCommand}" ToolTip.Tip="Go Backward">
                     <ui:SymbolIcon Symbol="Back" FontSize="16" />
                 </Button>
-                <Button Grid.Column="3"
-                        Command="{Binding GotoParentFolderCommand}">
+                <Button Grid.Column="4"
+                        Command="{Binding GotoParentFolderCommand}" ToolTip.Tip="Go Up">
                     <ui:SymbolIcon Symbol="Up" FontSize="16" />
                 </Button>
-                <Button Grid.Column="4"
-                        Command="{Binding GotoNextDirCommand}">
+                <Button Grid.Column="5"
+                        Command="{Binding GotoNextDirCommand}" ToolTip.Tip="Go Forward">
                     <ui:SymbolIcon Symbol="Forward" FontSize="16" />
                 </Button>
             </Grid>
@@ -65,6 +68,20 @@
                          SelectionMode="Multiple"
                          BorderThickness="0"
                          IsVisible="{Binding !!FilesInDir.Count}">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Create new folder" Command="{Binding  CreateNewFolder}">
+                                <MenuItem.Icon>
+                                    <ui:SymbolIcon Symbol="NewFolder" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Paste" Command="{Binding  Paste}">
+                                <MenuItem.Icon>
+                                    <ui:SymbolIcon Symbol="Paste" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />

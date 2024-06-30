@@ -13,7 +13,7 @@
     <Design.DataContext>
         <viewModels:FileViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto,Auto,Auto" Width="165" Height="135" Margin="0,10,0,0">
+    <Grid RowDefinitions="Auto,Auto,Auto" Width="165" Height="165" Margin="0,10,0,0">
         <Grid.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Rename" Command="{Binding  Rename}">

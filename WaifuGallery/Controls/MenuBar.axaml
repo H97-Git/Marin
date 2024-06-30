@@ -11,47 +11,55 @@
         <MenuItem Header="_File">
             <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="OpenFile" FontSize="120" />
+                    <!-- <ui:SymbolIcon Symbol="OpenFile" FontSize="120" /> -->
+                    <Svg Path="/Resources/SVGs/regular/folder-open.svg" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="_Settings..." Command="{Binding OpenSettingsTabCommand}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="Settings" FontSize="120" />
+                    <!-- <ui:SymbolIcon Symbol="Settings" FontSize="120" /> -->
+                    <Svg Path="/Resources/SVGs/regular/gear.svg" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
             <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="Clear" FontSize="120" />
+                    <Svg Path="/Resources/SVGs/regular/x-circle.svg" />
+                    <!-- <ui:SymbolIcon Symbol="Clear" FontSize="120" /> -->
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>
         <MenuItem Header="_View">
             <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="FullScreen" FontSize="120" />
+                    <!-- <ui:SymbolIcon Symbol="FullScreen" FontSize="120" /> -->
+                    <Svg Path="/Resources/SVGs/regular/frame-corners.svg" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
             <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="NewWindow" FontSize="120" />
+                    <!-- <ui:SymbolIcon Symbol="NewWindow" FontSize="120" /> -->
+                    <Svg Path="/Resources/SVGs/regular/tray-arrow-up.svg" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="View" FontSize="120" />
+                    <!-- <ui:SymbolIcon Symbol="View" FontSize="120" /> -->
+                    <Svg Path="/Resources/SVGs/regular/eye.svg" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
             <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="Remote" FontSize="120" />
+                    <!-- <ui:SymbolIcon Symbol="Remote" FontSize="120" /> -->
+                    <Svg Path="/Resources/SVGs/regular/arrows-out-line-horizontal.svg" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}">
                 <MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="Sort" FontSize="120" />
+                    <!-- <ui:SymbolIcon Symbol="Sort" FontSize="120" /> -->
+                    <Svg Path="/Resources/SVGs/regular/arrows-out-line-vertical.svg" />
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>

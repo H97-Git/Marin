@@ -13,10 +13,10 @@ public class Settings
 
     private static Settings? _instance;
 
-    private static readonly string SettingsPath =
+    public static readonly string SettingsPath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "WaifuGallery",
-            "settings.json");
+            "WaifuGallery");
+    private static string JsonPath => Path.Combine(SettingsPath, "settings.json");
 
     #endregion
 
@@ -28,7 +28,7 @@ public class Settings
         get
         {
             if (_instance != null) return _instance;
-            if (!File.Exists(SettingsPath))
+            if (!File.Exists(JsonPath))
             {
                 _instance = new Settings();
             }
@@ -36,7 +36,7 @@ public class Settings
             {
                 try
                 {
-                    _instance = JsonSerializer.Deserialize<Settings>(File.ReadAllText(SettingsPath)) ??
+                    _instance = JsonSerializer.Deserialize<Settings>(File.ReadAllText(JsonPath)) ??
                                 new Settings();
                 }
                 catch
@@ -85,7 +85,7 @@ public class Settings
             new JsonSerializerOptions
 #pragma warning restore CA1869
                 {WriteIndented = true, IgnoreReadOnlyFields = true, IgnoreReadOnlyProperties = true});
-        File.WriteAllText(SettingsPath, json);
+        File.WriteAllText(JsonPath, json);
     }
 
     #endregion

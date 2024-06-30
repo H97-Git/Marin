@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using Avalonia.Svg.Skia;
 
 namespace WaifuGallery.Desktop;
 
@@ -17,6 +18,8 @@ sealed class Program
     // ReSharper disable once MemberCanBePrivate.Global
     public static AppBuilder BuildAvaloniaApp() // => AppBuilder.Configure<Sandbox.App>()
     {
+        GC.KeepAlive(typeof(SvgImageExtension).Assembly);
+        GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()

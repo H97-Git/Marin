@@ -6,6 +6,7 @@ using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Controls;
+using WaifuGallery.ViewModels.Dialogs;
 
 namespace WaifuGallery.ViewModels.Tabs;
 
@@ -51,7 +52,7 @@ public class PreferencesTabViewModel : TabViewModelBase
     public PreferencesTabViewModel()
     {
         Id = Guid.Empty.ToString();
-        Header = "Settings";
+        Header = "Preferences";
         var fluentAvaloniaTheme = Application.Current?.Styles[0] as FluentAvaloniaTheme;
         InitializePreferences();
         this.WhenAnyValue(x => x.CurrentThemeVariant)

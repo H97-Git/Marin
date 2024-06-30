@@ -2,6 +2,8 @@
 
 public interface IFileExplorerCommand : ICommandMessage;
 
+public class RefreshFileExplorerCommand : IFileExplorerCommand;
+
 public class ChangePathCommand(string path) : IFileExplorerCommand
 {
     public string Path { get; } = path;

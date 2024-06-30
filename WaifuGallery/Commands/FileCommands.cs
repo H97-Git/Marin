@@ -1,23 +1,25 @@
 ﻿namespace WaifuGallery.Commands;
 
-public interface IFileCommand : ICommandMessage;
+public interface IFileCommand : ICommandMessage
+{
+}
 
-public class CopyCommand(string path) : IFileCommand
+public class FileCommand(string path) : IFileCommand
 {
     public string Path { get; } = path;
 }
 
-public class CutCommand(string path) : IFileCommand
+public class CopyCommand(string path) : FileCommand(path);
+
+public class CutCommand(string path) : FileCommand(path);
+
+public class DeleteCommand(string path) : FileCommand(path);
+
+public class NewFolderCommand(string path) : FileCommand(path);
+
+public class PasteCommand(string path) : FileCommand(path);
+
+public class RenameCommand(string path, string newName) : FileCommand(path)
 {
-    public string Path { get; } = path;
-}
-
-public class DeleteCommand : IFileCommand;
-
-public class PasteCommand : IFileCommand;
-
-public class RenameCommand(string path, string newName) : IFileCommand
-{
-    public string Path { get; } = path;
     public string NewName { get; } = newName;
 }

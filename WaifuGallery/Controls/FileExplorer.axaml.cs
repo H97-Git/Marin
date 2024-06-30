@@ -70,7 +70,7 @@ public partial class FileExplorer : UserControl
         if (FileExplorerViewModel is null) return;
         var fileExplorerWidth = (int) FileExplorerListBox.Bounds.Size.Width;
         //Todo: This should be taken from settings (or something like that) since this value doesn't reflect the actual desired size of the control.
-        const int fileWidth = 174;
+        const int fileWidth = 165;
         FileExplorerViewModel.ColumnsCount = fileExplorerWidth / fileWidth;
     }
 

@@ -7,6 +7,8 @@
             <Color x:Key="Color.Foreground">#0E0E0E</Color>
             <Color x:Key="Color.Red">#FFFF6059</Color>
             <Color x:Key="Color.TextBoxBackground">#E2E2E2</Color>
+            <Color x:Key="Color.34">#3434EE</Color>
+            <x:String x:Key="SvgCss">.svg {stroke: #000000;}</x:String>
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Dark">
@@ -15,6 +17,7 @@
             <Color x:Key="Color.Foreground">#EFEFEF</Color>
             <Color x:Key="Color.Red">#FFFF5E56</Color>
             <Color x:Key="Color.TextBoxBackground">#0E0E0E</Color>
+            <x:String x:Key="SvgCss">.svg {stroke: #FFFFFF;}</x:String>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
