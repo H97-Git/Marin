@@ -329,5 +329,8 @@ public class FileExplorerViewModel : ViewModelBase
     public ICommand CreateNewFolder =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new NewFolderCommand(CurrentPath)); });
 
+    public ICommand OpenInExplorer =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenInFileExplorerCommand(CurrentPath)); });
+
     #endregion
 }

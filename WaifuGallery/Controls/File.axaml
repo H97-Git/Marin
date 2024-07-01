@@ -16,29 +16,34 @@
     <Grid RowDefinitions="Auto,Auto,Auto" Width="165" Height="165" Margin="0,10,0,0">
         <Grid.ContextMenu>
             <ContextMenu>
+                <MenuItem Header="Open in Explorer" Command="{Binding  OpenInExplorer}">
+                    <MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Rename" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Rename" Command="{Binding  Rename}">
                     <MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="Rename" FontSize="64" />
+                        <ui:SymbolIcon Symbol="Rename" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Copy" Command="{Binding  Copy}">
                     <MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="Copy" FontSize="64" />
+                        <ui:SymbolIcon Symbol="Copy" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Cut" Command="{Binding Cut}">
                     <MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="Cut" FontSize="64" />
+                        <ui:SymbolIcon Symbol="Cut" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Paste" Command="{Binding  Paste}">
                     <MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="Paste" FontSize="12" />
+                        <ui:SymbolIcon Symbol="Paste" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Delete" Command="{Binding  Delete}">
                     <MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="Delete" FontSize="64" />
+                        <ui:SymbolIcon Symbol="Delete" />
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>

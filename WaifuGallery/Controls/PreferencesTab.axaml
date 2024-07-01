@@ -82,7 +82,7 @@
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
             <ui:SettingsExpander Header="Tabs"
-                                 IconSource="{StaticResource CalendarEmptyIcon}"
+                                 IconSource="{DynamicResource TabsSvg}"
                                  Description="Configure Tabs behaviours">
                 <ui:SettingsExpanderItem Content="Include settings tab when cycling"
                                          Description="Settings tab is always included when Ctrl is pressed.">

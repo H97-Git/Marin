@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -18,7 +19,7 @@ namespace WaifuGallery.ViewModels;
 public class MainViewViewModel : ViewModelBase
 {
     private readonly DataObject _clipBoardDataObject = new();
-    private bool _isDialogOpen = false;
+    private bool _isDialogOpen;
 
     #region Private Methods
 
@@ -267,11 +268,19 @@ public class MainViewViewModel : ViewModelBase
 
     private async void NewFolder(NewFolderCommand command)
     {
+        var isCanceled = false;
         try
         {
             _isDialogOpen = true;
             var newFolderName = await ShowNewFolderDialogAsync();
-            Directory.CreateDirectory(Path.Combine(command.Path, newFolderName));
+            if (newFolderName != null)
+            {
+                Directory.CreateDirectory(Path.Combine(command.Path, newFolderName));
+            }
+            else
+            {
+                isCanceled = true;
+            }
         }
         catch (Exception e)
         {
@@ -283,11 +292,12 @@ public class MainViewViewModel : ViewModelBase
             _isDialogOpen = false;
         }
 
+        if (isCanceled) return;
         MessageBus.Current.SendMessage(new RefreshFileExplorerCommand());
         SendMessageToStatusBar(InfoBarSeverity.Success, "Folder created successfully!");
     }
 
-    private async Task<string> ShowNewFolderDialogAsync()
+    private async Task<string?> ShowNewFolderDialogAsync()
     {
         var dialog = new ContentDialog()
         {
@@ -300,11 +310,17 @@ public class MainViewViewModel : ViewModelBase
         dialog.Content = new NewFolder()
         {
             DataContext = viewModel,
-            OnEnterPressed = (_, _) => { dialog.Hide(); }
+            OnEnterPressed = (_, _) => { dialog.Hide(); },
+            OnEscapePressed = (_, _) => { dialog.Hide(); }
         };
 
-        await dialog.ShowAsync();
-        return viewModel.NewFolderName;
+        var dialogResult = await dialog.ShowAsync();
+        return dialogResult is ContentDialogResult.Secondary ? null : viewModel.NewFolderName;
+    }
+    
+    private void OpenInFileExplorer(OpenInFileExplorerCommand command)
+    {
+        Process.Start("explorer.exe", command.Path);
     }
 
     #endregion
@@ -321,6 +337,7 @@ public class MainViewViewModel : ViewModelBase
         MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
         MessageBus.Current.Listen<DeleteCommand>().Subscribe(DeleteFile);
         MessageBus.Current.Listen<NewFolderCommand>().Subscribe(NewFolder);
+        MessageBus.Current.Listen<OpenInFileExplorerCommand>().Subscribe(OpenInFileExplorer);
     }
 
     #endregion

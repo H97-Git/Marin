@@ -15,6 +15,8 @@ public class CutCommand(string path) : FileCommand(path);
 
 public class DeleteCommand(string path) : FileCommand(path);
 
+public class OpenInFileExplorerCommand(string path) : FileCommand(path);
+
 public class NewFolderCommand(string path) : FileCommand(path);
 
 public class PasteCommand(string path) : FileCommand(path);

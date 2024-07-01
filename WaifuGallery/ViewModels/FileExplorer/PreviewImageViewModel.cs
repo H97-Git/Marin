@@ -13,10 +13,11 @@ public class PreviewImageViewModel : ViewModelBase
     #region Private Fields
 
     private Bitmap? _previewImage;
-    private Point _previewImagePosition = new(0, 0);
-    private Size _previewImageSize = new(300, 300);
-    private bool _isPreviewImageVisible;
+    private Point _previewPosition = new(0, 0);
+    private Size _previewSize = new(DefaultPreviewSize, DefaultPreviewSize);
+    private bool _isPreviewVisible;
     private int _previewImageIndex;
+    private const int DefaultPreviewSize = 300;
     private string[] _previewImagePaths = [];
     private string _previewImageCounter = "0/0";
 
@@ -37,6 +38,7 @@ public class PreviewImageViewModel : ViewModelBase
             _previewImageIndex = value;
             PreviewCounter = $"{_previewImageIndex + 1}/{_previewImagePaths.Length}";
             PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
+            PreviewSize = Helper.GetScaledSize(PreviewImage, DefaultPreviewSize);
         }
     }
 
@@ -60,22 +62,22 @@ public class PreviewImageViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _previewImage, value);
     }
 
-    public Point PreviewImagePosition
+    public Point PreviewPosition
     {
-        get => _previewImagePosition;
-        private set => this.RaiseAndSetIfChanged(ref _previewImagePosition, value);
+        get => _previewPosition;
+        private set => this.RaiseAndSetIfChanged(ref _previewPosition, value);
     }
 
-    public Size PreviewImageSize
+    public Size PreviewSize
     {
-        get => _previewImageSize;
-        private set => this.RaiseAndSetIfChanged(ref _previewImageSize, value);
+        get => _previewSize;
+        private set => this.RaiseAndSetIfChanged(ref _previewSize, value);
     }
 
     public bool IsPreviewImageVisible
     {
-        get => _isPreviewImageVisible;
-        set => this.RaiseAndSetIfChanged(ref _isPreviewImageVisible, value);
+        get => _isPreviewVisible;
+        set => this.RaiseAndSetIfChanged(ref _isPreviewVisible, value);
     }
 
     public string PreviewCounter
@@ -90,12 +92,11 @@ public class PreviewImageViewModel : ViewModelBase
 
     public void StartPreview(string path)
     {
-        
-        _previewImagePaths = Helper.GetAllImagesInPath(path,Settings.Instance.PreviewDepth);
+        _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.PreviewDepth);
         if (_previewImagePaths is {Length: 0})
         {
             const string message = "No images found for preview";
-            SendMessageToStatusBar(InfoBarSeverity.Warning,message);
+            SendMessageToStatusBar(InfoBarSeverity.Warning, message);
             return;
         }
 
@@ -116,28 +117,21 @@ public class PreviewImageViewModel : ViewModelBase
     public void ChangePreviewPosition(Point point)
     {
         // if (IsPreviewImageVisible) return;
-        PreviewImagePosition = new Point(point.X, point.Y);
+        PreviewPosition = new Point(point.X, point.Y);
     }
 
     public void ZoomPreview(double deltaY)
     {
         if (!IsPreviewImageVisible) return;
+        if (PreviewImage is null) return;
         var newDelta = (int) deltaY * 20;
-        double newWidth;
-        double newHeight;
-        if (newDelta < 0)
-        {
-            newWidth = Math.Max(150, PreviewImageSize.Width + newDelta);
-            newHeight = Math.Max(150, PreviewImageSize.Height + newDelta);
-        }
-        else
-        {
-            newWidth = Math.Min(600, PreviewImageSize.Width + newDelta);
-            newHeight = Math.Min(600, PreviewImageSize.Height + newDelta);
-        }
+        var newWidth = newDelta < 0
+            ? Math.Max(150, PreviewSize.Width + newDelta)
+            : Math.Min(600, PreviewSize.Width + newDelta);
 
-        PreviewImageSize = new Size(newWidth, newHeight);
+        PreviewSize = Helper.GetScaledSize(PreviewImage, (int) newWidth);
     }
+
 
     public void ClosePreview()
     {

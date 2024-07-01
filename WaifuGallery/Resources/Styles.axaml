@@ -6,9 +6,6 @@
         <StackPanel Margin="10">
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,0" Width="500"
                   Classes="fileExplorerToolBar">
-                <Button>
-                    <Svg Path="/Resources/SVGs/regular/frame-corners.svg" />
-                </Button>
                 <TextBox
                     Grid.Column="1" Text="C://Windows"
                     HorizontalAlignment="Stretch"
@@ -32,7 +29,7 @@
         <Setter Property="Css" Value="{DynamicResource SvgCss}" />
     </Style>
     <Style Selector="Window">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background}"></Setter>
+        <Setter Property="Background" Value="{DynamicResource Brush.Background}"/>
     </Style>
     <Style Selector="ContentPresenter">
         <Setter Property="FontFamily"
@@ -44,42 +41,16 @@
     <Style Selector="Expander /template/ Border">
         <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
     </Style>
-    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-        <!-- <Setter Property="BorderBrush" Value="#4433FF" /> -->
-    </Style>
-    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-        <!-- <Setter Property="BorderBrush" Value="#4433FF" /> -->
-    </Style>
-    <Style Selector="ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
-        <!-- <Setter Property="MinHeight" Value="145" /> -->
-    </Style>
     <Style Selector="TextBox /template/ Border#PART_BorderElement">
         <Setter Property="BorderBrush" Value="Red" />
         <Setter Property="BorderThickness" Value="0,0,0,0"></Setter>
     </Style>
-    <Style Selector="Grid.fileExplorerToolBar">
-    </Style>
+    
     <Style Selector="Grid.fileExplorerToolBar TextBox">
-        <!-- <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}" /> -->
-        <!-- <Setter Property="CornerRadius" Value="10" /> -->
-        <!-- <Setter Property="BorderThickness" Value="1" /> -->
-        <!-- <Setter Property="BorderBrush" Value="#4433FF" /> -->
         <Setter Property="Margin" Value="0,0,5,0" />
     </Style>
     <Style Selector="Grid.fileExplorerToolBar Button">
         <Setter Property="Margin" Value="0,0,5,0" />
-        <!-- <Setter Property="Background" Value="{DynamicResource Brush.Background}" /> -->
-        <!-- <Setter Property="BorderBrush" Value="#4433FF" /> -->
-        <!-- <Setter Property="BorderThickness" Value="1" /> -->
-        <!-- <Setter Property="CornerRadius" Value="10" /> -->
-        <!-- <Setter Property="FontSize" Value="25" /> -->
-        <!-- <Setter Property="Foreground" Value="#4433FF" /> -->
-        <!-- <Setter Property="Height" Value="35" /> -->
-        <!-- <Setter Property="Width" Value="50" /> -->
-        <!-- <Style Selector="^:pointerover /template/ ContentPresenter"> -->
-        <!--     <Setter Property="Background" Value="#4433FF" /> -->
-        <!--     <Setter Property="Foreground" Value="White" /> -->
-        <!-- </Style> -->
     </Style>
     <Style Selector="ListBox#FileExplorerListBox ListBoxItem:selected /template/ Rectangle#SelectionIndicator">
         <Setter Property="IsVisible" Value="False" />

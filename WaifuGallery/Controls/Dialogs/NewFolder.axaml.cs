@@ -15,6 +15,7 @@ public partial class NewFolder : UserControl
     }
 
     public EventHandler? OnEnterPressed { get; init; }
+    public EventHandler? OnEscapePressed { get; init; }
 
     private void Input_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
@@ -29,9 +30,14 @@ public partial class NewFolder : UserControl
     {
         if (DataContext is not NewFolderViewModel newFolderViewModel) return;
         if (string.IsNullOrWhiteSpace(newFolderViewModel.NewFolderName)) return;
-        if (e.Key is Key.Enter)
+        switch (e.Key)
         {
-            OnEnterPressed?.Invoke(this, EventArgs.Empty);
+            case Key.Enter:
+                OnEnterPressed?.Invoke(this, EventArgs.Empty);
+                break;
+            case Key.Escape:
+                OnEscapePressed?.Invoke(this, EventArgs.Empty);
+                break;
         }
     }
 }

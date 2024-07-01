@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using ImageMagick;
 using ReactiveUI;
@@ -74,7 +75,8 @@ public sealed class FileViewModel : ViewModelBase
                     case ".bmp":
                     case ".gif":
                         IsImage = true;
-                        Thumbnail = await GetThumbnail(new FileInfo(fileSystemInfo.FullName));
+                        Thumbnail = await Dispatcher.UIThread.InvokeAsync(() =>
+                            GetThumbnail(new FileInfo(fileSystemInfo.FullName)));
                         break;
                     case ".mp4":
                     case ".avi":
@@ -103,10 +105,7 @@ public sealed class FileViewModel : ViewModelBase
 
     private void ResizeThumbnail()
     {
-        var isPortrait = Thumbnail.Size.Width < Thumbnail.Size.Height;
-        ImageSize = isPortrait
-            ? Helper.GetScaledSizeByHeight(Thumbnail, 100)
-            : Helper.GetScaledSizeByWidth(Thumbnail, 100);
+        ImageSize = Helper.GetScaledSize(Thumbnail, 100);
     }
 
     #endregion
@@ -137,7 +136,7 @@ public sealed class FileViewModel : ViewModelBase
         return new Bitmap(outputFileInfo.FullName);
     }
 
-   private async Task<Bitmap?> GetThumbnail(FileInfo fileInfo)
+    private async Task<Bitmap?> GetThumbnail(FileInfo fileInfo)
     {
         if (fileInfo.Directory?.Name == null) return null;
         var dirInCacheForCurrentFile = Path.Combine(ThumbnailsPath, fileInfo.Directory.Name);
@@ -250,6 +249,9 @@ public sealed class FileViewModel : ViewModelBase
 
     public ICommand Paste =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new PasteCommand(FullPath)); });
+
+    public ICommand OpenInExplorer =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenInFileExplorerCommand(FullPath)); });
 
     #endregion
 }

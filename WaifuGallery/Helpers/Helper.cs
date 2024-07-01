@@ -75,6 +75,14 @@ public abstract class Helper
         return new Size(correspondingWidth, targetHeight);
     }
 
+    public static Size GetScaledSize(Bitmap image, int desiredSize)
+    {
+        var isPortrait = image.Size.Width < image.Size.Height;
+        return isPortrait
+            ? GetScaledSizeByHeight(image, desiredSize)
+            : GetScaledSizeByWidth(image, desiredSize);
+    }
+
     /// <summary>
     /// Use a string path to get all images
     /// </summary>

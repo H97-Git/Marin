@@ -29,7 +29,7 @@ public partial class FileExplorer : UserControl
         if (FileExplorerViewModel?.PreviewImageViewModel is null) return;
         var point = e.GetPosition(control);
         var newPoint = CalcNewPoint(control.Bounds.Size, point,
-            FileExplorerViewModel.PreviewImageViewModel.PreviewImageSize);
+            FileExplorerViewModel.PreviewImageViewModel.PreviewSize);
 
         // FileExplorerViewModel?.SendMessageToStatusBar(
         //     $"PointerMoved: X:{point.X}, Y:{point.Y} - Width:{size.Width}, Height:{size.Height}");
