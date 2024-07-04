@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Sandbox\Sandbox.csproj" />
         <ProjectReference Include="..\WaifuGallery\WaifuGallery.csproj"/>
     </ItemGroup>
 </Project>

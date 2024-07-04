@@ -55,7 +55,7 @@ public class App : Application
         SetTheme(Settings.Instance.Theme);
     }
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

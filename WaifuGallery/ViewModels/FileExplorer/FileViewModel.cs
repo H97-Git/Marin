@@ -1,13 +1,11 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media.Imaging;
-using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
-using ImageMagick;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
@@ -18,23 +16,25 @@ public sealed class FileViewModel : ViewModelBase
 {
     #region Private Fields
 
-    private Bitmap _thumbnail;
+    public readonly FileSystemInfo _fileSystemInfo;
+    private Bitmap? _thumbnail;
     private Size _imageSize;
     private Symbol _symbol = Symbol.Folder;
+    private bool _isArchive;
     private bool _isDirectoryEmpty;
     private bool _isFileReadOnly;
-    private bool _isRenaming;
     private bool _isImage;
+    private bool _isRenaming;
     private long _sizeInBytes;
-    private string _fileName = string.Empty;
     private string _createdTime = string.Empty;
+    private string _fileName = string.Empty;
     private string _lastAccessTime = string.Empty;
 
     #endregion
 
     #region Private Properties
 
-    private static string ThumbnailsPath => Path.Combine(Settings.SettingsPath, "Thumbnails");
+    private static string ThumbnailsPath => Settings.ThumbnailsPath;
 
     private long SizeInBytes
     {
@@ -52,15 +52,15 @@ public sealed class FileViewModel : ViewModelBase
 
     #region Private Methods
 
-    private async void Initialize(FileSystemInfo fileSystemInfo)
+    private async void Initialize()
     {
         Directory.CreateDirectory(ThumbnailsPath);
-        switch (fileSystemInfo)
+        switch (_fileSystemInfo)
         {
             case DirectoryInfo directoryInfo:
                 ParentPath = directoryInfo.Parent?.FullName;
-                SizeInBytes = Helper.GetDirectorySizeInByte(fileSystemInfo);
-                _isDirectoryEmpty = Helper.IsDirectoryEmpty(fileSystemInfo);
+                SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
+                _isDirectoryEmpty = Helper.IsDirectoryEmpty(_fileSystemInfo);
                 Symbol = _isDirectoryEmpty ? Symbol.Folder : Symbol.FolderFilled;
                 break;
             case FileInfo fileInfo:
@@ -74,9 +74,7 @@ public sealed class FileViewModel : ViewModelBase
                     case ".png":
                     case ".bmp":
                     case ".gif":
-                        IsImage = true;
-                        Thumbnail = await Dispatcher.UIThread.InvokeAsync(() =>
-                            GetThumbnail(new FileInfo(fileSystemInfo.FullName)));
+                        Symbol = Symbol.Image;
                         break;
                     case ".mp4":
                     case ".avi":
@@ -91,21 +89,37 @@ public sealed class FileViewModel : ViewModelBase
                     case ".rar":
                     case ".7z":
                         Symbol = Symbol.ZipFolder;
+                        IsArchive = true;
                         break;
                 }
 
                 break;
         }
 
-        FullPath = fileSystemInfo.FullName;
-        FileName = fileSystemInfo.Name;
-        CreatedTime = fileSystemInfo.CreationTime.ToString(CultureInfo.InvariantCulture);
-        LastAccessTime = fileSystemInfo.LastAccessTime.ToString(CultureInfo.InvariantCulture);
+        FullPath = _fileSystemInfo.FullName;
+        FileName = _fileSystemInfo.Name;
+        CreatedTime = _fileSystemInfo.CreationTime.ToString(CultureInfo.InvariantCulture);
+        LastAccessTime = _fileSystemInfo.LastAccessTime.ToString(CultureInfo.InvariantCulture);
+
+        this.WhenAnyValue(x => x.Thumbnail)
+            .Subscribe(_ =>
+            {
+                if (Thumbnail is null) return;
+                IsImage = true;
+                ImageSize = Helper.GetScaledSize(Thumbnail, 100);
+            });
     }
 
-    private void ResizeThumbnail()
+
+    public async Task<Bitmap> GetThumbnail(FileInfo fileInfo)
     {
-        ImageSize = Helper.GetScaledSize(Thumbnail, 100);
+        if (Helper.ThumbnailExists(fileInfo, out var thumbnailPath))
+        {
+            return new Bitmap(thumbnailPath);
+        }
+
+        var outputFileInfo = new FileInfo(Path.Combine(thumbnailPath, fileInfo.Name));
+        return await Helper.GenerateBitmapThumb(fileInfo, outputFileInfo);
     }
 
     #endregion
@@ -115,59 +129,24 @@ public sealed class FileViewModel : ViewModelBase
     public FileViewModel()
     {
         var directoryInfo = new DirectoryInfo(@"C:\oxford-iiit-pet\images");
-        Initialize(directoryInfo);
+        _fileSystemInfo = directoryInfo;
+        Initialize();
     }
 
     public FileViewModel(FileSystemInfo fileSystemInfo)
     {
-        Initialize(fileSystemInfo);
+        _fileSystemInfo = fileSystemInfo;
+        Initialize();
     }
 
     #endregion
 
-    private static async Task<Bitmap> GenerateBitmapThumb(FileInfo sourceFileInfo, FileInfo outputFileInfo)
-    {
-        using var image = new MagickImage(sourceFileInfo);
-        image.Resize(new MagickGeometry(100, 100)
-        {
-            IgnoreAspectRatio = false
-        });
-        await image.WriteAsync(outputFileInfo);
-        return new Bitmap(outputFileInfo.FullName);
-    }
-
-    private async Task<Bitmap?> GetThumbnail(FileInfo fileInfo)
-    {
-        if (fileInfo.Directory?.Name == null) return null;
-        var dirInCacheForCurrentFile = Path.Combine(ThumbnailsPath, fileInfo.Directory.Name);
-        Directory.CreateDirectory(dirInCacheForCurrentFile);
-        var cachedImagesPath = Helper.GetAllImagesInPath(dirInCacheForCurrentFile);
-        if (cachedImagesPath is {Length: 0})
-        {
-            var outputFileInfo = new FileInfo(Path.Combine(dirInCacheForCurrentFile, fileInfo.Name));
-            return await GenerateBitmapThumb(fileInfo, outputFileInfo);
-        }
-
-        var thumbnailPath = cachedImagesPath.FirstOrDefault(x => Path.GetFileName(x) == fileInfo.Name);
-        if (!File.Exists(thumbnailPath))
-        {
-            var outputFileInfo = new FileInfo(Path.Combine(dirInCacheForCurrentFile, fileInfo.Name));
-            return await GenerateBitmapThumb(fileInfo, outputFileInfo);
-        }
-
-        return new Bitmap(thumbnailPath);
-    }
-
     #region Public Properties
 
-    public Bitmap Thumbnail
+    public Bitmap? Thumbnail
     {
         get => _thumbnail;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _thumbnail, value);
-            ResizeThumbnail();
-        }
+        set => this.RaiseAndSetIfChanged(ref _thumbnail, value);
     }
 
     public Symbol Symbol
@@ -180,6 +159,12 @@ public sealed class FileViewModel : ViewModelBase
     {
         get => _isImage;
         private set => this.RaiseAndSetIfChanged(ref _isImage, value);
+    }
+
+    public bool IsArchive
+    {
+        get => _isArchive;
+        private set => this.RaiseAndSetIfChanged(ref _isArchive, value);
     }
 
     public bool IsRenaming
@@ -244,6 +229,9 @@ public sealed class FileViewModel : ViewModelBase
     public ICommand Delete =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new DeleteCommand(FullPath)); });
 
+    public ICommand Extract =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ExtractCommand(FullPath)); });
+
     public ICommand Rename =>
         ReactiveCommand.Create(() => { IsRenaming = true; });
 
@@ -252,6 +240,9 @@ public sealed class FileViewModel : ViewModelBase
 
     public ICommand OpenInExplorer =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenInFileExplorerCommand(FullPath)); });
+
+    public ICommand OpenInBrowser =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenInBrowserCommand(FullPath)); });
 
     #endregion
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -18,8 +19,12 @@ namespace WaifuGallery.ViewModels;
 
 public class MainViewViewModel : ViewModelBase
 {
+    #region Private Fields
+
     private readonly DataObject _clipBoardDataObject = new();
     private bool _isDialogOpen;
+
+    #endregion
 
     #region Private Methods
 
@@ -125,11 +130,11 @@ public class MainViewViewModel : ViewModelBase
                 FileExplorerViewModel.OpenImageTabFromKeyboardEvent();
                 break;
             case {Key: Key.P}:
-                FileExplorerViewModel.StartPreview(FileExplorerViewModel.SelectedFile.FullPath);
+                FileExplorerViewModel.PreviewImageViewModel.StartPreview(FileExplorerViewModel.SelectedFile.FullPath);
                 break;
             case {Key: Key.Escape}:
                 if (!FileExplorerViewModel.PreviewImageViewModel.IsPreviewImageVisible) return;
-                FileExplorerViewModel.ClosePreview();
+                FileExplorerViewModel.PreviewImageViewModel.ClosePreview();
                 break;
         }
     }
@@ -317,12 +322,24 @@ public class MainViewViewModel : ViewModelBase
         var dialogResult = await dialog.ShowAsync();
         return dialogResult is ContentDialogResult.Secondary ? null : viewModel.NewFolderName;
     }
-    
+
     private void OpenInFileExplorer(OpenInFileExplorerCommand command)
     {
         Process.Start("explorer.exe", command.Path);
     }
 
+    private void OpenInBrowser(OpenInBrowserCommand command)
+    {
+        var vivaldiPath = Process.GetProcessesByName("vivaldi").FirstOrDefault()?.MainModule?.FileName;
+        if (vivaldiPath == null) return;
+        var fileUri = new Uri(command.Path);
+        Process.Start(vivaldiPath, fileUri.ToString());
+    }
+    private void ExtractFile(ExtractCommand command)
+    {
+        Helper.ExtractDirectory(command.Path);
+    }
+    
     #endregion
 
     #region CTOR
@@ -338,6 +355,9 @@ public class MainViewViewModel : ViewModelBase
         MessageBus.Current.Listen<DeleteCommand>().Subscribe(DeleteFile);
         MessageBus.Current.Listen<NewFolderCommand>().Subscribe(NewFolder);
         MessageBus.Current.Listen<OpenInFileExplorerCommand>().Subscribe(OpenInFileExplorer);
+        MessageBus.Current.Listen<OpenInBrowserCommand>().Subscribe(OpenInBrowser);
+        MessageBus.Current.Listen<ExtractCommand>().Subscribe(ExtractFile);
+        MessageBus.Current.Listen<ClearCacheCommand>().Subscribe(_ => Helper.ClearThumbnailsCache());
     }
 
     #endregion

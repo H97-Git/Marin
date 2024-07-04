@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
@@ -24,7 +26,8 @@ public partial class File : UserControl
     private void OnFolderDoubleClick_ChangePath(object? sender, TappedEventArgs e)
     {
         StopTimer();
-        var command = new ChangePathCommand(FileViewModel?.FullPath);
+        if (FileViewModel is null) return;
+        var command = new ChangePathCommand(FileViewModel.FullPath);
         MessageBus.Current.SendMessage(command);
     }
 
@@ -86,8 +89,9 @@ public partial class File : UserControl
 
     private void Rename_OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key != Key.Enter) return;
         if (FileViewModel is null) return;
+        if (e.Key is Key.Escape) FileViewModel.IsRenaming = false;
+        if (e.Key is not Key.Enter) return;
         var command = new RenameCommand(FileViewModel.FullPath, FileViewModel.FileName);
         MessageBus.Current.SendMessage(command);
         FileViewModel.IsRenaming = false;
@@ -113,4 +117,11 @@ public partial class File : UserControl
     }
 
     #endregion
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        if(DataContext is FileViewModel fileViewModel)
+            fileViewModel.GetThumbnail(fileViewModel._fileSystemInfo as FileInfo);
+        base.OnLoaded(e);
+    }
 }

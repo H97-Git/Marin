@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+                    xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
             <Color x:Key="Color.Accent">#4433FF</Color>
@@ -9,11 +9,11 @@
             <Color x:Key="Color.Red">#FFFF6059</Color>
             <Color x:Key="Color.34">#3434EE</Color>
             <x:String x:Key="SvgCss">.svg {stroke: #000000;}</x:String>
-            <controls:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/window-tabs-light.svg}" />
+            <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/tabs.svg}" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Dark">
-            <controls:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/window-tabs-dark.svg}" />
+            <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/variants/tabs.svg}" />
             <Color x:Key="Color.Accent">#3A3AFF</Color>
             <Color x:Key="Color.Background">#0E0E0E</Color>
             <Color x:Key="Color.Foreground">#EFEFEF</Color>

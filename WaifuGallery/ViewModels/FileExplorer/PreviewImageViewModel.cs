@@ -125,11 +125,16 @@ public class PreviewImageViewModel : ViewModelBase
         if (!IsPreviewImageVisible) return;
         if (PreviewImage is null) return;
         var newDelta = (int) deltaY * 20;
-        var newWidth = newDelta < 0
-            ? Math.Max(150, PreviewSize.Width + newDelta)
-            : Math.Min(600, PreviewSize.Width + newDelta);
+        var isPortrait = PreviewSize.Width < PreviewSize.Height;
+        var newSize = isPortrait
+            ? newDelta < 0
+                ? Math.Max(150, PreviewSize.Height + newDelta)
+                : Math.Min(600, PreviewSize.Height + newDelta)
+            : newDelta < 0
+                ? Math.Max(150, PreviewSize.Width + newDelta)
+                : Math.Min(600, PreviewSize.Width + newDelta);
 
-        PreviewSize = Helper.GetScaledSize(PreviewImage, (int) newWidth);
+        PreviewSize = Helper.GetScaledSize(PreviewImage, (int) newSize);
     }
 
 

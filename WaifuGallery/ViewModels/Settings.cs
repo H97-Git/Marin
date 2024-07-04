@@ -13,9 +13,20 @@ public class Settings
 
     private static Settings? _instance;
 
-    public static readonly string SettingsPath =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "WaifuGallery");
+    public static string SettingsPath
+    {
+        get
+        {
+            if (OperatingSystem.IsWindows())
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "WaifuGallery");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".WaifuGallery");
+        }
+    }
+
+    public static string ThumbnailsPath => Path.Combine(SettingsPath, "Thumbnails");
+
+
     private static string JsonPath => Path.Combine(SettingsPath, "settings.json");
 
     #endregion

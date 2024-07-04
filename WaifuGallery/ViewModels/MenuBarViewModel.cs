@@ -17,6 +17,18 @@ public class MenuBarViewModel : ViewModelBase
     private bool _isMenuOpen;
     private bool _isMenuVisible = true;
     private double _toggleFileExplorerIconAngle = 0;
+    private bool _isDebugMenuVisible = false;
+
+    #endregion
+
+    #region CTOR
+
+    public MenuBarViewModel()
+    {
+#if DEBUG
+        IsDebugMenuVisible = true;
+#endif
+    }
 
     #endregion
 
@@ -33,7 +45,13 @@ public class MenuBarViewModel : ViewModelBase
         get => _isMenuVisible;
         set => this.RaiseAndSetIfChanged(ref _isMenuVisible, value);
     }
-    
+
+    public bool IsDebugMenuVisible
+    {
+        get => _isDebugMenuVisible;
+        set => this.RaiseAndSetIfChanged(ref _isDebugMenuVisible, value);
+    }
+
     public double ToggleFileExplorerIconAngle
     {
         get => _toggleFileExplorerIconAngle;
@@ -73,6 +91,9 @@ public class MenuBarViewModel : ViewModelBase
 
     public ICommand ToggleFullScreenCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFullScreenCommand()); });
+
+    public ICommand ClearCache =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ClearCacheCommand()); });
 
     #endregion
 }

@@ -16,7 +16,7 @@ sealed class Program
 
     // Avalonia configuration, don't remove; also used by visual designer.
     // ReSharper disable once MemberCanBePrivate.Global
-    public static AppBuilder BuildAvaloniaApp() // => AppBuilder.Configure<Sandbox.App>()
+    public static AppBuilder BuildAvaloniaApp() //
     {
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);

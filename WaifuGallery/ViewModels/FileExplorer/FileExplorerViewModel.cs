@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using DynamicData;
 using FluentAvalonia.UI.Controls;
+using NaturalSort.Extension;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
@@ -29,23 +32,9 @@ public class FileExplorerViewModel : ViewModelBase
     private bool _isSearchFocused;
     private int _columnsCount;
     private int _selectedIndexInFileExplorer;
+    private int _batchSize = 10;
     private readonly FileExplorerHistory _pathHistory = new();
     private string _currentPath = string.Empty;
-
-    #endregion
-
-    #region Private Properties
-
-    private static string SettingsPath
-    {
-        get
-        {
-            if (OperatingSystem.IsWindows())
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "WaifuGallery");
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".WaifuGallery");
-        }
-    }
 
     #endregion
 
@@ -63,7 +52,7 @@ public class FileExplorerViewModel : ViewModelBase
         var currentPathDirectoryInfo = new DirectoryInfo(path);
         if (!currentPathDirectoryInfo.Exists)
         {
-            SendMessageToStatusBar(InfoBarSeverity.Error, "The path does not exist");
+            SendMessageToStatusBar(InfoBarSeverity.Warning, "The path does not exist");
             return;
         }
 
@@ -72,36 +61,51 @@ public class FileExplorerViewModel : ViewModelBase
         SetDirsAndFiles(currentPathDirectoryInfo);
     }
 
-    private void SetDirsAndFiles(DirectoryInfo currentDir)
+    private async void SetDirsAndFiles(DirectoryInfo currentDir)
     {
         var dirs = currentDir.GetDirectories().Where(f => f.Name.First() is not '.' && f.Name.First() is not '$')
+            .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
         var imagesFileInfo = currentDir.GetFiles()
             .Where(file => Helper.AllFileExtensions.Contains(file.Extension.ToLower()))
-            .OrderBy(f => f.Name, new NaturalSortComparer())
+            .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
-        // If dir not empty call SetDirs
         if (dirs is not {Length: 0})
-            SetDirs(dirs);
-        // If images not empty call SetFiles and set _imagesInPathCount
+            await SetDirs(dirs);
         if (imagesFileInfo is not {Length: 0})
-            SetFiles(imagesFileInfo);
+            await SetFiles(imagesFileInfo);
     }
 
-    private void SetDirs(IEnumerable<DirectoryInfo> dirs)
+    private async Task SetDirs(IEnumerable<DirectoryInfo> dirs)
     {
-        foreach (var dir in dirs)
+        var dirInfos = dirs.ToList();
+        for (var i = 0; i < dirInfos.Count; i += _batchSize)
         {
-            Dispatcher.UIThread.Post(() => FilesInDir.Add(new FileViewModel(dir)));
+            var batch = dirInfos.Skip(i).Take(_batchSize);
+            foreach (var dir in batch)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.Add(new FileViewModel(dir)));
+            }
+
+            await Task.Delay(100);
         }
     }
 
-    private void SetFiles(IEnumerable<FileInfo> files)
+    private async Task SetFiles(IEnumerable<FileInfo> files)
     {
-        foreach (var file in files)
+        var fileInfos = files.ToList();
+        for (var i = 0; i < fileInfos.Count; i += _batchSize)
         {
-            Dispatcher.UIThread.Post(() => FilesInDir.Add(new FileViewModel(file)));
+            var batch = fileInfos.Skip(i).Take(_batchSize);
+            foreach (var file in batch)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.Add(new FileViewModel(file)));
+            }
+        
+            await Task.Delay(100);
         }
+        // var list = files.Select(file => new FileViewModel(file)).ToList();
+        // await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.AddRange(list));
     }
 
     private async void OpenPathInFileExplorer()
@@ -146,7 +150,7 @@ public class FileExplorerViewModel : ViewModelBase
             .Subscribe(_ =>
                 FileExplorerBackground = IsFileExplorerExpanded ? new SolidColorBrush(Colors.Transparent) : null);
         this.WhenAnyValue(x => x.PreviewImageViewModel.IsPreviewImageVisible)
-            .Subscribe(b => ScrollBarVisibility = b ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto);
+            .Subscribe(ToggleScrollbarVisibility);
 
         if (Settings.Instance.ShouldSaveLastPathOnExit && Settings.Instance.FileExplorerLastPath is not null)
         {
@@ -154,22 +158,25 @@ public class FileExplorerViewModel : ViewModelBase
         }
         else
         {
-            if (OperatingSystem.IsWindows())
-            {
-                ChangePath(@"C:\oxford-iiit-pet\images");
-            }
-
-            if (OperatingSystem.IsLinux())
-            {
-                ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
-            }
+            ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
         }
 
         MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
-        MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => StartPreview(x.Path));
+        MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => PreviewImageViewModel.StartPreview(x.Path));
         MessageBus.Current.Listen<ToggleFileExplorerCommand>().Subscribe(_ => ToggleFileExplorer());
         MessageBus.Current.Listen<ToggleFileExplorerVisibilityCommand>().Subscribe(_ => ToggleFileExplorerVisibility());
         MessageBus.Current.Listen<RefreshFileExplorerCommand>().Subscribe(_ => GetFilesFromPath(CurrentPath));
+    }
+
+    private void ToggleScrollbarVisibility(bool isPreviewImageVisible)
+    {
+        Console.WriteLine($"""IsPreviewImageVisible: {isPreviewImageVisible}""");
+        Console.WriteLine($"""ScrollBarVisibility Before: {ScrollBarVisibility}""");
+        if (isPreviewImageVisible)
+            ScrollBarVisibility = ScrollBarVisibility.Disabled;
+        else
+            ScrollBarVisibility = ScrollBarVisibility.Visible;
+        Console.WriteLine($"""ScrollBarVisibility After: {ScrollBarVisibility}""");
     }
 
     #endregion
@@ -254,18 +261,6 @@ public class FileExplorerViewModel : ViewModelBase
     #endregion
 
     #region Public Methods
-
-    public void StartPreview(string path)
-    {
-        PreviewImageViewModel.StartPreview(path);
-        ScrollBarVisibility = ScrollBarVisibility.Disabled;
-    }
-
-    public void ClosePreview()
-    {
-        PreviewImageViewModel.ClosePreview();
-        ScrollBarVisibility = ScrollBarVisibility.Visible;
-    }
 
     public void GoToParentFolder()
     {

@@ -3,65 +3,33 @@
              x:DataType="viewModels:MenuBarViewModel"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns="https://github.com/avaloniaui">
     <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}">
         <MenuItem Header="_File">
-            <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}">
-                <MenuItem.Icon>
-                    <!-- <ui:SymbolIcon Symbol="OpenFile" FontSize="120" /> -->
-                    <Svg Path="/Resources/SVGs/regular/folder-open.svg" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="_Settings..." Command="{Binding OpenSettingsTabCommand}">
-                <MenuItem.Icon>
-                    <!-- <ui:SymbolIcon Symbol="Settings" FontSize="120" /> -->
-                    <Svg Path="/Resources/SVGs/regular/gear.svg" />
-                </MenuItem.Icon>
-            </MenuItem>
+            <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}"
+                      Icon="{DynamicResource FolderOpen}" />
+            <MenuItem Header="_Settings..." Command="{Binding OpenSettingsTabCommand}" Icon="{DynamicResource Gear}" />
             <Separator />
-            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}">
-                <MenuItem.Icon>
-                    <Svg Path="/Resources/SVGs/regular/x-circle.svg" />
-                    <!-- <ui:SymbolIcon Symbol="Clear" FontSize="120" /> -->
-                </MenuItem.Icon>
-            </MenuItem>
+            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}" Icon="{DynamicResource XCircle}" />
         </MenuItem>
         <MenuItem Header="_View">
-            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}">
-                <MenuItem.Icon>
-                    <!-- <ui:SymbolIcon Symbol="FullScreen" FontSize="120" /> -->
-                    <Svg Path="/Resources/SVGs/regular/frame-corners.svg" />
-                </MenuItem.Icon>
-            </MenuItem>
+            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}"
+                      Icon="{DynamicResource FrameCorners}" />
             <Separator />
-            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}">
-                <MenuItem.Icon>
-                    <!-- <ui:SymbolIcon Symbol="NewWindow" FontSize="120" /> -->
-                    <Svg Path="/Resources/SVGs/regular/tray-arrow-up.svg" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}">
-                <MenuItem.Icon>
-                    <!-- <ui:SymbolIcon Symbol="View" FontSize="120" /> -->
-                    <Svg Path="/Resources/SVGs/regular/eye.svg" />
-                </MenuItem.Icon>
-            </MenuItem>
+            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}"
+                      Icon="{DynamicResource TrayArrowUp}" />
+            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}"
+                      Icon="{DynamicResource Eye}" />
             <Separator />
-            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}">
-                <MenuItem.Icon>
-                    <!-- <ui:SymbolIcon Symbol="Remote" FontSize="120" /> -->
-                    <Svg Path="/Resources/SVGs/regular/arrows-out-line-horizontal.svg" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}">
-                <MenuItem.Icon>
-                    <!-- <ui:SymbolIcon Symbol="Sort" FontSize="120" /> -->
-                    <Svg Path="/Resources/SVGs/regular/arrows-out-line-vertical.svg" />
-                </MenuItem.Icon>
-            </MenuItem>
+            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}"
+                      Icon="{DynamicResource ArrowOutHorizontal}" />
+            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}"
+                      Icon="{DynamicResource ArrowOutVertical}" />
+        </MenuItem>
+        <MenuItem Header="_Debug" IsVisible="{Binding IsDebugMenuVisible}">
+            <MenuItem Header="_Clear Thumbnails cache" Command="{Binding ClearCache}" Icon="{DynamicResource EyeSlash}" />
         </MenuItem>
     </Menu>
 </UserControl>

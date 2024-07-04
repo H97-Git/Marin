@@ -15,3 +15,5 @@ public class SendMessageToStatusBarCommand(InfoBarSeverity severity, string mess
 }
 
 public class ToggleFullScreenCommand : ICommandMessage;
+
+public class ClearCacheCommand : ICommandMessage;
