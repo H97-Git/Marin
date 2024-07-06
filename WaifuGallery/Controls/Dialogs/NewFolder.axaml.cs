@@ -9,14 +9,6 @@ namespace WaifuGallery.Controls.Dialogs;
 
 public partial class NewFolder : UserControl
 {
-    public NewFolder()
-    {
-        InitializeComponent();
-    }
-
-    public EventHandler? OnEnterPressed { get; init; }
-    public EventHandler? OnEscapePressed { get; init; }
-
     private void Input_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         // We will set the focus into our input field just after it got attached to the visual tree.
@@ -40,4 +32,12 @@ public partial class NewFolder : UserControl
                 break;
         }
     }
+
+    public NewFolder()
+    {
+        InitializeComponent();
+    }
+
+    public EventHandler? OnEnterPressed { get; init; }
+    public EventHandler? OnEscapePressed { get; init; }
 }

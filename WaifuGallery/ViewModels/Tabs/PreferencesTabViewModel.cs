@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Styling;
@@ -14,16 +16,19 @@ public class PreferencesTabViewModel : TabViewModelBase
 {
     #region Private Fields
 
-    private Key _openSettingsKey = Key.None;
+    private Key _openPreferencesKey;
     private bool _isDuplicateTabsAllowed;
-    private bool _isTabSettingsClosable;
     private bool _isSettingsTabCycled;
-    private bool _shouldHideStatusBar;
+    private bool _isTabSettingsClosable;
+    private bool _shouldCalculateFolderSize;
     private bool _shouldHideFileExplorer;
     private bool _shouldHideMenuBar;
+    private bool _shouldHideStatusBar;
     private bool _shouldHideTabsHeader;
     private bool _shouldSaveLastPathOnExit;
     private int _previewDepth;
+    private readonly ContentDialog _dialog;
+    private readonly KeyboardKeySetterViewModel _keySetterViewModel;
     private string _currentThemeVariant = string.Empty;
 
     #endregion
@@ -36,12 +41,13 @@ public class PreferencesTabViewModel : TabViewModelBase
         IsDuplicateTabsAllowed = Settings.Instance.IsDuplicateTabsAllowed;
         IsSettingsTabCycled = Settings.Instance.IsSettingsTabCycled;
         IsTabSettingsClosable = Settings.Instance.IsTabSettingsClosable;
-        OpenSettingsKey = Settings.Instance.OpenSettingsKey;
+        OpenPreferencesKey = Settings.Instance.OpenPreferencesKey;
         ShouldHideMenuBar = Settings.Instance.ShouldHideMenuBar;
         ShouldHideTabsHeader = Settings.Instance.ShouldHideTabsHeader;
         ShouldHideFileExplorer = Settings.Instance.ShouldHideFileExplorer;
         ShouldHideStatusBar = Settings.Instance.ShouldHideStatusBar;
         ShouldSaveLastPathOnExit = Settings.Instance.ShouldSaveLastPathOnExit;
+        ShouldCalculateFolderSize = Settings.Instance.ShouldCalculateFolderSize;
         PreviewDepth = Settings.Instance.PreviewDepth;
     }
 
@@ -76,8 +82,8 @@ public class PreferencesTabViewModel : TabViewModelBase
             .Subscribe(value => Settings.Instance.IsSettingsTabCycled = value);
         this.WhenAnyValue(x => x.IsTabSettingsClosable)
             .Subscribe(value => Settings.Instance.IsTabSettingsClosable = value);
-        this.WhenAnyValue(x => x.OpenSettingsKey)
-            .Subscribe(value => Settings.Instance.OpenSettingsKey = value);
+        this.WhenAnyValue(x => x.OpenPreferencesKey)
+            .Subscribe(value => Settings.Instance.OpenPreferencesKey = value);
         this.WhenAnyValue(x => x.ShouldHideMenuBar)
             .Subscribe(value => Settings.Instance.ShouldHideMenuBar = value);
         this.WhenAnyValue(x => x.ShouldHideTabsHeader)
@@ -90,6 +96,20 @@ public class PreferencesTabViewModel : TabViewModelBase
             .Subscribe(value => Settings.Instance.ShouldSaveLastPathOnExit = value);
         this.WhenAnyValue(x => x.PreviewDepth)
             .Subscribe(value => Settings.Instance.PreviewDepth = value);
+        this.WhenAnyValue(x => x.ShouldCalculateFolderSize)
+            .Subscribe(value => Settings.Instance.ShouldCalculateFolderSize = value);
+        _dialog = new ContentDialog()
+        {
+            Title = "Press any key",
+            PrimaryButtonText = "Ok",
+            SecondaryButtonText = "Cancel",
+        };
+        _keySetterViewModel = new KeyboardKeySetterViewModel();
+        _dialog.Content = new KeyboardKeySetter()
+        {
+            DataContext = _keySetterViewModel,
+            OnEscapePressed = (_, _) => { _dialog.Hide(); }
+        };
     }
 
     #endregion
@@ -146,6 +166,12 @@ public class PreferencesTabViewModel : TabViewModelBase
         set => this.RaiseAndSetIfChanged(ref _shouldSaveLastPathOnExit, value);
     }
 
+    public bool ShouldCalculateFolderSize
+    {
+        get => _shouldCalculateFolderSize;
+        set => this.RaiseAndSetIfChanged(ref _shouldCalculateFolderSize, value);
+    }
+
     public bool IsTabSettingsClosable
     {
         get => _isTabSettingsClosable;
@@ -158,10 +184,10 @@ public class PreferencesTabViewModel : TabViewModelBase
         set => this.RaiseAndSetIfChanged(ref _previewDepth, value);
     }
 
-    public Key OpenSettingsKey
+    public Key OpenPreferencesKey
     {
-        get => _openSettingsKey;
-        set => this.RaiseAndSetIfChanged(ref _openSettingsKey, value);
+        get => _openPreferencesKey;
+        set => this.RaiseAndSetIfChanged(ref _openPreferencesKey, value);
     }
 
     public string CurrentVersion => "0.0.1";
@@ -173,22 +199,19 @@ public class PreferencesTabViewModel : TabViewModelBase
 
     #region Public Methods
 
-    public async void ShowSetKeyDialogAsync()
+    public ICommand OpenPreferenceKeyCommand =>
+        ReactiveCommand.Create(async () =>
+        {
+            var keyEventArgs = await ShowSetKeyDialogAsync();
+            if (keyEventArgs != null)
+                OpenPreferencesKey = keyEventArgs.Key;
+        });
+
+    private async Task<KeyEventArgs?> ShowSetKeyDialogAsync()
     {
-        var dialog = new ContentDialog()
-        {
-            Title = "Press any key",
-            PrimaryButtonText = "Ok",
-            SecondaryButtonText = "Cancel",
-        };
-
-        var viewModel = new KeyboardKeySetterViewModel();
-        dialog.Content = new KeyboardKeySetter()
-        {
-            DataContext = viewModel
-        };
-
-        _ = await dialog.ShowAsync();
+        _keySetterViewModel.KeyEventArgs = null;
+        var dialogResult = await _dialog.ShowAsync();
+        return dialogResult is ContentDialogResult.Secondary ? null : _keySetterViewModel.KeyEventArgs;
     }
 
     #endregion

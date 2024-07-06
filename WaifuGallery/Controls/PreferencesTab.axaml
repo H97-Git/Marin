@@ -26,10 +26,15 @@
             </DockPanel>
             <ui:SettingsExpander Header="File Explorer"
                                  Description="Configure Tabs behaviours"
-                                 IconSource="{StaticResource OpenFolderIcon}">
-                <ui:SettingsExpanderItem Content="Save last path on exit ?">
+                                 IconSource="OpenFolder">
+                <ui:SettingsExpanderItem Content="Save last path on exit">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldSaveLastPathOnExit}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Calculate all folder size">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox IsChecked="{Binding ShouldCalculateFolderSize}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
                 <ui:SettingsExpanderItem Content="Image Preview depth">
@@ -49,7 +54,7 @@
             </ui:SettingsExpander>
             <ui:SettingsExpander Header="FullScreen"
                                  Description="Hide UI elements when fullscreen"
-                                 IconSource="{StaticResource FullScreenMaximizeIcon}">
+                                 IconSource="FullScreenMaximize">
                 <ui:SettingsExpanderItem Content="Menu Bar">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldHideMenuBar}" />
@@ -73,10 +78,16 @@
             </ui:SettingsExpander>
             <ui:SettingsExpander Header="Keymap"
                                  Description="Change keyboard shortcuts"
-                                 IconSource="{StaticResource KeyboardIcon}">
-                <ui:SettingsExpanderItem Content="Test Key">
+                                 IconSource="Keyboard">
+                <ui:SettingsExpanderItem Content="Toggle FullScreen">
                     <ui:SettingsExpanderItem.Footer>
-                        <Button Content="Click" Command="{Binding ShowSetKeyDialogAsync}">
+                        <Button Content="F11" Command="{Binding }">
+                        </Button>
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Open Preferences">
+                    <ui:SettingsExpanderItem.Footer>
+                        <Button Content="{Binding OpenPreferencesKey}" Command="{Binding OpenPreferenceKeyCommand}">
                         </Button>
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>

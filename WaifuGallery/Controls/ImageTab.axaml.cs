@@ -68,6 +68,8 @@ public partial class ImageTab : UserControl
                 break;
             case Key.T:
                 ZoomBorder.ToggleStretchMode();
+                break;
+            case Key.A:
                 ZoomBorder.AutoFit();
                 break;
         }

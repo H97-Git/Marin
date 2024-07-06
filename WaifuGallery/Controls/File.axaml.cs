@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -89,13 +88,18 @@ public partial class File : UserControl
 
     private void Rename_OnKeyDown(object? sender, KeyEventArgs e)
     {
+        e.Handled = true;
         if (FileViewModel is null) return;
-        if (e.Key is Key.Escape) FileViewModel.IsRenaming = false;
+        if (e.Key is Key.Escape)
+        {
+            FileViewModel.IsRenaming = false;
+            return;
+        }
+
         if (e.Key is not Key.Enter) return;
         var command = new RenameCommand(FileViewModel.FullPath, FileViewModel.FileName);
         MessageBus.Current.SendMessage(command);
         FileViewModel.IsRenaming = false;
-        e.Handled = true;
     }
 
     #endregion
@@ -118,10 +122,10 @@ public partial class File : UserControl
 
     #endregion
 
-    protected override void OnLoaded(RoutedEventArgs e)
+    protected override async void OnLoaded(RoutedEventArgs e)
     {
-        if(DataContext is FileViewModel fileViewModel)
-            fileViewModel.GetThumbnail(fileViewModel._fileSystemInfo as FileInfo);
+        if (DataContext is FileViewModel {IsImage: true} fileViewModel)
+            await fileViewModel.GetThumbnail();
         base.OnLoaded(e);
     }
 }

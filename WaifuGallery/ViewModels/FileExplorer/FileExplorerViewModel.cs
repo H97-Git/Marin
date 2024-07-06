@@ -9,7 +9,6 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using DynamicData;
 using FluentAvalonia.UI.Controls;
 using NaturalSort.Extension;
 using ReactiveUI;

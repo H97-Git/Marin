@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
@@ -12,10 +13,14 @@ public partial class KeyboardKeySetter : UserControl
 
     private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key is Key.Escape) return;
-        if (DataContext is not KeyboardKeySetterViewModel viewModel) return;
-        viewModel.Key = e.Key;
+        if (e.Key is Key.Escape)
+        {
+            OnEscapePressed?.Invoke(this, EventArgs.Empty);
+            return;
+        }
 
+        if (DataContext is not KeyboardKeySetterViewModel viewModel) return;
+        viewModel.KeyEventArgs = e;
         e.Handled = true;
     }
 
@@ -38,4 +43,5 @@ public partial class KeyboardKeySetter : UserControl
     }
 
     #endregion
+    public EventHandler? OnEscapePressed { get; init; }
 }

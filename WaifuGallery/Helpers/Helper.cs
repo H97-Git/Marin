@@ -165,6 +165,11 @@ public abstract class Helper
 
     public static long GetDirectorySizeInByte(FileSystemInfo fileSystemInfo)
     {
+        if (fileSystemInfo is DirectoryInfo directoryInfo)
+        {
+            if (directoryInfo.Root.FullName == directoryInfo.FullName) return 0;
+        }
+
         try
         {
             var sizeInCache = MemoryCacheService.Get<long>(GetSizeKey(fileSystemInfo));

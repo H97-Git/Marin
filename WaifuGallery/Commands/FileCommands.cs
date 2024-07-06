@@ -14,9 +14,11 @@ public class CopyCommand(string path) : FileCommand(path);
 public class CutCommand(string path) : FileCommand(path);
 
 public class DeleteCommand(string path) : FileCommand(path);
+
 public class ExtractCommand(string path) : FileCommand(path);
 
 public class OpenInFileExplorerCommand(string path) : FileCommand(path);
+
 public class OpenInBrowserCommand(string path) : FileCommand(path);
 
 public class NewFolderCommand(string path) : FileCommand(path);

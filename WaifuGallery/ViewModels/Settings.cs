@@ -69,7 +69,7 @@ public class Settings
 
     #region Public Properties
 
-    public Key OpenSettingsKey { get; set; } = Key.F1;
+    public Key OpenPreferencesKey { get; set; } = Key.F1;
     public bool IsDuplicateTabsAllowed { get; set; }
     public bool IsSettingsTabCycled { get; set; }
     public bool IsTabSettingsClosable { get; set; }
@@ -78,6 +78,7 @@ public class Settings
     public bool ShouldHideStatusBar { get; set; }
     public bool ShouldHideTabsHeader { get; set; }
     public bool ShouldSaveLastPathOnExit { get; set; }
+    public bool ShouldCalculateFolderSize { get; set; }
     public int PreviewDepth { get; set; }
     public string Theme { get; set; } = "System";
     public string? FileExplorerLastPath { get; set; }

@@ -16,7 +16,7 @@ public sealed class FileViewModel : ViewModelBase
 {
     #region Private Fields
 
-    public readonly FileSystemInfo _fileSystemInfo;
+    private readonly FileSystemInfo _fileSystemInfo;
     private Bitmap? _thumbnail;
     private Size _imageSize;
     private Symbol _symbol = Symbol.Folder;
@@ -59,7 +59,8 @@ public sealed class FileViewModel : ViewModelBase
         {
             case DirectoryInfo directoryInfo:
                 ParentPath = directoryInfo.Parent?.FullName;
-                SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
+                if (Settings.Instance.ShouldCalculateFolderSize)
+                    SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
                 _isDirectoryEmpty = Helper.IsDirectoryEmpty(_fileSystemInfo);
                 Symbol = _isDirectoryEmpty ? Symbol.Folder : Symbol.FolderFilled;
                 break;
@@ -75,6 +76,7 @@ public sealed class FileViewModel : ViewModelBase
                     case ".bmp":
                     case ".gif":
                         Symbol = Symbol.Image;
+                        IsImage = true;
                         break;
                     case ".mp4":
                     case ".avi":
@@ -105,21 +107,8 @@ public sealed class FileViewModel : ViewModelBase
             .Subscribe(_ =>
             {
                 if (Thumbnail is null) return;
-                IsImage = true;
                 ImageSize = Helper.GetScaledSize(Thumbnail, 100);
             });
-    }
-
-
-    public async Task<Bitmap> GetThumbnail(FileInfo fileInfo)
-    {
-        if (Helper.ThumbnailExists(fileInfo, out var thumbnailPath))
-        {
-            return new Bitmap(thumbnailPath);
-        }
-
-        var outputFileInfo = new FileInfo(Path.Combine(thumbnailPath, fileInfo.Name));
-        return await Helper.GenerateBitmapThumb(fileInfo, outputFileInfo);
     }
 
     #endregion
@@ -218,6 +207,27 @@ public sealed class FileViewModel : ViewModelBase
 
     #endregion
 
+    #region Public Methods
+
+    public async Task GetThumbnail()
+    {
+        if (_fileSystemInfo is not FileInfo fileInfo)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (Helper.ThumbnailExists(fileInfo, out var thumbnailPath))
+        {
+            Thumbnail = new Bitmap(thumbnailPath);
+            return;
+        }
+
+        var outputFileInfo = new FileInfo(Path.Combine(thumbnailPath, fileInfo.Name));
+        Thumbnail = await Helper.GenerateBitmapThumb(fileInfo, outputFileInfo);
+    }
+
+    #endregion
+
     #region Public Commands
 
     public ICommand Copy =>
@@ -231,6 +241,9 @@ public sealed class FileViewModel : ViewModelBase
 
     public ICommand Extract =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ExtractCommand(FullPath)); });
+
+    public ICommand CalculateSize =>
+        ReactiveCommand.Create(() => { SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo); });
 
     public ICommand Rename =>
         ReactiveCommand.Create(() => { IsRenaming = true; });

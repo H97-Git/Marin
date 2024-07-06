@@ -8,7 +8,7 @@ public class KeyboardKeySetterViewModel : ViewModelBase
 {
     #region Private Fields
 
-    private Key _key = Key.None;
+    private KeyEventArgs? _keyEventArgs;
     private string _keyName = string.Empty;
 
     #endregion
@@ -17,10 +17,10 @@ public class KeyboardKeySetterViewModel : ViewModelBase
 
     public KeyboardKeySetterViewModel()
     {
-        this.WhenAnyValue(x => x.Key).Subscribe(x =>
+        this.WhenAnyValue(x => x.KeyEventArgs).Subscribe(x =>
         {
-            if (x == Key.None) return;
-            KeyName = Key switch
+            if (x is null || x.Key is Key.Escape) return;
+            var key = x.Key switch
             {
                 Key.D0 => "0",
                 Key.D1 => "1",
@@ -67,8 +67,22 @@ public class KeyboardKeySetterViewModel : ViewModelBase
                 Key.DbeEnterDialogConversionMode => "EnterDialogConversionMode",
                 Key.OemClear => "Clear",
                 Key.DeadCharProcessed => "DeadCharProcessed",
-                _ => Key.ToString()
+                Key.LeftAlt => "",
+                Key.RightAlt => "",
+                Key.LeftCtrl => "",
+                Key.RightCtrl => "",
+                Key.LeftShift => "",
+                Key.RightShift => "",
+                _ => x.Key.ToString()
             };
+            var modifier = x.KeyModifiers switch
+            {
+                KeyModifiers.Control => "Ctrl",
+                KeyModifiers.Shift => "Shift",
+                KeyModifiers.Alt => "Alt",
+                _ => string.Empty,
+            };
+            KeyName = KeyEventArgs?.KeyModifiers is not KeyModifiers.None ? $"{modifier}+{key}" : key;
         });
     }
 
@@ -76,10 +90,10 @@ public class KeyboardKeySetterViewModel : ViewModelBase
 
     #region Public Properties
 
-    public Key Key
+    public KeyEventArgs? KeyEventArgs
     {
-        get => _key;
-        set => this.RaiseAndSetIfChanged(ref _key, value);
+        get => _keyEventArgs;
+        set => this.RaiseAndSetIfChanged(ref _keyEventArgs, value);
     }
 
     public string KeyName

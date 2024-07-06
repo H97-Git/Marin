@@ -74,7 +74,7 @@ public class MainViewViewModel : ViewModelBase
                 break;
         }
 
-        if (e.Key == Settings.Instance.OpenSettingsKey)
+        if (e.Key == Settings.Instance.OpenPreferencesKey)
         {
             if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
                 TabsViewModel.OpenSettingsTab();
