@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Styling;
 using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
-using WaifuGallery.Controls;
+using WaifuGallery.Models;
 using WaifuGallery.ViewModels.Dialogs;
+using KeyboardKeySetter = WaifuGallery.Controls.Dialogs.KeyboardKeySetter;
 
 namespace WaifuGallery.ViewModels.Tabs;
 
@@ -16,7 +18,6 @@ public class PreferencesTabViewModel : TabViewModelBase
 {
     #region Private Fields
 
-    private Key _openPreferencesKey;
     private bool _isDuplicateTabsAllowed;
     private bool _isSettingsTabCycled;
     private bool _isTabSettingsClosable;
@@ -27,8 +28,7 @@ public class PreferencesTabViewModel : TabViewModelBase
     private bool _shouldHideTabsHeader;
     private bool _shouldSaveLastPathOnExit;
     private int _previewDepth;
-    private readonly ContentDialog _dialog;
-    private readonly KeyboardKeySetterViewModel _keySetterViewModel;
+   
     private string _currentThemeVariant = string.Empty;
 
     #endregion
@@ -41,7 +41,6 @@ public class PreferencesTabViewModel : TabViewModelBase
         IsDuplicateTabsAllowed = Settings.Instance.IsDuplicateTabsAllowed;
         IsSettingsTabCycled = Settings.Instance.IsSettingsTabCycled;
         IsTabSettingsClosable = Settings.Instance.IsTabSettingsClosable;
-        OpenPreferencesKey = Settings.Instance.OpenPreferencesKey;
         ShouldHideMenuBar = Settings.Instance.ShouldHideMenuBar;
         ShouldHideTabsHeader = Settings.Instance.ShouldHideTabsHeader;
         ShouldHideFileExplorer = Settings.Instance.ShouldHideFileExplorer;
@@ -82,8 +81,6 @@ public class PreferencesTabViewModel : TabViewModelBase
             .Subscribe(value => Settings.Instance.IsSettingsTabCycled = value);
         this.WhenAnyValue(x => x.IsTabSettingsClosable)
             .Subscribe(value => Settings.Instance.IsTabSettingsClosable = value);
-        this.WhenAnyValue(x => x.OpenPreferencesKey)
-            .Subscribe(value => Settings.Instance.OpenPreferencesKey = value);
         this.WhenAnyValue(x => x.ShouldHideMenuBar)
             .Subscribe(value => Settings.Instance.ShouldHideMenuBar = value);
         this.WhenAnyValue(x => x.ShouldHideTabsHeader)
@@ -98,24 +95,25 @@ public class PreferencesTabViewModel : TabViewModelBase
             .Subscribe(value => Settings.Instance.PreviewDepth = value);
         this.WhenAnyValue(x => x.ShouldCalculateFolderSize)
             .Subscribe(value => Settings.Instance.ShouldCalculateFolderSize = value);
-        _dialog = new ContentDialog()
+       
+        var groups = Settings.Instance.HotKeyManager.UserKeymap.GroupBy(x => x.Value);
+        foreach (var group in groups)
         {
-            Title = "Press any key",
-            PrimaryButtonText = "Ok",
-            SecondaryButtonText = "Cancel",
-        };
-        _keySetterViewModel = new KeyboardKeySetterViewModel();
-        _dialog.Content = new KeyboardKeySetter()
-        {
-            DataContext = _keySetterViewModel,
-            OnEscapePressed = (_, _) => { _dialog.Hide(); }
-        };
+            var shortcut = new ShortcutViewModel(group.Key);
+            foreach (var keyGestureKeyCommand in group)
+            {
+                shortcut.Gestures.Add(keyGestureKeyCommand.Key);
+            }
+
+            Shortcuts.Add(shortcut);
+        }
     }
 
     #endregion
 
     #region Public Properties
 
+    public ObservableCollection<ShortcutViewModel> Shortcuts { get; init; } = [];
     public string[] ThemesVariants { get; } = ["System", "Light", "Dark"];
 
     public string CurrentThemeVariant
@@ -184,35 +182,10 @@ public class PreferencesTabViewModel : TabViewModelBase
         set => this.RaiseAndSetIfChanged(ref _previewDepth, value);
     }
 
-    public Key OpenPreferencesKey
-    {
-        get => _openPreferencesKey;
-        set => this.RaiseAndSetIfChanged(ref _openPreferencesKey, value);
-    }
-
     public string CurrentVersion => "0.0.1";
 
     public string? CurrentAvaloniaVersion =>
         typeof(Application).Assembly.GetName().Version?.ToString();
-
-    #endregion
-
-    #region Public Methods
-
-    public ICommand OpenPreferenceKeyCommand =>
-        ReactiveCommand.Create(async () =>
-        {
-            var keyEventArgs = await ShowSetKeyDialogAsync();
-            if (keyEventArgs != null)
-                OpenPreferencesKey = keyEventArgs.Key;
-        });
-
-    private async Task<KeyEventArgs?> ShowSetKeyDialogAsync()
-    {
-        _keySetterViewModel.KeyEventArgs = null;
-        var dialogResult = await _dialog.ShowAsync();
-        return dialogResult is ContentDialogResult.Secondary ? null : _keySetterViewModel.KeyEventArgs;
-    }
 
     #endregion
 }

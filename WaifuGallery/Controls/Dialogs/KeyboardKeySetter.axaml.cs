@@ -20,7 +20,7 @@ public partial class KeyboardKeySetter : UserControl
         }
 
         if (DataContext is not KeyboardKeySetterViewModel viewModel) return;
-        viewModel.KeyEventArgs = e;
+        viewModel.KeyGesture = new KeyGesture(e.Key, e.KeyModifiers);
         e.Handled = true;
     }
 

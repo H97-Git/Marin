@@ -23,7 +23,6 @@ public class FileExplorerViewModel : ViewModelBase
     #region Private Fields
 
     private Brush? _fileExplorerBackground;
-    private ObservableCollection<FileViewModel> _filesInDir = [];
     private ScrollBarVisibility _scrollBarVisibility = ScrollBarVisibility.Auto;
     private bool _isFileExplorerExpanded = true;
     private bool _isFileExplorerVisible = true;
@@ -100,7 +99,7 @@ public class FileExplorerViewModel : ViewModelBase
             {
                 await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.Add(new FileViewModel(file)));
             }
-        
+
             await Task.Delay(100);
         }
         // var list = files.Select(file => new FileViewModel(file)).ToList();
@@ -192,11 +191,7 @@ public class FileExplorerViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _fileExplorerBackground, value);
     }
 
-    public ObservableCollection<FileViewModel> FilesInDir
-    {
-        get => _filesInDir;
-        set => this.RaiseAndSetIfChanged(ref _filesInDir, value);
-    }
+    public ObservableCollection<FileViewModel> FilesInDir { get; init; } = [];
 
     public ScrollBarVisibility ScrollBarVisibility
     {

@@ -2,10 +2,9 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Avalonia.Input;
 using Avalonia.Media;
 
-namespace WaifuGallery.ViewModels;
+namespace WaifuGallery.Models;
 
 public class Settings
 {
@@ -13,21 +12,12 @@ public class Settings
 
     private static Settings? _instance;
 
-    public static string SettingsPath
+    private static JsonSerializerOptions _jsonSerializerOptions = new()
     {
-        get
-        {
-            if (OperatingSystem.IsWindows())
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "WaifuGallery");
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".WaifuGallery");
-        }
-    }
+        WriteIndented = true, IgnoreReadOnlyFields = true, IgnoreReadOnlyProperties = true
+    };
 
-    public static string ThumbnailsPath => Path.Combine(SettingsPath, "Thumbnails");
-
-
-    private static string JsonPath => Path.Combine(SettingsPath, "settings.json");
+    private static string JsonPath => Path.Combine(SettingsPath, "Settings.json");
 
     #endregion
 
@@ -38,7 +28,8 @@ public class Settings
     {
         get
         {
-            if (_instance != null) return _instance;
+            if (_instance is not null)
+                return _instance;
             if (!File.Exists(JsonPath))
             {
                 _instance = new Settings();
@@ -56,10 +47,8 @@ public class Settings
                 }
             }
 
-            if (_instance.DefaultFont == null)
-            {
-                _instance.DefaultFont = FontManager.Current.DefaultFontFamily;
-            }
+
+            _instance.DefaultFont ??= FontManager.Current.DefaultFontFamily;
 
             return _instance;
         }
@@ -69,19 +58,32 @@ public class Settings
 
     #region Public Properties
 
-    public Key OpenPreferencesKey { get; set; } = Key.F1;
+    [JsonIgnore] public HotKeyManager HotKeyManager { get; init; } = new();
     public bool IsDuplicateTabsAllowed { get; set; }
     public bool IsSettingsTabCycled { get; set; }
     public bool IsTabSettingsClosable { get; set; }
+    public bool ShouldCalculateFolderSize { get; set; }
     public bool ShouldHideFileExplorer { get; set; }
     public bool ShouldHideMenuBar { get; set; }
     public bool ShouldHideStatusBar { get; set; }
     public bool ShouldHideTabsHeader { get; set; }
     public bool ShouldSaveLastPathOnExit { get; set; }
-    public bool ShouldCalculateFolderSize { get; set; }
     public int PreviewDepth { get; set; }
     public string Theme { get; set; } = "System";
     public string? FileExplorerLastPath { get; set; }
+
+    public static string SettingsPath
+    {
+        get
+        {
+            if (OperatingSystem.IsWindows())
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "WaifuGallery");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".WaifuGallery");
+        }
+    }
+
+    public static string ThumbnailsPath => Path.Combine(SettingsPath, "Thumbnails");
 
     [JsonIgnore] public FontFamily? DefaultFont { get; set; }
 
@@ -91,13 +93,9 @@ public class Settings
 
     public void Save()
     {
-        var json = JsonSerializer.Serialize(this,
-            //This warning can be ignored since this method (as of now) is only called once when the app exits.
-#pragma warning disable CA1869
-            new JsonSerializerOptions
-#pragma warning restore CA1869
-                {WriteIndented = true, IgnoreReadOnlyFields = true, IgnoreReadOnlyProperties = true});
-        File.WriteAllText(JsonPath, json);
+        HotKeyManager.SaveUserKeymap();
+        var jsonPreference = JsonSerializer.Serialize(this, _jsonSerializerOptions);
+        File.WriteAllText(JsonPath, jsonPreference);
     }
 
     #endregion

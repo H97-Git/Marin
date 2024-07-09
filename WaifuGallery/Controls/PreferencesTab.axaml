@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:WaifuGallery.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="WaifuGallery.Controls.PreferencesTab"
              xmlns:ui="using:FluentAvalonia.UI.Controls"
@@ -24,6 +25,7 @@
                     <TextBlock Text="{Binding CurrentAvaloniaVersion}" />
                 </StackPanel>
             </DockPanel>
+            <!-- File Explorer -->
             <ui:SettingsExpander Header="File Explorer"
                                  Description="Configure Tabs behaviours"
                                  IconSource="OpenFolder">
@@ -52,6 +54,7 @@
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
+            <!-- FullScreen -->
             <ui:SettingsExpander Header="FullScreen"
                                  Description="Hide UI elements when fullscreen"
                                  IconSource="FullScreenMaximize">
@@ -76,22 +79,19 @@
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
-            <ui:SettingsExpander Header="Keymap"
+            <!-- HotKey Manager -->
+            <ui:SettingsExpander Header="HotKey Manager"
                                  Description="Change keyboard shortcuts"
                                  IconSource="Keyboard">
-                <ui:SettingsExpanderItem Content="Toggle FullScreen">
-                    <ui:SettingsExpanderItem.Footer>
-                        <Button Content="F11" Command="{Binding }">
-                        </Button>
-                    </ui:SettingsExpanderItem.Footer>
-                </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Open Preferences">
-                    <ui:SettingsExpanderItem.Footer>
-                        <Button Content="{Binding OpenPreferencesKey}" Command="{Binding OpenPreferenceKeyCommand}">
-                        </Button>
-                    </ui:SettingsExpanderItem.Footer>
-                </ui:SettingsExpanderItem>
+                <ItemsControl ItemsSource="{Binding Shortcuts}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:Shortcut DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ui:SettingsExpander>
+            <!-- Tabs -->
             <ui:SettingsExpander Header="Tabs"
                                  IconSource="{DynamicResource TabsSvg}"
                                  Description="Configure Tabs behaviours">
@@ -112,6 +112,7 @@
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
+            <!-- Theme Variant -->
             <ui:SettingsExpander Header="Theme Variant"
                                  IconSource="DarkTheme"
                                  Description="Change the current theme variant">

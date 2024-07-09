@@ -1,0 +1,33 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="viewModels:ShortcutViewModel"
+             x:Class="WaifuGallery.Controls.Shortcut"
+             Name="ShortcutControl"
+             Margin="5">
+    <ui:SettingsExpanderItem Content="{Binding KeyCommand}">
+        <ui:SettingsExpanderItem.Footer>
+            <!-- <StackPanel Orientation="Vertical"> -->
+            <ItemsControl ItemsSource="{Binding Gestures}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding Key}"
+                                Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).UpdateKeyCommand}"
+                                CommandParameter="{Binding}">
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!-- <StackPanel Orientation="Horizontal"> -->
+            <!-- <Button Content="{Binding Gestures[0] }" Command="{Binding UpdateKeyCommand}" /> -->
+            <!-- <Button Content="{Binding Gestures[1] }" Command="{Binding UpdateKeyCommand}" /> -->
+            <!-- <Button Content="{Binding Gestures[2] }" Command="{Binding UpdateKeyCommand}" /> -->
+            <!-- </StackPanel> -->
+            <!-- </StackPanel> -->
+        </ui:SettingsExpanderItem.Footer>
+    </ui:SettingsExpanderItem>
+</UserControl>
