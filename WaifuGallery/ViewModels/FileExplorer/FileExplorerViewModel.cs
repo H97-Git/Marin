@@ -161,7 +161,7 @@ public class FileExplorerViewModel : ViewModelBase
         }
 
         MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
-        MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => PreviewImageViewModel.StartPreview(x.Path));
+        MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => PreviewImageViewModel.ShowPreview(x.Path));
         MessageBus.Current.Listen<ToggleFileExplorerCommand>().Subscribe(_ => ToggleFileExplorer());
         MessageBus.Current.Listen<ToggleFileExplorerVisibilityCommand>().Subscribe(_ => ToggleFileExplorerVisibility());
         MessageBus.Current.Listen<RefreshFileExplorerCommand>().Subscribe(_ => GetFilesFromPath(CurrentPath));

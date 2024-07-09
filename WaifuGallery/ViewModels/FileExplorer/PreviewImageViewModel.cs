@@ -5,6 +5,7 @@ using Avalonia.Media.Imaging;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Helpers;
+using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.FileExplorer;
 
@@ -49,7 +50,7 @@ public class PreviewImageViewModel : ViewModelBase
     public PreviewImageViewModel()
     {
         if (!Design.IsDesignMode) return;
-        StartPreview("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
+        ShowPreview("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
     }
 
     #endregion
@@ -90,8 +91,9 @@ public class PreviewImageViewModel : ViewModelBase
 
     #region Public Methods
 
-    public void StartPreview(string path)
+    public void ShowPreview(string path)
     {
+        if(IsPreviewImageVisible) return;
         _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.PreviewDepth);
         if (_previewImagePaths is {Length: 0})
         {
@@ -138,7 +140,7 @@ public class PreviewImageViewModel : ViewModelBase
     }
 
 
-    public void ClosePreview()
+    public void HidePreview()
     {
         if (!IsPreviewImageVisible) return;
         IsPreviewImageVisible = false;

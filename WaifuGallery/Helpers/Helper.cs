@@ -13,7 +13,6 @@ using SharpCompress.Archives;
 using SharpCompress.Common;
 using WaifuGallery.Commands;
 using WaifuGallery.Models;
-using WaifuGallery.ViewModels;
 using WaifuGallery.ViewModels.FileExplorer;
 
 namespace WaifuGallery.Helpers;

@@ -8,6 +8,7 @@ using Avalonia.Platform.Storage;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
+using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.Tabs;
 

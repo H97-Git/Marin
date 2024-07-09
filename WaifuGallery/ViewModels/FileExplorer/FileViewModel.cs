@@ -9,6 +9,7 @@ using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
+using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.FileExplorer;
 

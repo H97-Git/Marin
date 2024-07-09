@@ -8,7 +8,8 @@
              xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns="https://github.com/avaloniaui">
+             xmlns="https://github.com/avaloniaui"
+             xmlns:models="clr-namespace:WaifuGallery.Models">
     <Design.DataContext>
         <viewModels:FileViewModel />
     </Design.DataContext>
@@ -69,7 +70,7 @@
     <Grid RowDefinitions="Auto,Auto,Auto" Width="165" Height="165" Margin="0,10,0,0">
         <ToolTip.Tip>
             <StackPanel>
-                <TextBlock FontFamily="{Binding Source={x:Static tabs1:Settings.Instance}, Path=.DefaultFont}"
+                <TextBlock FontFamily="{Binding Source={x:Static models:Settings.Instance}, Path=.DefaultFont}"
                            FontSize="16" Text="{Binding FileName}" />
                 <TextBlock Text="{Binding ParentPath}" />
                 <TextBlock Text="{Binding CreatedTime}" />

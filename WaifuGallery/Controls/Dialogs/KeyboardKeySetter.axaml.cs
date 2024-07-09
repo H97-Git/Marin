@@ -5,7 +5,7 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using WaifuGallery.ViewModels.Dialogs;
 
-namespace WaifuGallery.Controls;
+namespace WaifuGallery.Controls.Dialogs;
 
 public partial class KeyboardKeySetter : UserControl
 {

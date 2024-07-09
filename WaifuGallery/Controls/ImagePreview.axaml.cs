@@ -30,7 +30,7 @@ public partial class ImagePreview : UserControl
         }
 
         if (properties.IsLeftButtonPressed || properties.IsRightButtonPressed)
-            PreviewImageViewModel?.ClosePreview();
+            PreviewImageViewModel?.HidePreview();
     }
 
     #endregion

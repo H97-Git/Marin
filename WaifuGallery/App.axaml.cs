@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
-using WaifuGallery.ViewModels;
+using WaifuGallery.Models;
 
 namespace WaifuGallery;
 
