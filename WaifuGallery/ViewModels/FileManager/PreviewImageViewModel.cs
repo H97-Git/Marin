@@ -7,7 +7,7 @@ using ReactiveUI;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
-namespace WaifuGallery.ViewModels.FileExplorer;
+namespace WaifuGallery.ViewModels.FileManager;
 
 public class PreviewImageViewModel : ViewModelBase
 {
@@ -15,10 +15,9 @@ public class PreviewImageViewModel : ViewModelBase
 
     private Bitmap? _previewImage;
     private Point _previewPosition = new(0, 0);
-    private Size _previewSize = new(DefaultPreviewSize, DefaultPreviewSize);
+    private Size _previewSize = new(0, 0);
     private bool _isPreviewVisible;
     private int _previewImageIndex;
-    private const int DefaultPreviewSize = 300;
     private string[] _previewImagePaths = [];
     private string _previewImageCounter = "0/0";
 
@@ -26,11 +25,14 @@ public class PreviewImageViewModel : ViewModelBase
 
     #region Private Properties
 
+    private bool IsPortrait => PreviewSize.Width < PreviewSize.Height;
+
     private int PreviewImageIndex
     {
         get => _previewImageIndex;
         set
         {
+            if (!IsPreviewImageVisible) return;
             // A potential to let user loop through images in preview.
             if (value < 0)
                 value = 0;
@@ -39,7 +41,9 @@ public class PreviewImageViewModel : ViewModelBase
             _previewImageIndex = value;
             PreviewCounter = $"{_previewImageIndex + 1}/{_previewImagePaths.Length}";
             PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
-            PreviewSize = Helper.GetScaledSize(PreviewImage, DefaultPreviewSize);
+            PreviewSize = _previewImageIndex is 0
+                ? Helper.GetScaledSize(PreviewImage, Settings.Instance.PreviewDefaultZoom)
+                : PreviewSize;
         }
     }
 
@@ -93,7 +97,7 @@ public class PreviewImageViewModel : ViewModelBase
 
     public void ShowPreview(string path)
     {
-        if(IsPreviewImageVisible) return;
+        if (IsPreviewImageVisible) return;
         _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.PreviewDepth);
         if (_previewImagePaths is {Length: 0})
         {
@@ -102,8 +106,8 @@ public class PreviewImageViewModel : ViewModelBase
             return;
         }
 
-        PreviewImageIndex = 0;
         IsPreviewImageVisible = true;
+        PreviewImageIndex = 0;
     }
 
     public void NextPreview()
@@ -118,8 +122,10 @@ public class PreviewImageViewModel : ViewModelBase
 
     public void ChangePreviewPosition(Point point)
     {
-        // if (IsPreviewImageVisible) return;
-        PreviewPosition = new Point(point.X, point.Y);
+        if (Settings.Instance.PreviewFollowMouse)
+        {
+            PreviewPosition = new Point(point.X, point.Y);
+        }
     }
 
     public void ZoomPreview(double deltaY)
@@ -127,8 +133,7 @@ public class PreviewImageViewModel : ViewModelBase
         if (!IsPreviewImageVisible) return;
         if (PreviewImage is null) return;
         var newDelta = (int) deltaY * 20;
-        var isPortrait = PreviewSize.Width < PreviewSize.Height;
-        var newSize = isPortrait
+        var newSize = IsPortrait
             ? newDelta < 0
                 ? Math.Max(150, PreviewSize.Height + newDelta)
                 : Math.Min(600, PreviewSize.Height + newDelta)

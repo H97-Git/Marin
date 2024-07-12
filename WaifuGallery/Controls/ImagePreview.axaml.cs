@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
-using WaifuGallery.ViewModels.FileExplorer;
+using WaifuGallery.ViewModels.FileManager;
 
 namespace WaifuGallery.Controls;
 

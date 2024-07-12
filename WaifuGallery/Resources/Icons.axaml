@@ -1,26 +1,46 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <x:String x:Key="ArrowOutHorizontalPath">/Resources/SVGs/arrows-out-line-horizontal.svg</x:String>
-    <x:String x:Key="ArrowOutVerticalPath">/Resources/SVGs/arrows-out-line-vertical.svg</x:String>
+    <x:String x:Key="ArrowBendRightUp">/Resources/SVGs/arrow-bend-right-up.svg</x:String>
+    <x:String x:Key="ArrowSquareOutPath">/Resources/SVGs/arrow-square-out.svg</x:String>
+    <x:String x:Key="ArrowsOutHorizontalPath">/Resources/SVGs/arrows-out-line-horizontal.svg</x:String>
+    <x:String x:Key="ArrowsOutPath">/Resources/SVGs/arrows-out.svg</x:String>
+    <x:String x:Key="ArrowsOutVerticalPath">/Resources/SVGs/arrows-out-line-vertical.svg</x:String>
+    <x:String x:Key="BarricadePath">/Resources/SVGs/barricade.svg</x:String>
+    <x:String x:Key="BinaryPath">/Resources/SVGs/binary.svg</x:String>
     <x:String x:Key="BinocularsPath">/Resources/SVGs/binoculars.svg</x:String>
-    <x:String x:Key="BrowserPath">/Resources/SVGs/Browser.svg</x:String>
+    <x:String x:Key="BrowserPath">/Resources/SVGs/browser.svg</x:String>
+    <x:String x:Key="CopyPath">/Resources/SVGs/copy.svg</x:String>
+    <x:String x:Key="CaretLeftPath">/Resources/SVGs/caret-left.svg</x:String>
+    <x:String x:Key="CaretRightPath">/Resources/SVGs/caret-right.svg</x:String>
+    <x:String x:Key="CopySimplePath">/Resources/SVGs/copy-simple.svg</x:String>
+    <x:String x:Key="CursorTextPath">/Resources/SVGs/cursor-text.svg</x:String>
     <x:String x:Key="EyePath">/Resources/SVGs/eye.svg</x:String>
     <x:String x:Key="EyeSlashPath">/Resources/SVGs/eye-slash.svg</x:String>
     <x:String x:Key="FileArchivePath">/Resources/SVGs/file-archive.svg</x:String>
+    <x:String x:Key="FileZipPath">/Resources/SVGs/file-zip.svg</x:String>
     <x:String x:Key="FolderOpenPath">/Resources/SVGs/folder-open.svg</x:String>
+    <x:String x:Key="FolderPlusPath">/Resources/SVGs/folder-plus.svg</x:String>
+    <x:String x:Key="FoldersPath">/Resources/SVGs/folders.svg</x:String>
     <x:String x:Key="FrameCornersPath">/Resources/SVGs/frame-corners.svg</x:String>
     <x:String x:Key="GearPath">/Resources/SVGs/gear.svg</x:String>
+    <x:String x:Key="GoogleChromeLogoPath">/Resources/SVGs/google-chrome-logo.svg</x:String>
+    <x:String x:Key="KeyboardPath">/Resources/SVGs/keyboard.svg</x:String>
+    <x:String x:Key="PictureInPicturePath">/Resources/SVGs/picture-in-picture.svg</x:String>
+    <x:String x:Key="ScissorsPath">/Resources/SVGs/scissors.svg</x:String>
+    <x:String x:Key="TabsPath">/Resources/SVGs/tabs.svg</x:String>
+    <x:String x:Key="TrashPath">/Resources/SVGs/trash.svg</x:String>
     <x:String x:Key="TrayArrowDownPath">/Resources/SVGs/tray-arrow-down.svg</x:String>
     <x:String x:Key="TrayArrowUpPath">/Resources/SVGs/tray-arrow-up.svg</x:String>
+    <x:String x:Key="UploadSimplePath">/Resources/SVGs/upload-simple.svg</x:String>
     <x:String x:Key="XCirclePath">/Resources/SVGs/x-circle.svg</x:String>
-    <x:String x:Key="ArrowSquareOutPath">/Resources/SVGs/arrow-square-out.svg</x:String>
-    <Svg x:Key="ArrowOutHorizontal" Path="{StaticResource ArrowOutHorizontalPath}" />
-    <Svg x:Key="ArrowOutVertical" Path="{StaticResource ArrowOutVerticalPath}" />
-    <Svg x:Key="ArrowSquareOut" Path="{StaticResource ArrowSquareOutPath}" />
+    <x:String x:Key="YinYangPath">/Resources/SVGs/yin-yang.svg</x:String>
+    <Svg x:Key="ArrowsOutHorizontal" Path="{StaticResource ArrowsOutHorizontalPath}" />
+    <Svg x:Key="ArrowsOutVertical" Path="{StaticResource ArrowsOutVerticalPath}" />
+    <!-- <Svg x:Key="ArrowSquareOut" Path="{StaticResource ArrowSquareOutPath}" /> -->
     <Svg x:Key="Binoculars" Path="{StaticResource BinocularsPath}" />
-    <Svg x:Key="Browser" Path="{StaticResource BinocularsPath}" />
+    <Svg x:Key="Browser" Path="{StaticResource GoogleChromeLogoPath}" />
     <Svg x:Key="Eye" Path="{StaticResource EyePath}" />
-    <Svg x:Key="EyeSlash" Path="{StaticResource EyeSlashPath}" />
-    <Svg x:Key="FileArchive" Path="{StaticResource FileArchivePath}" />
+    <Svg x:Key="Trash" Path="{StaticResource TrashPath}" />
+    <!-- <Svg x:Key="FileArchive" Path="{StaticResource FileArchivePath}" /> -->
     <Svg x:Key="FolderOpen" Path="{StaticResource FolderOpenPath}" />
     <Svg x:Key="FrameCorners" Path="{StaticResource FrameCornersPath}" />
     <Svg x:Key="Gear" Path="{StaticResource GearPath}" />

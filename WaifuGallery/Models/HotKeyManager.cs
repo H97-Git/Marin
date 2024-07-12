@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Avalonia.Input;
 using WaifuGallery.Helpers;
 
@@ -22,8 +20,8 @@ public enum KeyCommand
     GoToParentFolder,
     OpenFolder,
     OpenImageInNewTab,
-    ToggleFileExplorer,
-    ToggleFileExplorerVisibility,
+    ToggleFileManager,
+    ToggleFileManagerVisibility,
     ShowPreview,
     HidePreview,
     FullScreen,
@@ -65,11 +63,11 @@ public class HotKeyManager
         {new KeyGesture(Key.U), KeyCommand.ZUniform},
         {new KeyGesture(Key.W, KeyModifiers.Control), KeyCommand.FitToWidthAndResetZoom},
         {new KeyGesture(Key.W, KeyModifiers.Shift), KeyCommand.FitToWidthAndResetZoom},
-        //File Explorer
+        //File Manager
         {new KeyGesture(Key.Back), KeyCommand.GoToParentFolder},
         {new KeyGesture(Key.Enter), KeyCommand.OpenFolder},
-        {new KeyGesture(Key.F), KeyCommand.ToggleFileExplorer},
-        {new KeyGesture(Key.F, KeyModifiers.Shift), KeyCommand.ToggleFileExplorerVisibility},
+        {new KeyGesture(Key.F), KeyCommand.ToggleFileManager},
+        {new KeyGesture(Key.F, KeyModifiers.Shift), KeyCommand.ToggleFileManagerVisibility},
         {new KeyGesture(Key.O), KeyCommand.OpenImageInNewTab},
         {new KeyGesture(Key.Space), KeyCommand.OpenImageInNewTab},
         //File Preview

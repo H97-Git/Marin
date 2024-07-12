@@ -16,7 +16,7 @@ public class MenuBarViewModel : ViewModelBase
 
     private bool _isMenuOpen;
     private bool _isMenuVisible = true;
-    private double _toggleFileExplorerIconAngle = 0;
+    private double _toggleFileManagerIconAngle = 0;
     private bool _isDebugMenuVisible = false;
 
     #endregion
@@ -52,10 +52,10 @@ public class MenuBarViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isDebugMenuVisible, value);
     }
 
-    public double ToggleFileExplorerIconAngle
+    public double ToggleFileManagerIconAngle
     {
-        get => _toggleFileExplorerIconAngle;
-        set => this.RaiseAndSetIfChanged(ref _toggleFileExplorerIconAngle, value);
+        get => _toggleFileManagerIconAngle;
+        set => this.RaiseAndSetIfChanged(ref _toggleFileManagerIconAngle, value);
     }
 
     #endregion
@@ -78,16 +78,16 @@ public class MenuBarViewModel : ViewModelBase
     public ICommand OpenSettingsTabCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenSettingsTabCommand()); });
 
-    public ICommand ToggleFileExplorerCommand =>
+    public ICommand ToggleFileManagerCommand =>
         ReactiveCommand.Create(() =>
         {
-            ToggleFileExplorerIconAngle = ToggleFileExplorerIconAngle == 0 ? 180 : 0;
-            MessageBus.Current.SendMessage(new ToggleFileExplorerCommand());
+            ToggleFileManagerIconAngle = ToggleFileManagerIconAngle == 0 ? 180 : 0;
+            MessageBus.Current.SendMessage(new ToggleFileManagerCommand());
         });
 
 
-    public ICommand ToggleFileExplorerVisibilityCommand =>
-        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileExplorerVisibilityCommand()); });
+    public ICommand ToggleFileManagerVisibilityCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileManagerVisibilityCommand()); });
 
     public ICommand ToggleFullScreenCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFullScreenCommand()); });

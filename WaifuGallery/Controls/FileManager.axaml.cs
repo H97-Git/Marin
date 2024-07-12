@@ -3,15 +3,15 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using WaifuGallery.ViewModels.FileExplorer;
+using WaifuGallery.ViewModels.FileManager;
 
 namespace WaifuGallery.Controls;
 
-public partial class FileExplorer : UserControl
+public partial class FileManager : UserControl
 {
     #region Private Fields
 
-    private FileExplorerViewModel? FileExplorerViewModel => DataContext as FileExplorerViewModel;
+    private FileManagerViewModel? FileManagerViewModel => DataContext as FileManagerViewModel;
 
     #endregion
 
@@ -19,21 +19,21 @@ public partial class FileExplorer : UserControl
 
     private void InputElement_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
-        FileExplorerViewModel?.PreviewImageViewModel.ZoomPreview(e.Delta.Y);
+        FileManagerViewModel?.PreviewImageViewModel.ZoomPreview(e.Delta.Y);
     }
 
     private void OnPointerMoved_ChangePreviewPosition(object? sender, PointerEventArgs e)
     {
         // if (e.KeyModifiers is not KeyModifiers.Control) return;
         if (sender is not Control control) return;
-        if (FileExplorerViewModel?.PreviewImageViewModel is null) return;
+        if (FileManagerViewModel?.PreviewImageViewModel is null) return;
         var point = e.GetPosition(control);
         var newPoint = CalcNewPoint(control.Bounds.Size, point,
-            FileExplorerViewModel.PreviewImageViewModel.PreviewSize);
+            FileManagerViewModel.PreviewImageViewModel.PreviewSize);
 
-        // FileExplorerViewModel?.SendMessageToStatusBar(
+        // FileManagerViewModel?.SendMessageToStatusBar(
         //     $"PointerMoved: X:{point.X}, Y:{point.Y} - Width:{size.Width}, Height:{size.Height}");
-        FileExplorerViewModel?.PreviewImageViewModel.ChangePreviewPosition(newPoint);
+        FileManagerViewModel?.PreviewImageViewModel.ChangePreviewPosition(newPoint);
     }
 
     private static Point CalcNewPoint(Size gridSize, Point pointerPosition, Size previewImageSize)
@@ -54,11 +54,11 @@ public partial class FileExplorer : UserControl
 
     #region Ctor
 
-    public FileExplorer()
+    public FileManager()
     {
         InitializeComponent();
         ImagePreviewControl.PointerWheelChanged += InputElement_OnPointerWheelChanged;
-        FileExplorerContent.PointerMoved += OnPointerMoved_ChangePreviewPosition;
+        FileManagerContent.PointerMoved += OnPointerMoved_ChangePreviewPosition;
     }
 
     #endregion
@@ -67,11 +67,11 @@ public partial class FileExplorer : UserControl
 
     public override void Render(DrawingContext context)
     {
-        if (FileExplorerViewModel is null) return;
-        var fileExplorerWidth = (int) FileExplorerListBox.Bounds.Size.Width;
+        if (FileManagerViewModel is null) return;
+        var fileManagerWidth = (int) FileManagerListBox.Bounds.Size.Width;
         //Todo: This should be taken from settings (or something like that) since this value doesn't reflect the actual desired size of the control.
         const int fileWidth = 165;
-        FileExplorerViewModel.ColumnsCount = fileExplorerWidth / fileWidth;
+        FileManagerViewModel.ColumnsCount = fileManagerWidth / fileWidth;
     }
 
     #endregion

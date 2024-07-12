@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Avalonia.Input;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using WaifuGallery.Commands;
 using WaifuGallery.Controls.Dialogs;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels.Dialogs;
@@ -34,13 +35,16 @@ public class ShortcutViewModel : ViewModelBase
         var keyGesture = await ShowSetKeyDialogAsync();
         if (keyGesture is null) return;
         if (!Gestures.Remove(oldKeyGesture)) return;
-        if (Settings.Instance.HotKeyManager.TrySetBinding(KeyCommand, keyGesture,oldKeyGesture, out var oldBinding))
+        if (Settings.Instance.HotKeyManager.TrySetBinding(KeyCommand, keyGesture, oldKeyGesture, out var oldBinding))
         {
             Gestures.Add(keyGesture);
         }
         else
         {
             // Show another dialog if the binding is already in use
+            Gestures.Add(oldKeyGesture);
+            MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Warning,
+                $"{keyGesture} is already used by {oldBinding}"));
         }
     }
 

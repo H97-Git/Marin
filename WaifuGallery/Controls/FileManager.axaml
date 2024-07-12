@@ -1,42 +1,46 @@
 ﻿<UserControl
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
-    x:Class="WaifuGallery.Controls.FileExplorer"
-    x:DataType="fileExplorer:FileExplorerViewModel"
+    x:Class="WaifuGallery.Controls.FileManager"
+    x:DataType="fileManager:FileManagerViewModel"
     xmlns:controls="clr-namespace:WaifuGallery.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns="https://github.com/avaloniaui"
-    Name="FileExplorerControl"
+    xmlns:fileManager="clr-namespace:WaifuGallery.ViewModels.FileManager"
+    Name="FileManagerControl"
     Margin="10,40,10,10">
     <Design.DataContext>
-        <fileExplorer:FileExplorerViewModel />
+        <fileManager:FileManagerViewModel />
     </Design.DataContext>
     <Expander
         HorizontalAlignment="Left"
-        IsExpanded="{Binding IsFileExplorerExpanded}"
+        IsExpanded="{Binding IsFileManagerExpanded}"
         IsPointerOver="{Binding IsPointerOver, Mode=OneWayToSource}"
-        IsVisible="{Binding IsFileExplorerVisible}"
+        IsVisible="{Binding IsFileManagerVisible}"
         Margin="0"
         Padding="0"
         VerticalAlignment="Bottom">
         <Expander.Header>
-            <!-- Expander.IsExpanded = false -->
-            <TextBlock Text="File Explorer" />
-            <!-- Expander.IsExpanded = true -->
+            <StackPanel Orientation="Horizontal">
+                <Svg Path="{DynamicResource FoldersPath}" Width="24" VerticalAlignment="Center" Margin="0,0,5,0" />
+                <TextBlock Text="File Manager" VerticalAlignment="Center" />
+            </StackPanel>
         </Expander.Header>
         <Grid
             RowDefinitions="Auto,*"
             MinHeight="500"
             MinWidth="500">
-            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Margin="10" Classes="fileExplorerToolBar">
+            <!-- Tool Bar -->
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Margin="10" Classes="fileManagerToolBar">
                 <Button Grid.Column="0" Command="{Binding OpenFileCommand}" ToolTip.Tip="Open folder">
-                    <ui:SymbolIcon Symbol="OpenFolder" FontSize="16" />
+                    <!-- <ui:SymbolIcon Symbol="OpenFolder" FontSize="16" /> -->
+                    <Svg Path="{StaticResource FolderOpenPath}" Width="18"/>
                 </Button>
                 <Button Grid.Column="1" Command="{Binding CreateNewFolder}" ToolTip.Tip="Create new folder">
-                    <ui:SymbolIcon Symbol="NewFolder" FontSize="16" />
+                    <Svg Path="{StaticResource FolderPlusPath}" Width="18"/>
+                    <!-- <ui:SymbolIcon Symbol="NewFolder" FontSize="16" /> -->
                 </Button>
                 <TextBox Grid.Column="2" Text="{Binding CurrentPath}"
                          HorizontalAlignment="Stretch"
@@ -44,18 +48,21 @@
                          IsFocused="{Binding IsSearchFocused, Mode=OneWayToSource}" />
                 <Button Grid.Column="3"
                         Command="{Binding GotoPreviousDirCommand}" ToolTip.Tip="Go Backward">
-                    <ui:SymbolIcon Symbol="Back" FontSize="16" />
+                    <!-- <ui:SymbolIcon Symbol="Back" FontSize="16" /> -->
+                    <Svg Path="{StaticResource CaretLeftPath}" Width="18" />
                 </Button>
                 <Button Grid.Column="4"
                         Command="{Binding GotoParentFolderCommand}" ToolTip.Tip="Go Up">
-                    <ui:SymbolIcon Symbol="Up" FontSize="16" />
+                    <!-- <ui:SymbolIcon Symbol="Up" FontSize="16" /> -->
+                    <Svg Path="{StaticResource ArrowBendRightUp}" Width="18" />
                 </Button>
                 <Button Grid.Column="5"
                         Command="{Binding GotoNextDirCommand}" ToolTip.Tip="Go Forward">
-                    <ui:SymbolIcon Symbol="Forward" FontSize="16" />
+                    <!-- <ui:SymbolIcon Symbol="Forward" FontSize="16" /> -->
+                    <Svg Path="{StaticResource CaretRightPath}" Width="18" />
                 </Button>
             </Grid>
-            <Panel Grid.Row="1" Name="FileExplorerContent">
+            <Panel Grid.Row="1" Name="FileManagerContent">
                 <controls:ImagePreview Name="ImagePreviewControl" DataContext="{Binding PreviewImageViewModel}" />
                 <!-- ListBox -->
                 <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -63,7 +70,7 @@
                          ItemsSource="{Binding FilesInDir}"
                          Margin="0,0,20,0"
                          SelectedIndex="{Binding SelectedIndex}"
-                         Name="FileExplorerListBox"
+                         Name="FileManagerListBox"
                          SelectionMode="Multiple"
                          BorderThickness="0"
                          IsVisible="{Binding !!FilesInDir.Count}">
@@ -71,17 +78,20 @@
                         <ContextMenu>
                             <MenuItem Header="Open in Explorer" Command="{Binding OpenInExplorer}">
                                 <MenuItem.Icon>
-                                    <ui:SymbolIcon Symbol="NewFolder" />
+                                    <!-- <ui:SymbolIcon Symbol="NewFolder" /> -->
+                                    <Svg Path="{StaticResource BinocularsPath}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Create new folder" Command="{Binding  CreateNewFolder}">
                                 <MenuItem.Icon>
-                                    <ui:SymbolIcon Symbol="NewFolder" />
+                                    <!-- <ui:SymbolIcon Symbol="NewFolder" /> -->
+                                    <Svg Path="{StaticResource FolderPlusPath}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Paste" Command="{Binding  Paste}">
                                 <MenuItem.Icon>
-                                    <ui:SymbolIcon Symbol="Paste" />
+                                    <!-- <ui:SymbolIcon Symbol="Paste" /> -->
+                                    <Svg Path="{StaticResource CopyPath}" />
                                 </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>

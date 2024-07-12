@@ -10,7 +10,8 @@
         <MenuItem Header="_File">
             <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}"
                       Icon="{DynamicResource FolderOpen}" />
-            <MenuItem Header="_Settings..." Command="{Binding OpenSettingsTabCommand}" Icon="{DynamicResource Gear}" />
+            <MenuItem Header="_Preferences ..." Command="{Binding OpenSettingsTabCommand}"
+                      Icon="{DynamicResource Gear}" />
             <Separator />
             <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}" Icon="{DynamicResource XCircle}" />
         </MenuItem>
@@ -18,18 +19,18 @@
             <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}"
                       Icon="{DynamicResource FrameCorners}" />
             <Separator />
-            <MenuItem Header="Toggle Files Explorer" Command="{Binding ToggleFileExplorerCommand}"
+            <MenuItem Header="Toggle Files Manager" Command="{Binding ToggleFileManagerCommand}"
                       Icon="{DynamicResource TrayArrowUp}" />
-            <MenuItem Header="Toggle Files Explorer Visibility" Command="{Binding ToggleFileExplorerVisibilityCommand}"
+            <MenuItem Header="Toggle Files Manager Visibility" Command="{Binding ToggleFileManagerVisibilityCommand}"
                       Icon="{DynamicResource Eye}" />
             <Separator />
             <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}"
-                      Icon="{DynamicResource ArrowOutHorizontal}" />
+                      Icon="{DynamicResource ArrowsOutHorizontal}" />
             <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}"
-                      Icon="{DynamicResource ArrowOutVertical}" />
+                      Icon="{DynamicResource ArrowsOutVertical}" />
         </MenuItem>
         <MenuItem Header="_Debug" IsVisible="{Binding IsDebugMenuVisible}">
-            <MenuItem Header="_Clear Thumbnails cache" Command="{Binding ClearCache}" Icon="{DynamicResource EyeSlash}" />
+            <MenuItem Header="_Clear Thumbnails cache" Command="{Binding ClearCache}" Icon="{DynamicResource Trash}" />
         </MenuItem>
     </Menu>
 </UserControl>

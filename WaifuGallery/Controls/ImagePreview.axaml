@@ -2,15 +2,15 @@
              PointerPressed="ImagePreview_OnPointerPressed"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="WaifuGallery.Controls.ImagePreview"
-             x:DataType="fileExplorer:PreviewImageViewModel"
+             x:DataType="fileManager:PreviewImageViewModel"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:fileExplorer="clr-namespace:WaifuGallery.ViewModels.FileExplorer"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns="https://github.com/avaloniaui"
+             xmlns:fileManager="clr-namespace:WaifuGallery.ViewModels.FileManager"
              ZIndex="99">
     <Design.DataContext>
-        <fileExplorer:PreviewImageViewModel></fileExplorer:PreviewImageViewModel>
+        <fileManager:PreviewImageViewModel></fileManager:PreviewImageViewModel>
     </Design.DataContext>
     <Canvas Name="PreviewCanvas">
         <Grid

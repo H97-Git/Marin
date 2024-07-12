@@ -9,21 +9,35 @@
             <Color x:Key="Color.Red">#FFFF6059</Color>
             <Color x:Key="Color.34">#3434EE</Color>
             <x:String x:Key="SvgCss">.svg {stroke: #000000;}</x:String>
+            <ui:ImageIconSource x:Key="ArrowsOutSvg" Source="{SvgImage SVGs/arrows-out.svg}" />
+            <ui:ImageIconSource x:Key="BarricadeSvg" Source="{SvgImage SVGs/barricade.svg}" />
+            <ui:ImageIconSource x:Key="FoldersSvg" Source="{SvgImage SVGs/folders.svg}" />
+            <ui:ImageIconSource x:Key="KeyboardSvg" Source="{SvgImage SVGs/keyboard.svg}" />
+            <ui:ImageIconSource x:Key="PictureInPictureSvg" Source="{SvgImage SVGs/picture-in-picture.svg}" />
             <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/tabs.svg}" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Dark">
-            <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/variants/tabs.svg}" />
             <Color x:Key="Color.Accent">#3A3AFF</Color>
             <Color x:Key="Color.Background">#0E0E0E</Color>
             <Color x:Key="Color.Foreground">#EFEFEF</Color>
             <Color x:Key="Color.Red">#FFFF5E56</Color>
             <x:String x:Key="SvgCss">.svg {stroke: #FFFFFF;}</x:String>
+            <ui:ImageIconSource x:Key="ArrowsOutSvg" Source="{SvgImage SVGs/variants/arrows-out.svg}" />
+            <ui:ImageIconSource x:Key="BarricadeSvg" Source="{SvgImage SVGs/variants/barricade.svg}" />
+            <ui:ImageIconSource x:Key="FoldersSvg" Source="{SvgImage SVGs/variants/folders.svg}" />
+            <ui:ImageIconSource x:Key="KeyboardSvg" Source="{SvgImage SVGs/variants/keyboard.svg}" />
+            <ui:ImageIconSource x:Key="PictureInPictureSvg" Source="{SvgImage SVGs/variants/picture-in-picture.svg}" />
+            <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/variants/tabs.svg}" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
+    <ui:ImageIconSource x:Key="FrameCornersSvg" Source="{SvgImage SVGs/frame-corners.svg}" />
 
     <SolidColorBrush x:Key="Brush.Error" Color="{DynamicResource Color.Red}" />
     <SolidColorBrush x:Key="Brush.Accent" Color="{DynamicResource Color.Accent}" />
     <SolidColorBrush x:Key="Brush.Foreground" Color="{DynamicResource Color.Foreground}" />
     <SolidColorBrush x:Key="Brush.Background" Color="{DynamicResource Color.Background}" />
+    <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="{DynamicResource Color.Background}" />
+    <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="{DynamicResource Color.Background}" />
+    <SolidColorBrush x:Key="ListViewItemForegroundPointerOver" Color="{DynamicResource Color.Foreground}" />
 </ResourceDictionary>

@@ -11,7 +11,7 @@ public class OpenFileCommand : ITabCommand
 
 public class OpenSettingsTabCommand : ITabCommand;
 
-public class OpenInNewTabCommand(int index, string[] imagesInPath) : IFileExplorerCommand
+public class OpenInNewTabCommand(int index, string[] imagesInPath) : IFileManagerCommand
 {
     public int Index { get; } = index;
     public string[] ImagesInPath { get; } = imagesInPath;

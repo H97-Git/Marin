@@ -6,7 +6,7 @@ public interface IFileCommand : ICommandMessage
 
 public class FileCommand(string path) : IFileCommand
 {
-    public string Path { get; } = path;
+    public string Path { get; set; } = path;
 }
 
 public class CopyCommand(string path) : FileCommand(path);

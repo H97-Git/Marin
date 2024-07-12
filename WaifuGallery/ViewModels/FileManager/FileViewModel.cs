@@ -11,7 +11,7 @@ using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
-namespace WaifuGallery.ViewModels.FileExplorer;
+namespace WaifuGallery.ViewModels.FileManager;
 
 public sealed class FileViewModel : ViewModelBase
 {
@@ -25,6 +25,7 @@ public sealed class FileViewModel : ViewModelBase
     private bool _isDirectoryEmpty;
     private bool _isFileReadOnly;
     private bool _isImage;
+    private bool _isDirectory;
     private bool _isRenaming;
     private long _sizeInBytes;
     private string _createdTime = string.Empty;
@@ -53,7 +54,7 @@ public sealed class FileViewModel : ViewModelBase
 
     #region Private Methods
 
-    private async void Initialize()
+    private void Initialize()
     {
         Directory.CreateDirectory(ThumbnailsPath);
         switch (_fileSystemInfo)
@@ -64,6 +65,7 @@ public sealed class FileViewModel : ViewModelBase
                     SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
                 _isDirectoryEmpty = Helper.IsDirectoryEmpty(_fileSystemInfo);
                 Symbol = _isDirectoryEmpty ? Symbol.Folder : Symbol.FolderFilled;
+                IsDirectory = true;
                 break;
             case FileInfo fileInfo:
                 ParentPath = fileInfo.DirectoryName;
@@ -154,7 +156,13 @@ public sealed class FileViewModel : ViewModelBase
     public bool IsArchive
     {
         get => _isArchive;
-        private set => this.RaiseAndSetIfChanged(ref _isArchive, value);
+        set => this.RaiseAndSetIfChanged(ref _isArchive, value);
+    }
+
+    public bool IsDirectory
+    {
+        get => _isDirectory;
+        set => this.RaiseAndSetIfChanged(ref _isDirectory, value);
     }
 
     public bool IsRenaming
@@ -244,7 +252,13 @@ public sealed class FileViewModel : ViewModelBase
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ExtractCommand(FullPath)); });
 
     public ICommand CalculateSize =>
-        ReactiveCommand.Create(() => { SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo); });
+        ReactiveCommand.Create(() =>
+        {
+            if (SizeInBytes is 0)
+            {
+                SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
+            }
+        });
 
     public ICommand Rename =>
         ReactiveCommand.Create(() => { IsRenaming = true; });

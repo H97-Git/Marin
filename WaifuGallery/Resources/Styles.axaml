@@ -1,12 +1,10 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-        xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
-        xmlns:models="clr-namespace:WaifuGallery.Models">
+        xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
         <StackPanel Margin="10">
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,0" Width="500"
-                  Classes="fileExplorerToolBar">
+                  Classes="fileManagerToolBar">
                 <TextBox
                     Grid.Column="1" Text="C://Windows"
                     HorizontalAlignment="Stretch"
@@ -30,30 +28,31 @@
         <Setter Property="Css" Value="{DynamicResource SvgCss}" />
     </Style>
     <Style Selector="Window">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
     </Style>
-    <Style Selector="ContentPresenter">
-        <Setter Property="FontFamily"
-                Value="{Binding Source={x:Static models:Settings.Instance}, Path=DefaultFont}" />
-    </Style>
-    <Style Selector="ListBox#FileExplorerListBox">
+    <!-- <Style Selector="ContentPresenter"> -->
+    <!--     <Setter Property="FontFamily" -->
+    <!--             Value="{Binding Source={x:Static models:Settings.Instance}, Path=DefaultFont}" /> -->
+    <!-- </Style> -->
+    <Style Selector="ListBox#FileManagerListBox">
         <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="Expander /template/ Border">
         <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
+        <Setter Property="CornerRadius" Value="4" />
     </Style>
     <Style Selector="TextBox /template/ Border#PART_BorderElement">
         <Setter Property="BorderBrush" Value="Red" />
         <Setter Property="BorderThickness" Value="0,0,0,0"></Setter>
     </Style>
-    
-    <Style Selector="Grid.fileExplorerToolBar TextBox">
+
+    <Style Selector="Grid.fileManagerToolBar TextBox">
         <Setter Property="Margin" Value="0,0,5,0" />
     </Style>
-    <Style Selector="Grid.fileExplorerToolBar Button">
+    <Style Selector="Grid.fileManagerToolBar Button">
         <Setter Property="Margin" Value="0,0,5,0" />
     </Style>
-    <Style Selector="ListBox#FileExplorerListBox ListBoxItem:selected /template/ Rectangle#SelectionIndicator">
+    <Style Selector="ListBox#FileManagerListBox ListBoxItem:selected /template/ Rectangle#SelectionIndicator">
         <Setter Property="IsVisible" Value="False" />
     </Style>
     <Style Selector="Control.rotating">

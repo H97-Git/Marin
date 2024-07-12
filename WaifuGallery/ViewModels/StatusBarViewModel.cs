@@ -3,6 +3,8 @@ using Avalonia.Media;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
+using WaifuGallery.Models;
+using Timer = System.Timers.Timer;
 
 namespace WaifuGallery.ViewModels;
 
@@ -17,6 +19,7 @@ public class StatusBarViewModel : ViewModelBase
     private string _message = "Welcome to WaifuGallery!";
     private string _title = "Information";
     private int _countDuplicates;
+    private readonly Timer _timer;
 
     #endregion
 
@@ -37,6 +40,10 @@ public class StatusBarViewModel : ViewModelBase
             _countDuplicates = 0;
             Message = command.Message;
         }
+
+        if (!Settings.Instance.AutoHideStatusBar) return;
+        _timer.Stop();
+        _timer.Start();
     }
 
     #endregion
@@ -45,6 +52,9 @@ public class StatusBarViewModel : ViewModelBase
 
     public StatusBarViewModel()
     {
+        _timer = new Timer(3000);
+        _timer.Elapsed += (_, _) => IsStatusBarVisible = false;
+        _timer.AutoReset = false;
         MessageBus.Current.Listen<SendMessageToStatusBarCommand>()
             .Subscribe(SetMessage);
 

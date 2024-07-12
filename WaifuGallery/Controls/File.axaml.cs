@@ -7,7 +7,7 @@ using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
-using WaifuGallery.ViewModels.FileExplorer;
+using WaifuGallery.ViewModels.FileManager;
 
 namespace WaifuGallery.Controls;
 
@@ -52,7 +52,7 @@ public partial class File : UserControl
     }
 
     // private void OnPointerExited_ClosePreview(object? sender, PointerEventArgs e) =>
-    //     FileViewModel?.SendCommandToFileExplorer(new Command(CommandType.ClosePreview));
+    //     FileViewModel?.SendCommandToFileManager(new Command(CommandType.ClosePreview));
 
     private void OnPointerReleased_OpenInNewTab(object? sender, PointerReleasedEventArgs e)
     {

@@ -9,25 +9,25 @@
              x:Class="WaifuGallery.Controls.Shortcut"
              Name="ShortcutControl"
              Margin="5">
-    <ui:SettingsExpanderItem Content="{Binding KeyCommand}">
+    <ui:SettingsExpanderItem Content="{Binding KeyCommand}" >
         <ui:SettingsExpanderItem.Footer>
             <!-- <StackPanel Orientation="Vertical"> -->
             <ItemsControl ItemsSource="{Binding Gestures}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button Content="{Binding Key}"
+                        <Button Content="{Binding}"
+                                Margin="5,0"
                                 Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).UpdateKeyCommand}"
                                 CommandParameter="{Binding}">
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <!-- <StackPanel Orientation="Horizontal"> -->
-            <!-- <Button Content="{Binding Gestures[0] }" Command="{Binding UpdateKeyCommand}" /> -->
-            <!-- <Button Content="{Binding Gestures[1] }" Command="{Binding UpdateKeyCommand}" /> -->
-            <!-- <Button Content="{Binding Gestures[2] }" Command="{Binding UpdateKeyCommand}" /> -->
-            <!-- </StackPanel> -->
-            <!-- </StackPanel> -->
         </ui:SettingsExpanderItem.Footer>
     </ui:SettingsExpanderItem>
 </UserControl>

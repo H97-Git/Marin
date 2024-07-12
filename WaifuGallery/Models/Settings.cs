@@ -63,14 +63,17 @@ public class Settings
     public bool IsSettingsTabCycled { get; set; }
     public bool IsTabSettingsClosable { get; set; }
     public bool ShouldCalculateFolderSize { get; set; }
-    public bool ShouldHideFileExplorer { get; set; }
+    public bool ShouldHideFileManager { get; set; }
     public bool ShouldHideMenuBar { get; set; }
+    public bool AutoHideStatusBar { get; set; }
     public bool ShouldHideStatusBar { get; set; }
     public bool ShouldHideTabsHeader { get; set; }
     public bool ShouldSaveLastPathOnExit { get; set; }
+    public bool PreviewFollowMouse { get; set; }
     public int PreviewDepth { get; set; }
+    public int PreviewDefaultZoom { get; set; }
     public string Theme { get; set; } = "System";
-    public string? FileExplorerLastPath { get; set; }
+    public string? FileManagerLastPath { get; set; }
 
     public static string SettingsPath
     {

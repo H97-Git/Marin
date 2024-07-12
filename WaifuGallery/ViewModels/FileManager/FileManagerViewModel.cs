@@ -16,27 +16,66 @@ using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
-namespace WaifuGallery.ViewModels.FileExplorer;
+namespace WaifuGallery.ViewModels.FileManager;
 
-public class FileExplorerViewModel : ViewModelBase
+public class FileManagerViewModel : ViewModelBase
 {
     #region Private Fields
 
-    private Brush? _fileExplorerBackground;
+    private Brush? _fileManagerBackground;
     private ScrollBarVisibility _scrollBarVisibility = ScrollBarVisibility.Auto;
-    private bool _isFileExplorerExpanded = true;
-    private bool _isFileExplorerVisible = true;
+    private bool _isFileManagerExpanded = true;
+    private bool _isFileManagerVisible = true;
     private bool _isPointerOver;
     private bool _isSearchFocused;
     private int _columnsCount;
-    private int _selectedIndexInFileExplorer;
+    private int _selectedIndexInFileManager;
     private int _batchSize = 10;
-    private readonly FileExplorerHistory _pathHistory = new();
+    private readonly FileManagerHistory _pathHistory = new();
     private string _currentPath = string.Empty;
 
     #endregion
 
     #region Private Methods
+
+    private void SortFileInDir()
+    {
+        FilesInDir = new ObservableCollection<FileViewModel>(FilesInDir.OrderBy(f => f.FileName,
+            StringComparison.OrdinalIgnoreCase.WithNaturalSort()));
+    }
+
+    private void RefreshFileManager(IFileCommand fileCommand)
+    {
+        switch (fileCommand)
+        {
+            case NewFolderCommand newFolderCommand:
+                var newFolderInfo = new DirectoryInfo(newFolderCommand.Path);
+                FilesInDir.Add(new FileViewModel(newFolderInfo));
+                break;
+            case DeleteCommand deleteCommand:
+                var fvm = FilesInDir.FirstOrDefault(x => x.FullPath == deleteCommand.Path);
+                if (fvm is not null)
+                    FilesInDir.Remove(fvm);
+                break;
+            case PasteCommand pasteCommand:
+                if (File.Exists(pasteCommand.Path))
+                {
+                    var fileInfo = new FileInfo(pasteCommand.Path);
+                    FilesInDir.Add(new FileViewModel(fileInfo));
+                    return;
+                }
+
+                if (Directory.Exists(pasteCommand.Path))
+                {
+                    var dirInfo = new DirectoryInfo(pasteCommand.Path);
+                    FilesInDir.Add(new FileViewModel(dirInfo));
+                }
+
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(fileCommand), fileCommand, null);
+        }
+    }
 
     private void GetFilesFromPath(string? path)
     {
@@ -54,7 +93,7 @@ public class FileExplorerViewModel : ViewModelBase
             return;
         }
 
-        Settings.Instance.FileExplorerLastPath = path;
+        Settings.Instance.FileManagerLastPath = path;
         FilesInDir.Clear();
         SetDirsAndFiles(currentPathDirectoryInfo);
     }
@@ -106,7 +145,7 @@ public class FileExplorerViewModel : ViewModelBase
         // await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.AddRange(list));
     }
 
-    private async void OpenPathInFileExplorer()
+    private async void OpenPathInFileManager()
     {
         var storageProvider = App.GetTopLevel()?.StorageProvider;
         if (storageProvider is null) return;
@@ -139,20 +178,29 @@ public class FileExplorerViewModel : ViewModelBase
 
     #region CTOR
 
-    public FileExplorerViewModel()
+    public FileManagerViewModel()
     {
-        FileExplorerBackground = new SolidColorBrush(Colors.Transparent);
+        FileManagerBackground = new SolidColorBrush(Colors.Transparent);
         this.WhenAnyValue(x => x.CurrentPath)
             .Subscribe(GetFilesFromPath);
-        this.WhenAnyValue(x => x.IsFileExplorerExpanded)
+        this.WhenAnyValue(x => x.IsFileManagerExpanded)
             .Subscribe(_ =>
-                FileExplorerBackground = IsFileExplorerExpanded ? new SolidColorBrush(Colors.Transparent) : null);
+                FileManagerBackground = IsFileManagerExpanded ? new SolidColorBrush(Colors.Transparent) : null);
         this.WhenAnyValue(x => x.PreviewImageViewModel.IsPreviewImageVisible)
             .Subscribe(ToggleScrollbarVisibility);
 
-        if (Settings.Instance.ShouldSaveLastPathOnExit && Settings.Instance.FileExplorerLastPath is not null)
+        if (Settings.Instance.ShouldSaveLastPathOnExit && Settings.Instance.FileManagerLastPath is not null)
         {
-            ChangePath(Settings.Instance.FileExplorerLastPath);
+            var path = Settings.Instance.FileManagerLastPath;
+            if (Directory.Exists(path))
+            {
+                ChangePath(path);
+            }
+            else
+            {
+                SendMessageToStatusBar(InfoBarSeverity.Error, "The saved path does not exist anymore");
+                ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
+            }
         }
         else
         {
@@ -161,9 +209,9 @@ public class FileExplorerViewModel : ViewModelBase
 
         MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
         MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => PreviewImageViewModel.ShowPreview(x.Path));
-        MessageBus.Current.Listen<ToggleFileExplorerCommand>().Subscribe(_ => ToggleFileExplorer());
-        MessageBus.Current.Listen<ToggleFileExplorerVisibilityCommand>().Subscribe(_ => ToggleFileExplorerVisibility());
-        MessageBus.Current.Listen<RefreshFileExplorerCommand>().Subscribe(_ => GetFilesFromPath(CurrentPath));
+        MessageBus.Current.Listen<ToggleFileManagerCommand>().Subscribe(_ => ToggleFileManager());
+        MessageBus.Current.Listen<ToggleFileManagerVisibilityCommand>().Subscribe(_ => ToggleFileManagerVisibility());
+        MessageBus.Current.Listen<RefreshFileManagerCommand>().Subscribe(x => RefreshFileManager(x.FileCommand));
     }
 
     private void ToggleScrollbarVisibility(bool isPreviewImageVisible)
@@ -185,13 +233,13 @@ public class FileExplorerViewModel : ViewModelBase
 
     public FileViewModel SelectedFile => FilesInDir[SelectedIndex];
 
-    public Brush? FileExplorerBackground
+    public Brush? FileManagerBackground
     {
-        get => _fileExplorerBackground;
-        set => this.RaiseAndSetIfChanged(ref _fileExplorerBackground, value);
+        get => _fileManagerBackground;
+        set => this.RaiseAndSetIfChanged(ref _fileManagerBackground, value);
     }
 
-    public ObservableCollection<FileViewModel> FilesInDir { get; init; } = [];
+    public ObservableCollection<FileViewModel> FilesInDir { get; set; } = [];
 
     public ScrollBarVisibility ScrollBarVisibility
     {
@@ -205,19 +253,19 @@ public class FileExplorerViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isPointerOver, value);
     }
 
-    public bool IsFileExplorerVisible
+    public bool IsFileManagerVisible
     {
-        get => _isFileExplorerVisible;
-        set => this.RaiseAndSetIfChanged(ref _isFileExplorerVisible, value);
+        get => _isFileManagerVisible;
+        set => this.RaiseAndSetIfChanged(ref _isFileManagerVisible, value);
     }
 
-    public bool IsFileExplorerExpanded
+    public bool IsFileManagerExpanded
     {
-        get => _isFileExplorerExpanded;
-        set => this.RaiseAndSetIfChanged(ref _isFileExplorerExpanded, value);
+        get => _isFileManagerExpanded;
+        set => this.RaiseAndSetIfChanged(ref _isFileManagerExpanded, value);
     }
 
-    public bool IsFileExplorerExpandedAndVisible => IsFileExplorerExpanded && IsFileExplorerVisible;
+    public bool IsFileManagerExpandedAndVisible => IsFileManagerExpanded && IsFileManagerVisible;
 
     public bool IsSearchFocused
     {
@@ -233,7 +281,7 @@ public class FileExplorerViewModel : ViewModelBase
 
     public int SelectedIndex
     {
-        get => _selectedIndexInFileExplorer;
+        get => _selectedIndexInFileManager;
         set
         {
             if (value < 0)
@@ -242,7 +290,7 @@ public class FileExplorerViewModel : ViewModelBase
             if (value >= FilesInDir.Count)
                 value = FilesInDir.Count - 1;
 
-            this.RaiseAndSetIfChanged(ref _selectedIndexInFileExplorer, value);
+            this.RaiseAndSetIfChanged(ref _selectedIndexInFileManager, value);
         }
     }
 
@@ -269,9 +317,9 @@ public class FileExplorerViewModel : ViewModelBase
         UpdatePath(path);
     }
 
-    public void ToggleFileExplorer() => IsFileExplorerExpanded = !IsFileExplorerExpanded;
+    public void ToggleFileManager() => IsFileManagerExpanded = !IsFileManagerExpanded;
 
-    public void ToggleFileExplorerVisibility() => IsFileExplorerVisible = !IsFileExplorerVisible;
+    public void ToggleFileManagerVisibility() => IsFileManagerVisible = !IsFileManagerVisible;
 
     public void GoUp()
     {
@@ -310,7 +358,7 @@ public class FileExplorerViewModel : ViewModelBase
     public ICommand GotoParentFolderCommand => ReactiveCommand.Create(GoToParentFolder);
     public ICommand GotoNextDirCommand => ReactiveCommand.Create(GoForwardHistory);
     public ICommand GotoPreviousDirCommand => ReactiveCommand.Create(GoBackwardHistory);
-    public ICommand OpenFileCommand => ReactiveCommand.Create(OpenPathInFileExplorer);
+    public ICommand OpenFileCommand => ReactiveCommand.Create(OpenPathInFileManager);
 
     public ICommand Paste =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new PasteCommand(CurrentPath)); });

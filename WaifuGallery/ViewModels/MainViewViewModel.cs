@@ -10,10 +10,10 @@ using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Controls.Dialogs;
 using WaifuGallery.ViewModels.Dialogs;
-using WaifuGallery.ViewModels.FileExplorer;
 using WaifuGallery.ViewModels.Tabs;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
+using WaifuGallery.ViewModels.FileManager;
 using File = System.IO.File;
 
 namespace WaifuGallery.ViewModels;
@@ -25,7 +25,7 @@ public class MainViewViewModel : ViewModelBase
     private bool _isDialogOpen;
     private readonly DataObject _clipBoardDataObject = new();
     private ImageTabViewModel? ImageTabViewModel => TabsViewModel.ImageTabViewModel;
-    private PreviewImageViewModel PreviewImageViewModel => FileExplorerViewModel.PreviewImageViewModel;
+    private PreviewImageViewModel PreviewImageViewModel => FileManagerViewModel.PreviewImageViewModel;
 
     #endregion
 
@@ -38,21 +38,21 @@ public class MainViewViewModel : ViewModelBase
         switch (hk)
         {
             case KeyCommand.FirstImage:
-                if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
+                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.ImageTabViewModel?.LoadFirstImage();
                 break;
             case KeyCommand.LastImage:
-                if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
+                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.ImageTabViewModel?.LoadLastImage();
                 break;
             case KeyCommand.GoRight:
             case KeyCommand.NextImage:
-                if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
+                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.ImageTabViewModel?.LoadNextImage();
                 break;
             case KeyCommand.PreviousImage:
             case KeyCommand.GoLeft:
-                if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
+                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
                 break;
             case KeyCommand.FullScreen:
@@ -65,7 +65,7 @@ public class MainViewViewModel : ViewModelBase
                 TabsViewModel.FitToHeightAndResetZoom();
                 break;
             case KeyCommand.OpenPreferences:
-                if (!FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
+                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.OpenSettingsTab();
                 break;
             case KeyCommand.None:
@@ -74,8 +74,7 @@ public class MainViewViewModel : ViewModelBase
                 return;
         }
     }
-
-    private void HandleFileExplorerKeyboardEvent(KeyEventArgs e)
+    private void HandleFileManagerKeyboardEvent(KeyEventArgs e)
     {
         var keyGesture = new KeyGesture(e.Key, e.KeyModifiers);
         var hk = Settings.Instance.HotKeyManager.GetBinding(keyGesture);
@@ -88,34 +87,34 @@ public class MainViewViewModel : ViewModelBase
                 PreviewImageViewModel.NextPreview();
                 break;
             case KeyCommand.GoUp:
-                FileExplorerViewModel.GoUp();
+                FileManagerViewModel.GoUp();
                 break;
             case KeyCommand.GoDown:
-                FileExplorerViewModel.GoDown();
+                FileManagerViewModel.GoDown();
                 break;
             case KeyCommand.GoLeft:
-                FileExplorerViewModel.SelectedIndex -=1;
+                FileManagerViewModel.SelectedIndex -= 1;
                 break;
             case KeyCommand.GoRight:
-                FileExplorerViewModel.SelectedIndex +=1;
+                FileManagerViewModel.SelectedIndex += 1;
                 break;
             case KeyCommand.GoToParentFolder:
-                FileExplorerViewModel.GoToParentFolder();
+                FileManagerViewModel.GoToParentFolder();
                 break;
             case KeyCommand.OpenFolder:
-                FileExplorerViewModel.ChangePath(FileExplorerViewModel.SelectedFile.FullPath);
+                FileManagerViewModel.ChangePath(FileManagerViewModel.SelectedFile.FullPath);
                 break;
             case KeyCommand.OpenImageInNewTab:
-                FileExplorerViewModel.OpenImageTabFromKeyboardEvent();
+                FileManagerViewModel.OpenImageTabFromKeyboardEvent();
                 break;
-            case KeyCommand.ToggleFileExplorer:
-                FileExplorerViewModel.ToggleFileExplorer();
+            case KeyCommand.ToggleFileManager:
+                FileManagerViewModel.ToggleFileManager();
                 break;
-            case KeyCommand.ToggleFileExplorerVisibility:
-                FileExplorerViewModel.ToggleFileExplorerVisibility();
+            case KeyCommand.ToggleFileManagerVisibility:
+                FileManagerViewModel.ToggleFileManagerVisibility();
                 break;
             case KeyCommand.ShowPreview:
-                PreviewImageViewModel.ShowPreview(FileExplorerViewModel.SelectedFile.FullPath);
+                PreviewImageViewModel.ShowPreview(FileManagerViewModel.SelectedFile.FullPath);
                 break;
             case KeyCommand.HidePreview:
                 PreviewImageViewModel.HidePreview();
@@ -137,8 +136,8 @@ public class MainViewViewModel : ViewModelBase
                 MenuBarViewModel.IsMenuVisible = false;
             if (Settings.Instance.ShouldHideTabsHeader)
                 TabsViewModel.IsTabHeadersVisible = false;
-            if (Settings.Instance.ShouldHideFileExplorer)
-                FileExplorerViewModel.IsFileExplorerVisible = false;
+            if (Settings.Instance.ShouldHideFileManager)
+                FileManagerViewModel.IsFileManagerVisible = false;
             if (Settings.Instance.ShouldHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = false;
         }
@@ -147,7 +146,7 @@ public class MainViewViewModel : ViewModelBase
             mainWindow.WindowState = WindowState.Normal;
             MenuBarViewModel.IsMenuVisible = true;
             TabsViewModel.IsTabHeadersVisible = true;
-            FileExplorerViewModel.IsFileExplorerVisible = true;
+            FileManagerViewModel.IsFileManagerVisible = true;
             StatusBarViewModel.IsStatusBarVisible = true;
         }
     }
@@ -215,7 +214,7 @@ public class MainViewViewModel : ViewModelBase
             return;
         }
 
-        MessageBus.Current.SendMessage(new RefreshFileExplorerCommand());
+        MessageBus.Current.SendMessage(new RefreshFileManagerCommand(command));
         SendMessageToStatusBar(InfoBarSeverity.Success, "File deleted successfully!");
     }
 
@@ -248,14 +247,19 @@ public class MainViewViewModel : ViewModelBase
                 }
                 else
                 {
-                    var s = Path.Combine(destination, Path.GetFileName(sourceFileCommand.Path));
-                    Directory.Move(sourceFileCommand.Path, s);
+                    destination = Path.Combine(command.Path, Path.GetFileName(sourceFileCommand.Path));
+                    Directory.Move(sourceFileCommand.Path, destination);
                 }
 
                 break;
         }
 
-        MessageBus.Current.SendMessage(new RefreshFileExplorerCommand());
+        if (sourceFileCommand is null)
+        {
+            return;
+        }
+        command.Path = destination;
+        MessageBus.Current.SendMessage(new RefreshFileManagerCommand(command));
         SendMessageToStatusBar(InfoBarSeverity.Success, "Pasted successfully!");
     }
 
@@ -269,6 +273,7 @@ public class MainViewViewModel : ViewModelBase
             if (newFolderName != null)
             {
                 Directory.CreateDirectory(Path.Combine(command.Path, newFolderName));
+                command.Path = Path.Combine(command.Path, newFolderName);
             }
             else
             {
@@ -286,7 +291,7 @@ public class MainViewViewModel : ViewModelBase
         }
 
         if (isCanceled) return;
-        MessageBus.Current.SendMessage(new RefreshFileExplorerCommand());
+        MessageBus.Current.SendMessage(new RefreshFileManagerCommand(command));
         SendMessageToStatusBar(InfoBarSeverity.Success, "Folder created successfully!");
     }
 
@@ -331,35 +336,35 @@ public class MainViewViewModel : ViewModelBase
 
     private void ShowPreview()
     {
-        FileExplorerViewModel.PreviewImageViewModel.ShowPreview(FileExplorerViewModel.SelectedFile.FullPath);
+        FileManagerViewModel.PreviewImageViewModel.ShowPreview(FileManagerViewModel.SelectedFile.FullPath);
     }
 
     private void ChangePath()
     {
-        FileExplorerViewModel.ChangePath(FileExplorerViewModel.SelectedFile.FullPath);
+        FileManagerViewModel.ChangePath(FileManagerViewModel.SelectedFile.FullPath);
     }
 
     private void GoLeft()
     {
-        if (FileExplorerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
+        if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
         {
-            FileExplorerViewModel.PreviewImageViewModel.PreviousPreview();
+            FileManagerViewModel.PreviewImageViewModel.PreviousPreview();
         }
         else
         {
-            FileExplorerViewModel.SelectedIndex -= 1;
+            FileManagerViewModel.SelectedIndex -= 1;
         }
     }
 
     private void GoRight()
     {
-        if (FileExplorerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
+        if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
         {
-            FileExplorerViewModel.PreviewImageViewModel.NextPreview();
+            FileManagerViewModel.PreviewImageViewModel.NextPreview();
         }
         else
         {
-            FileExplorerViewModel.SelectedIndex += 1;
+            FileManagerViewModel.SelectedIndex += 1;
         }
     }
 
@@ -371,7 +376,7 @@ public class MainViewViewModel : ViewModelBase
     {
         MenuBarViewModel = new MenuBarViewModel();
         TabsViewModel = new TabsViewModel();
-        FileExplorerViewModel = new FileExplorerViewModel();
+        FileManagerViewModel = new FileManagerViewModel();
         StatusBarViewModel = new StatusBarViewModel();
         MessageBus.Current.Listen<ClearCacheCommand>().Subscribe(_ => Helper.ClearThumbnailsCache());
         MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
@@ -394,7 +399,7 @@ public class MainViewViewModel : ViewModelBase
     public MenuBarViewModel MenuBarViewModel { get; set; }
     public TabsViewModel TabsViewModel { get; set; }
 
-    public FileExplorerViewModel FileExplorerViewModel { get; set; }
+    public FileManagerViewModel FileManagerViewModel { get; set; }
     public StatusBarViewModel StatusBarViewModel { get; }
 
     #endregion
@@ -404,11 +409,11 @@ public class MainViewViewModel : ViewModelBase
     public void HandleKeyBoardEvent(KeyEventArgs e)
     {
         if (_isDialogOpen) return;
-        if (FileExplorerViewModel.IsSearchFocused) return;
+        if (FileManagerViewModel.IsSearchFocused) return;
         HandleMainViewKeyboardEvent(e);
 
-        if (FileExplorerViewModel.IsFileExplorerExpandedAndVisible)
-            HandleFileExplorerKeyboardEvent(e);
+        if (FileManagerViewModel.IsFileManagerExpandedAndVisible)
+            HandleFileManagerKeyboardEvent(e);
         e.Handled = true;
     }
 

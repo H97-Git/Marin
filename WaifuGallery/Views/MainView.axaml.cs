@@ -21,12 +21,12 @@ public partial class MainView : UserControl
         if (e.InitialPressMouseButton is MouseButton.Middle) return;
         switch (MainViewModel)
         {
-            case {FileExplorerViewModel.IsFileExplorerExpanded: false}:
-            case {FileExplorerViewModel.IsFileExplorerVisible: false}:
-            case {FileExplorerViewModel.IsPointerOver: true}:
+            case {FileManagerViewModel.IsFileManagerExpanded: false}:
+            case {FileManagerViewModel.IsFileManagerVisible: false}:
+            case {FileManagerViewModel.IsPointerOver: true}:
                 return;
             default:
-                MainViewModel?.FileExplorerViewModel.ToggleFileExplorer();
+                MainViewModel?.FileManagerViewModel.ToggleFileManager();
                 break;
         }
     }
@@ -63,7 +63,7 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
-        FileExplorerPanel.PointerReleased += InputElement_OnPointerReleased;
+        FileManagerPanel.PointerReleased += InputElement_OnPointerReleased;
     }
 
     #endregion

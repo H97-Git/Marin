@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WaifuGallery.Models;
 
-public class FileExplorerHistory
+public class FileManagerHistory
 {
     #region Private Fields
 

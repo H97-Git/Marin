@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Input;
 using Avalonia.Styling;
 using FluentAvalonia.Styling;
-using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Models;
-using WaifuGallery.ViewModels.Dialogs;
-using KeyboardKeySetter = WaifuGallery.Controls.Dialogs.KeyboardKeySetter;
 
 namespace WaifuGallery.ViewModels.Tabs;
 
@@ -18,15 +13,18 @@ public class PreferencesTabViewModel : TabViewModelBase
 {
     #region Private Fields
 
+    private bool _autoHideStatusBar;
     private bool _isDuplicateTabsAllowed;
     private bool _isSettingsTabCycled;
     private bool _isTabSettingsClosable;
+    private bool _previewFollowMouse;
     private bool _shouldCalculateFolderSize;
-    private bool _shouldHideFileExplorer;
+    private bool _shouldHideFileManager;
     private bool _shouldHideMenuBar;
     private bool _shouldHideStatusBar;
     private bool _shouldHideTabsHeader;
     private bool _shouldSaveLastPathOnExit;
+    private int _previewDefaultZoom;
     private int _previewDepth;
    
     private string _currentThemeVariant = string.Empty;
@@ -43,11 +41,14 @@ public class PreferencesTabViewModel : TabViewModelBase
         IsTabSettingsClosable = Settings.Instance.IsTabSettingsClosable;
         ShouldHideMenuBar = Settings.Instance.ShouldHideMenuBar;
         ShouldHideTabsHeader = Settings.Instance.ShouldHideTabsHeader;
-        ShouldHideFileExplorer = Settings.Instance.ShouldHideFileExplorer;
+        ShouldHideFileManager = Settings.Instance.ShouldHideFileManager;
         ShouldHideStatusBar = Settings.Instance.ShouldHideStatusBar;
         ShouldSaveLastPathOnExit = Settings.Instance.ShouldSaveLastPathOnExit;
         ShouldCalculateFolderSize = Settings.Instance.ShouldCalculateFolderSize;
         PreviewDepth = Settings.Instance.PreviewDepth;
+        AutoHideStatusBar = Settings.Instance.AutoHideStatusBar;
+        PreviewDefaultZoom = Settings.Instance.PreviewDefaultZoom;
+        PreviewFollowMouse = Settings.Instance.PreviewFollowMouse;
     }
 
     #endregion
@@ -85,8 +86,8 @@ public class PreferencesTabViewModel : TabViewModelBase
             .Subscribe(value => Settings.Instance.ShouldHideMenuBar = value);
         this.WhenAnyValue(x => x.ShouldHideTabsHeader)
             .Subscribe(value => Settings.Instance.ShouldHideTabsHeader = value);
-        this.WhenAnyValue(x => x.ShouldHideFileExplorer)
-            .Subscribe(value => Settings.Instance.ShouldHideFileExplorer = value);
+        this.WhenAnyValue(x => x.ShouldHideFileManager)
+            .Subscribe(value => Settings.Instance.ShouldHideFileManager = value);
         this.WhenAnyValue(x => x.ShouldHideStatusBar)
             .Subscribe(value => Settings.Instance.ShouldHideStatusBar = value);
         this.WhenAnyValue(x => x.ShouldSaveLastPathOnExit)
@@ -95,6 +96,12 @@ public class PreferencesTabViewModel : TabViewModelBase
             .Subscribe(value => Settings.Instance.PreviewDepth = value);
         this.WhenAnyValue(x => x.ShouldCalculateFolderSize)
             .Subscribe(value => Settings.Instance.ShouldCalculateFolderSize = value);
+        this.WhenAnyValue(x => x.AutoHideStatusBar)
+            .Subscribe(value => Settings.Instance.AutoHideStatusBar = value);
+        this.WhenAnyValue(x => x.PreviewDefaultZoom)
+            .Subscribe(value => Settings.Instance.PreviewDefaultZoom = value);
+        this.WhenAnyValue(x => x.PreviewFollowMouse)
+            .Subscribe(value => Settings.Instance.PreviewFollowMouse = value);
        
         var groups = Settings.Instance.HotKeyManager.UserKeymap.GroupBy(x => x.Value);
         foreach (var group in groups)
@@ -133,6 +140,12 @@ public class PreferencesTabViewModel : TabViewModelBase
         get => _isSettingsTabCycled;
         set => this.RaiseAndSetIfChanged(ref _isSettingsTabCycled, value);
     }
+    
+    public bool AutoHideStatusBar
+    {
+        get => _autoHideStatusBar;
+        set => this.RaiseAndSetIfChanged(ref _autoHideStatusBar, value);
+    }
 
     public bool ShouldHideStatusBar
     {
@@ -140,10 +153,16 @@ public class PreferencesTabViewModel : TabViewModelBase
         set => this.RaiseAndSetIfChanged(ref _shouldHideStatusBar, value);
     }
 
-    public bool ShouldHideFileExplorer
+    public bool ShouldHideFileManager
     {
-        get => _shouldHideFileExplorer;
-        set => this.RaiseAndSetIfChanged(ref _shouldHideFileExplorer, value);
+        get => _shouldHideFileManager;
+        set => this.RaiseAndSetIfChanged(ref _shouldHideFileManager, value);
+    }
+    
+    public bool PreviewFollowMouse
+    {
+        get => _previewFollowMouse;
+        set => this.RaiseAndSetIfChanged(ref _previewFollowMouse, value);
     }
 
     public bool ShouldHideMenuBar
@@ -180,6 +199,12 @@ public class PreferencesTabViewModel : TabViewModelBase
     {
         get => _previewDepth;
         set => this.RaiseAndSetIfChanged(ref _previewDepth, value);
+    }
+    
+    public int PreviewDefaultZoom
+    {
+        get => _previewDefaultZoom;
+        set => this.RaiseAndSetIfChanged(ref _previewDefaultZoom, value);
     }
 
     public string CurrentVersion => "0.0.1";
