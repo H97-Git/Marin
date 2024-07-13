@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Input;
@@ -11,22 +12,41 @@ using WaifuGallery.ViewModels.Dialogs;
 
 namespace WaifuGallery.ViewModels;
 
-public class ShortcutViewModel : ViewModelBase
+public class ShortcutViewModel(KeyCommand keyCommand) : ViewModelBase
 {
-    private KeyCommand _keyCommand = KeyCommand.None;
-
-    public ShortcutViewModel(KeyCommand command)
-    {
-        KeyCommand = command;
-    }
-
     public ObservableCollection<KeyGesture> Gestures { get; set; } = [];
 
-    public KeyCommand KeyCommand
-    {
-        get => _keyCommand;
-        set => this.RaiseAndSetIfChanged(ref _keyCommand, value);
-    }
+    public string KeyCommandString
+        => keyCommand switch
+        {
+            KeyCommand.None => "None",
+            KeyCommand.FirstImage => "First Image",
+            KeyCommand.LastImage => "Last Image",
+            KeyCommand.NextImage => "Next Image",
+            KeyCommand.PreviousImage => "Previous Image",
+            KeyCommand.GoUp => "Go Up",
+            KeyCommand.GoDown => "Go Down",
+            KeyCommand.GoLeft => "Go Left",
+            KeyCommand.GoRight => "Go Right",
+            KeyCommand.GoToParentFolder => "Go To Parent Folder",
+            KeyCommand.OpenFolder => "Open Folder",
+            KeyCommand.OpenImageInNewTab => "Open Image In New Tab",
+            KeyCommand.ToggleFileManager => "Toggle File Manager",
+            KeyCommand.ToggleFileManagerVisibility => "Toggle File Manager Visibility",
+            KeyCommand.ShowPreview => "Show Preview",
+            KeyCommand.HidePreview => "Hide Preview",
+            KeyCommand.FullScreen => "Full Screen",
+            KeyCommand.FitToWidthAndResetZoom => "Fit To Width And Reset Zoom",
+            KeyCommand.FitToHeightAndResetZoom => "Fit To Height And Reset Zoom",
+            KeyCommand.OpenPreferences => "Open Preferences",
+            KeyCommand.ZAutoFit => "Auto Fit",
+            KeyCommand.ZFill => "Fill",
+            KeyCommand.ZResetMatrix => "Reset Matrix",
+            KeyCommand.ZToggleStretchMode => "Toggle Stretch Mode",
+            KeyCommand.ZUniform => "Uniform",
+            _ => throw new ArgumentOutOfRangeException(nameof(keyCommand), keyCommand, null)
+        };
+
 
     public ICommand UpdateKeyCommand => ReactiveCommand.Create<KeyGesture>(UpdateKey);
 
@@ -35,7 +55,7 @@ public class ShortcutViewModel : ViewModelBase
         var keyGesture = await ShowSetKeyDialogAsync();
         if (keyGesture is null) return;
         if (!Gestures.Remove(oldKeyGesture)) return;
-        if (Settings.Instance.HotKeyManager.TrySetBinding(KeyCommand, keyGesture, oldKeyGesture, out var oldBinding))
+        if (Settings.Instance.HotKeyManager.TrySetBinding(keyCommand, keyGesture, oldKeyGesture, out var oldBinding))
         {
             Gestures.Add(keyGesture);
         }

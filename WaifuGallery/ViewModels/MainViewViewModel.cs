@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Controls.Dialogs;
 using WaifuGallery.ViewModels.Dialogs;
@@ -68,12 +69,19 @@ public class MainViewViewModel : ViewModelBase
                 if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.OpenSettingsTab();
                 break;
+            case KeyCommand.ToggleFileManager:
+                FileManagerViewModel.ToggleFileManager();
+                break;
+            case KeyCommand.ToggleFileManagerVisibility:
+                FileManagerViewModel.ToggleFileManagerVisibility();
+                break;
             case KeyCommand.None:
                 return;
             default:
                 return;
         }
     }
+
     private void HandleFileManagerKeyboardEvent(KeyEventArgs e)
     {
         var keyGesture = new KeyGesture(e.Key, e.KeyModifiers);
@@ -106,12 +114,6 @@ public class MainViewViewModel : ViewModelBase
                 break;
             case KeyCommand.OpenImageInNewTab:
                 FileManagerViewModel.OpenImageTabFromKeyboardEvent();
-                break;
-            case KeyCommand.ToggleFileManager:
-                FileManagerViewModel.ToggleFileManager();
-                break;
-            case KeyCommand.ToggleFileManagerVisibility:
-                FileManagerViewModel.ToggleFileManagerVisibility();
                 break;
             case KeyCommand.ShowPreview:
                 PreviewImageViewModel.ShowPreview(FileManagerViewModel.SelectedFile.FullPath);
@@ -221,7 +223,9 @@ public class MainViewViewModel : ViewModelBase
     private void PasteFile(PasteCommand command)
     {
         var sourceFileCommand = _clipBoardDataObject.Get(DataFormats.FileNames) as FileCommand;
+        Log.Debug($"Paste File sourceFileCommand: {sourceFileCommand?.Path}");
         var destination = command.Path;
+        Log.Debug($"Paste File destination: {destination}");
         switch (sourceFileCommand)
         {
             case CopyCommand:
@@ -232,11 +236,16 @@ public class MainViewViewModel : ViewModelBase
                         destination += "_copy";
                     }
 
+                    Log.Debug($"Copy Command File: destination: {destination}");
                     File.Copy(sourceFileCommand.Path, destination);
+                    command.Path = Path.Combine(sourceFileCommand.Path, Path.GetFileName(destination));
                 }
                 else
                 {
-                    Helper.CopyDirectory(sourceFileCommand.Path, destination, true);
+                    Log.Debug($"Copy Command Folder: destination: {destination}");
+                    var newDir = Helper.CopyDirectory(sourceFileCommand.Path, destination, true);
+                    Log.Debug($"Copy Command Folder: newdir: {newDir.FullName}");
+                    command.Path = newDir.FullName;
                 }
 
                 break;
@@ -248,6 +257,7 @@ public class MainViewViewModel : ViewModelBase
                 else
                 {
                     destination = Path.Combine(command.Path, Path.GetFileName(sourceFileCommand.Path));
+                    Log.Debug($"Cut command: destination: {destination}");
                     Directory.Move(sourceFileCommand.Path, destination);
                 }
 
@@ -258,7 +268,7 @@ public class MainViewViewModel : ViewModelBase
         {
             return;
         }
-        command.Path = destination;
+
         MessageBus.Current.SendMessage(new RefreshFileManagerCommand(command));
         SendMessageToStatusBar(InfoBarSeverity.Success, "Pasted successfully!");
     }

@@ -9,9 +9,11 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using DynamicData;
 using FluentAvalonia.UI.Controls;
 using NaturalSort.Extension;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
@@ -50,7 +52,7 @@ public class FileManagerViewModel : ViewModelBase
         {
             case NewFolderCommand newFolderCommand:
                 var newFolderInfo = new DirectoryInfo(newFolderCommand.Path);
-                FilesInDir.Add(new FileViewModel(newFolderInfo));
+                AddToCollectionAndSort(new FileViewModel(newFolderInfo));
                 break;
             case DeleteCommand deleteCommand:
                 var fvm = FilesInDir.FirstOrDefault(x => x.FullPath == deleteCommand.Path);
@@ -61,14 +63,14 @@ public class FileManagerViewModel : ViewModelBase
                 if (File.Exists(pasteCommand.Path))
                 {
                     var fileInfo = new FileInfo(pasteCommand.Path);
-                    FilesInDir.Add(new FileViewModel(fileInfo));
+                    AddToCollectionAndSort(new FileViewModel(fileInfo));
                     return;
                 }
 
                 if (Directory.Exists(pasteCommand.Path))
                 {
                     var dirInfo = new DirectoryInfo(pasteCommand.Path);
-                    FilesInDir.Add(new FileViewModel(dirInfo));
+                    AddToCollectionAndSort(new FileViewModel(dirInfo));
                 }
 
                 break;
@@ -174,6 +176,15 @@ public class FileManagerViewModel : ViewModelBase
 
     private void UpdatePath(string path) => CurrentPath = path;
 
+    private void AddToCollectionAndSort(FileViewModel fileViewModel)
+    {
+        var buffer = FilesInDir.ToList();
+        buffer.Add(fileViewModel);
+        buffer = buffer.OrderBy(x => x.FileName, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
+        FilesInDir.Clear();
+        FilesInDir.AddRange(buffer);
+    }
+    
     #endregion
 
     #region CTOR
@@ -216,13 +227,13 @@ public class FileManagerViewModel : ViewModelBase
 
     private void ToggleScrollbarVisibility(bool isPreviewImageVisible)
     {
-        Console.WriteLine($"""IsPreviewImageVisible: {isPreviewImageVisible}""");
-        Console.WriteLine($"""ScrollBarVisibility Before: {ScrollBarVisibility}""");
+        Log.Debug($"""IsPreviewImageVisible: {isPreviewImageVisible}""");
+        Log.Debug($"""ScrollBarVisibility Before: {ScrollBarVisibility}""");
         if (isPreviewImageVisible)
             ScrollBarVisibility = ScrollBarVisibility.Disabled;
         else
             ScrollBarVisibility = ScrollBarVisibility.Visible;
-        Console.WriteLine($"""ScrollBarVisibility After: {ScrollBarVisibility}""");
+        Log.Debug($"""ScrollBarVisibility After: {ScrollBarVisibility}""");
     }
 
     #endregion

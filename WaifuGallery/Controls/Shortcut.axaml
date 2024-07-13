@@ -9,7 +9,7 @@
              x:Class="WaifuGallery.Controls.Shortcut"
              Name="ShortcutControl"
              Margin="5">
-    <ui:SettingsExpanderItem Content="{Binding KeyCommand}" >
+    <ui:SettingsExpanderItem Content="{Binding KeyCommandString}" >
         <ui:SettingsExpanderItem.Footer>
             <!-- <StackPanel Orientation="Vertical"> -->
             <ItemsControl ItemsSource="{Binding Gestures}">
