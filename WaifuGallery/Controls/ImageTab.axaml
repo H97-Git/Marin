@@ -13,7 +13,11 @@
                 Name="ImageInTab"
                 Source="{Binding BitmapImage}"
                 Width="{Binding ImageSize.Width}"
-                Height="{Binding ImageSize.Height}" />
+                Height="{Binding ImageSize.Height}">
+            </Image>
+            <ZoomBorder.RenderTransform>
+                <RotateTransform Angle="{Binding RotationAngle}"></RotateTransform>
+            </ZoomBorder.RenderTransform>
         </ZoomBorder>
     </Grid>
 </UserControl>

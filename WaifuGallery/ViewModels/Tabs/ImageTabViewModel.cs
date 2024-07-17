@@ -8,6 +8,7 @@ using Avalonia.Media.Imaging;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
+using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.Tabs;
 
@@ -20,6 +21,7 @@ public class ImageTabViewModel : TabViewModelBase
     private readonly string[] _imagesInPath;
     private readonly string? _parentFolderName;
     private int _index;
+    private int _rotationAngle;
 
     #endregion
 
@@ -30,13 +32,33 @@ public class ImageTabViewModel : TabViewModelBase
         get => _index;
         set
         {
-            if (value < 0)
-                value = 0;
-            else if (value >= _imagesInPath.Length)
-                value = _imagesInPath.Length - 1;
-            _index = value;
+            _index = SetIndexInBound(value);
             LoadImage();
         }
+    }
+
+    private int SetIndexInBound(int value)
+    {
+        if (value < 0)
+        {
+            if (Settings.Instance.TabsPreference.Loop)
+            {
+                return _imagesInPath.Length - 1;
+                
+            }
+            return 0;
+        }
+
+        if (value >= _imagesInPath.Length)
+        {
+            if (Settings.Instance.TabsPreference.Loop)
+            {
+                return 0;
+            }
+            return _imagesInPath.Length - 1;
+        }
+
+        return value;
     }
 
     private string CurrentImagePath => _imagesInPath[Index];
@@ -107,6 +129,12 @@ public class ImageTabViewModel : TabViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _imageSize, value);
     }
 
+    public int RotationAngle
+    {
+        get => _rotationAngle;
+        set => this.RaiseAndSetIfChanged(ref _rotationAngle, value);
+    }
+
     public Matrix Matrix { get; set; }
     public bool IsDefaultZoom { get; set; } = true;
 
@@ -139,6 +167,20 @@ public class ImageTabViewModel : TabViewModelBase
 
     public void ResizeImageByWidth(double targetHeight) =>
         ImageSize = Helper.GetScaledSizeByWidth(BitmapImage, (int) targetHeight);
+
+    public void RotateImage(bool clockwise)
+    {
+        if (clockwise)
+        {
+            RotationAngle = (RotationAngle + 90) % 360;
+        }
+        else
+        {
+            RotationAngle = (RotationAngle - 90) % 360;
+            if (RotationAngle < 0)
+                RotationAngle += 360;
+        }
+    }
 
     public static ImageTabViewModel? CreateImageTabFromCommand(ICommandMessage command)
     {

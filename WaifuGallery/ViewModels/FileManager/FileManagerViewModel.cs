@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using DynamicData;
 using FluentAvalonia.UI.Controls;
 using NaturalSort.Extension;
 using ReactiveUI;
@@ -23,14 +26,14 @@ public class FileManagerViewModel : ViewModelBase
     #region Private Fields
 
     private Brush? _fileManagerBackground;
-    private ScrollBarVisibility _scrollBarVisibility = ScrollBarVisibility.Auto;
+    private CancellationTokenSource _searchCancellationTokenSource = new();
     private bool _isFileManagerExpanded = true;
     private bool _isFileManagerVisible = true;
     private bool _isPointerOver;
     private bool _isSearchFocused;
+    private const int BatchSize = 5;
     private int _columnsCount;
     private int _selectedIndexInFileManager;
-    private int _batchSize = 10;
     private readonly FileManagerHistory _pathHistory = new();
     private string _currentPath = string.Empty;
 
@@ -50,7 +53,7 @@ public class FileManagerViewModel : ViewModelBase
         {
             case NewFolderCommand newFolderCommand:
                 var newFolderInfo = new DirectoryInfo(newFolderCommand.Path);
-                FilesInDir.Add(new FileViewModel(newFolderInfo));
+                AddToCollectionAndSort(new FileViewModel(newFolderInfo));
                 break;
             case DeleteCommand deleteCommand:
                 var fvm = FilesInDir.FirstOrDefault(x => x.FullPath == deleteCommand.Path);
@@ -61,14 +64,14 @@ public class FileManagerViewModel : ViewModelBase
                 if (File.Exists(pasteCommand.Path))
                 {
                     var fileInfo = new FileInfo(pasteCommand.Path);
-                    FilesInDir.Add(new FileViewModel(fileInfo));
+                    AddToCollectionAndSort(new FileViewModel(fileInfo));
                     return;
                 }
 
                 if (Directory.Exists(pasteCommand.Path))
                 {
                     var dirInfo = new DirectoryInfo(pasteCommand.Path);
-                    FilesInDir.Add(new FileViewModel(dirInfo));
+                    AddToCollectionAndSort(new FileViewModel(dirInfo));
                 }
 
                 break;
@@ -86,6 +89,9 @@ public class FileManagerViewModel : ViewModelBase
             path = path[..^1];
         }
 
+        _searchCancellationTokenSource.Cancel();
+        _searchCancellationTokenSource = new CancellationTokenSource();
+
         var currentPathDirectoryInfo = new DirectoryInfo(path);
         if (!currentPathDirectoryInfo.Exists)
         {
@@ -93,12 +99,12 @@ public class FileManagerViewModel : ViewModelBase
             return;
         }
 
-        Settings.Instance.FileManagerLastPath = path;
+        Settings.Instance.FileManagerPreference.FileManagerLastPath = path;
         FilesInDir.Clear();
-        SetDirsAndFiles(currentPathDirectoryInfo);
+        SetDirsAndFiles(currentPathDirectoryInfo, _searchCancellationTokenSource.Token);
     }
 
-    private async void SetDirsAndFiles(DirectoryInfo currentDir)
+    private async void SetDirsAndFiles(DirectoryInfo currentDir, CancellationToken token)
     {
         var dirs = currentDir.GetDirectories().Where(f => f.Name.First() is not '.' && f.Name.First() is not '$')
             .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
@@ -108,41 +114,45 @@ public class FileManagerViewModel : ViewModelBase
             .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
         if (dirs is not {Length: 0})
-            await SetDirs(dirs);
+            await SetDirs(dirs, token);
         if (imagesFileInfo is not {Length: 0})
-            await SetFiles(imagesFileInfo);
+            await SetFiles(imagesFileInfo, token);
     }
 
-    private async Task SetDirs(IEnumerable<DirectoryInfo> dirs)
+    private async Task SetDirs(IEnumerable<DirectoryInfo> dirs, CancellationToken token)
     {
         var dirInfos = dirs.ToList();
-        for (var i = 0; i < dirInfos.Count; i += _batchSize)
+        for (var i = 0; i < dirInfos.Count; i += BatchSize)
         {
-            var batch = dirInfos.Skip(i).Take(_batchSize);
-            foreach (var dir in batch)
+            if (token.IsCancellationRequested)
             {
-                await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.Add(new FileViewModel(dir)));
+                FilesInDir.Clear();
+                break;
             }
 
-            await Task.Delay(100);
+            var batch = dirInfos.Skip(i).Take(BatchSize);
+            var batchList = batch.Select(dir => new FileViewModel(dir));
+            await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.AddRange(batchList));
+            await Task.Delay(100, CancellationToken.None);
         }
     }
 
-    private async Task SetFiles(IEnumerable<FileInfo> files)
+    private async Task SetFiles(IEnumerable<FileInfo> files, CancellationToken token)
     {
         var fileInfos = files.ToList();
-        for (var i = 0; i < fileInfos.Count; i += _batchSize)
+        for (var i = 0; i < fileInfos.Count; i += BatchSize)
         {
-            var batch = fileInfos.Skip(i).Take(_batchSize);
-            foreach (var file in batch)
+            if (token.IsCancellationRequested)
             {
-                await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.Add(new FileViewModel(file)));
+                FilesInDir.Clear();
+                break;
             }
 
-            await Task.Delay(100);
+            var batch = fileInfos.Skip(i).Take(BatchSize);
+            var batchList = batch.Select(file => new FileViewModel(file));
+            await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.AddRange(batchList));
+            await Task.Delay(100, CancellationToken.None);
         }
-        // var list = files.Select(file => new FileViewModel(file)).ToList();
-        // await Dispatcher.UIThread.InvokeAsync(() => FilesInDir.AddRange(list));
     }
 
     private async void OpenPathInFileManager()
@@ -174,6 +184,15 @@ public class FileManagerViewModel : ViewModelBase
 
     private void UpdatePath(string path) => CurrentPath = path;
 
+    private void AddToCollectionAndSort(FileViewModel fileViewModel)
+    {
+        var buffer = FilesInDir.ToList();
+        buffer.Add(fileViewModel);
+        buffer = buffer.OrderBy(x => x.FileName, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
+        FilesInDir.Clear();
+        FilesInDir.AddRange(buffer);
+    }
+
     #endregion
 
     #region CTOR
@@ -182,16 +201,18 @@ public class FileManagerViewModel : ViewModelBase
     {
         FileManagerBackground = new SolidColorBrush(Colors.Transparent);
         this.WhenAnyValue(x => x.CurrentPath)
+            .Throttle(TimeSpan.FromMilliseconds(500))
             .Subscribe(GetFilesFromPath);
         this.WhenAnyValue(x => x.IsFileManagerExpanded)
             .Subscribe(_ =>
                 FileManagerBackground = IsFileManagerExpanded ? new SolidColorBrush(Colors.Transparent) : null);
         this.WhenAnyValue(x => x.PreviewImageViewModel.IsPreviewImageVisible)
-            .Subscribe(ToggleScrollbarVisibility);
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(ScrollBarVisibility)));
 
-        if (Settings.Instance.ShouldSaveLastPathOnExit && Settings.Instance.FileManagerLastPath is not null)
+        if (Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit &&
+            Settings.Instance.FileManagerPreference.FileManagerLastPath is not null)
         {
-            var path = Settings.Instance.FileManagerLastPath;
+            var path = Settings.Instance.FileManagerPreference.FileManagerLastPath;
             if (Directory.Exists(path))
             {
                 ChangePath(path);
@@ -216,13 +237,13 @@ public class FileManagerViewModel : ViewModelBase
 
     private void ToggleScrollbarVisibility(bool isPreviewImageVisible)
     {
-        Console.WriteLine($"""IsPreviewImageVisible: {isPreviewImageVisible}""");
-        Console.WriteLine($"""ScrollBarVisibility Before: {ScrollBarVisibility}""");
-        if (isPreviewImageVisible)
-            ScrollBarVisibility = ScrollBarVisibility.Disabled;
-        else
-            ScrollBarVisibility = ScrollBarVisibility.Visible;
-        Console.WriteLine($"""ScrollBarVisibility After: {ScrollBarVisibility}""");
+        // Log.Debug($"""IsPreviewImageVisible: {isPreviewImageVisible}""");
+        // Log.Debug($"""ScrollBarVisibility Before: {ScrollBarVisibility}""");
+        // if (isPreviewImageVisible)
+        //     ScrollBarVisibility = ScrollBarVisibility.Hidden;
+        // else
+        //     ScrollBarVisibility = ScrollBarVisibility.Visible;
+        // Log.Debug($"""ScrollBarVisibility After: {ScrollBarVisibility}""");
     }
 
     #endregion
@@ -241,11 +262,9 @@ public class FileManagerViewModel : ViewModelBase
 
     public ObservableCollection<FileViewModel> FilesInDir { get; set; } = [];
 
-    public ScrollBarVisibility ScrollBarVisibility
-    {
-        get => _scrollBarVisibility;
-        set => this.RaiseAndSetIfChanged(ref _scrollBarVisibility, value);
-    }
+    public ScrollBarVisibility ScrollBarVisibility => PreviewImageViewModel.IsPreviewImageVisible
+        ? ScrollBarVisibility.Disabled
+        : ScrollBarVisibility.Auto;
 
     public bool IsPointerOver
     {

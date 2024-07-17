@@ -38,7 +38,7 @@ public class TabsViewModel : ViewModelBase
     private void CloseTab()
     {
         if (SelectedTab is null) return;
-        if (SelectedTab is PreferencesTabViewModel && !Settings.Instance.IsTabSettingsClosable) return;
+        if (SelectedTab is PreferencesTabViewModel && !Settings.Instance.TabsPreference.IsTabSettingsClosable) return;
         OpenTabs.Remove(SelectedTab);
         if (OpenTabs.Count is 0)
         {
@@ -70,17 +70,6 @@ public class TabsViewModel : ViewModelBase
         }
     }
 
-    private void ResizeTabByHeight(ImageTabViewModel imageTabViewModel)
-    {
-        imageTabViewModel.ResizeImageByHeight(ControlSize.Height);
-    }
-
-
-    private void ResizeTabByWidth(ImageTabViewModel imageTabViewModel)
-    {
-        imageTabViewModel.ResizeImageByWidth(ControlSize.Width);
-    }
-
     #endregion
 
     #region CTOR
@@ -94,6 +83,8 @@ public class TabsViewModel : ViewModelBase
         MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
         MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidthAndResetZoom());
         MessageBus.Current.Listen<OpenSettingsTabCommand>().Subscribe(_ => OpenSettingsTab());
+        MessageBus.Current.Listen<RotateClockwiseCommand>().Subscribe(_ => RotateAndResetZoom());
+        MessageBus.Current.Listen<RotateAntiClockwiseCommand>().Subscribe(_ => RotateAndResetZoom(false));
     }
 
     #endregion
@@ -202,14 +193,21 @@ public class TabsViewModel : ViewModelBase
     public void FitToWidthAndResetZoom()
     {
         if (ImageTabViewModel is null) return;
-        ResizeTabByWidth(ImageTabViewModel);
+        ImageTabViewModel.ResizeImageByWidth(ControlSize.Width);
         MessageBus.Current.SendMessage(new ResetZoomCommand());
     }
 
     public void FitToHeightAndResetZoom()
     {
         if (ImageTabViewModel is null) return;
-        ResizeTabByHeight(ImageTabViewModel);
+        ImageTabViewModel.ResizeImageByHeight(ControlSize.Height);
+        MessageBus.Current.SendMessage(new ResetZoomCommand());
+    }
+
+    private void RotateAndResetZoom(bool clockwise = true)
+    {
+        if (ImageTabViewModel is null) return;
+        ImageTabViewModel.RotateImage(clockwise);
         MessageBus.Current.SendMessage(new ResetZoomCommand());
     }
 
@@ -217,7 +215,7 @@ public class TabsViewModel : ViewModelBase
     {
         var imageTabViewModel = ImageTabViewModel.CreateImageTabFromCommand(command);
         if (imageTabViewModel is null) return;
-        if (!Settings.Instance.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
+        if (!Settings.Instance.TabsPreference.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
 
         AddTab(imageTabViewModel);
     }
@@ -246,7 +244,7 @@ public class TabsViewModel : ViewModelBase
 
         if (!isCtrlKey)
         {
-            if (!Settings.Instance.IsSettingsTabCycled)
+            if (!Settings.Instance.TabsPreference.IsSettingsTabCycled)
             {
                 if (OpenTabs[newIndex] is PreferencesTabViewModel)
                 {

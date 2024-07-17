@@ -23,11 +23,15 @@
                       Icon="{DynamicResource TrayArrowUp}" />
             <MenuItem Header="Toggle Files Manager Visibility" Command="{Binding ToggleFileManagerVisibilityCommand}"
                       Icon="{DynamicResource Eye}" />
-            <Separator />
+        </MenuItem>
+        <MenuItem Header="_Tabs">
             <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}"
                       Icon="{DynamicResource ArrowsOutHorizontal}" />
             <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}"
                       Icon="{DynamicResource ArrowsOutVertical}" />
+            <Separator />
+            <MenuItem Header="Rotate Clock Wise" Command="{Binding RotateClockwiseCommand}" />
+            <MenuItem Header="Rotate Anti Clock Wise" Command="{Binding RotateAntiClockwiseCommand}" />
         </MenuItem>
         <MenuItem Header="_Debug" IsVisible="{Binding IsDebugMenuVisible}">
             <MenuItem Header="_Clear Thumbnails cache" Command="{Binding ClearCache}" Icon="{DynamicResource Trash}" />

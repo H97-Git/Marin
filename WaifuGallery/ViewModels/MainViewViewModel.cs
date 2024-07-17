@@ -46,11 +46,9 @@ public class MainViewViewModel : ViewModelBase
                     TabsViewModel.ImageTabViewModel?.LoadLastImage();
                 break;
             case KeyCommand.GoRight:
-            case KeyCommand.NextImage:
                 if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.ImageTabViewModel?.LoadNextImage();
                 break;
-            case KeyCommand.PreviousImage:
             case KeyCommand.GoLeft:
                 if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
@@ -68,17 +66,24 @@ public class MainViewViewModel : ViewModelBase
                 if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.OpenSettingsTab();
                 break;
+            case KeyCommand.ToggleFileManager:
+                FileManagerViewModel.ToggleFileManager();
+                break;
+            case KeyCommand.ToggleFileManagerVisibility:
+                FileManagerViewModel.ToggleFileManagerVisibility();
+                break;
             case KeyCommand.None:
                 return;
             default:
                 return;
         }
     }
+
     private void HandleFileManagerKeyboardEvent(KeyEventArgs e)
     {
         var keyGesture = new KeyGesture(e.Key, e.KeyModifiers);
-        var hk = Settings.Instance.HotKeyManager.GetBinding(keyGesture);
-        switch (hk)
+        var keyCommand = Settings.Instance.HotKeyManager.GetBinding(keyGesture);
+        switch (keyCommand)
         {
             case KeyCommand.NextImage:
                 PreviewImageViewModel.NextPreview();
@@ -107,12 +112,6 @@ public class MainViewViewModel : ViewModelBase
             case KeyCommand.OpenImageInNewTab:
                 FileManagerViewModel.OpenImageTabFromKeyboardEvent();
                 break;
-            case KeyCommand.ToggleFileManager:
-                FileManagerViewModel.ToggleFileManager();
-                break;
-            case KeyCommand.ToggleFileManagerVisibility:
-                FileManagerViewModel.ToggleFileManagerVisibility();
-                break;
             case KeyCommand.ShowPreview:
                 PreviewImageViewModel.ShowPreview(FileManagerViewModel.SelectedFile.FullPath);
                 break;
@@ -120,9 +119,21 @@ public class MainViewViewModel : ViewModelBase
                 PreviewImageViewModel.HidePreview();
                 break;
             case KeyCommand.None:
-                break;
+            case KeyCommand.FirstImage:
+            case KeyCommand.LastImage:
+            case KeyCommand.ToggleFileManager:
+            case KeyCommand.ToggleFileManagerVisibility:
+            case KeyCommand.FullScreen:
+            case KeyCommand.FitToWidthAndResetZoom:
+            case KeyCommand.FitToHeightAndResetZoom:
+            case KeyCommand.OpenPreferences:
+            case KeyCommand.ZAutoFit:
+            case KeyCommand.ZFill:
+            case KeyCommand.ZResetMatrix:
+            case KeyCommand.ZToggleStretchMode:
+            case KeyCommand.ZUniform:
             default:
-                return;
+                break;
         }
     }
 
@@ -136,7 +147,7 @@ public class MainViewViewModel : ViewModelBase
                 MenuBarViewModel.IsMenuVisible = false;
             if (Settings.Instance.ShouldHideTabsHeader)
                 TabsViewModel.IsTabHeadersVisible = false;
-            if (Settings.Instance.ShouldHideFileManager)
+            if (Settings.Instance.FileManagerPreference.ShouldHideFileManager)
                 FileManagerViewModel.IsFileManagerVisible = false;
             if (Settings.Instance.ShouldHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = false;
@@ -147,7 +158,8 @@ public class MainViewViewModel : ViewModelBase
             MenuBarViewModel.IsMenuVisible = true;
             TabsViewModel.IsTabHeadersVisible = true;
             FileManagerViewModel.IsFileManagerVisible = true;
-            StatusBarViewModel.IsStatusBarVisible = true;
+            if (!Settings.Instance.AutoHideStatusBar)
+                StatusBarViewModel.IsStatusBarVisible = true;
         }
     }
 
@@ -188,12 +200,18 @@ public class MainViewViewModel : ViewModelBase
         clipboard.SetTextAsync(command.Path);
     }
 
-    private void DeleteFile(DeleteCommand command)
+    private async void DeleteFile(DeleteCommand command)
     {
         var path = command.Path;
         if (!File.Exists(path) && !Directory.Exists(path))
         {
             SendMessageToStatusBar(InfoBarSeverity.Warning, "File or Directory does not exist!");
+            return;
+        }
+
+        var confirm = await ShowDeleteDialogAsync(Path.GetFileName(path));
+        if (!confirm)
+        {
             return;
         }
 
@@ -233,10 +251,12 @@ public class MainViewViewModel : ViewModelBase
                     }
 
                     File.Copy(sourceFileCommand.Path, destination);
+                    command.Path = Path.Combine(sourceFileCommand.Path, Path.GetFileName(destination));
                 }
                 else
                 {
-                    Helper.CopyDirectory(sourceFileCommand.Path, destination, true);
+                    var newDir = Helper.CopyDirectory(sourceFileCommand.Path, destination, true);
+                    command.Path = newDir.FullName;
                 }
 
                 break;
@@ -258,7 +278,7 @@ public class MainViewViewModel : ViewModelBase
         {
             return;
         }
-        command.Path = destination;
+
         MessageBus.Current.SendMessage(new RefreshFileManagerCommand(command));
         SendMessageToStatusBar(InfoBarSeverity.Success, "Pasted successfully!");
     }
@@ -304,8 +324,8 @@ public class MainViewViewModel : ViewModelBase
             SecondaryButtonText = "Cancel",
         };
 
-        var viewModel = new NewFolderViewModel();
-        dialog.Content = new NewFolder()
+        var viewModel = new UserInputDialog();
+        dialog.Content = new UserInput()
         {
             DataContext = viewModel,
             OnEnterPressed = (_, _) => { dialog.Hide(); },
@@ -313,7 +333,44 @@ public class MainViewViewModel : ViewModelBase
         };
 
         var dialogResult = await dialog.ShowAsync();
-        return dialogResult is ContentDialogResult.Secondary ? null : viewModel.NewFolderName;
+        return dialogResult is ContentDialogResult.Secondary ? null : viewModel.UserInput;
+    }
+
+    private async Task<string?> ShowExtractDialogAsync(string archiveName)
+    {
+        var dialog = new ContentDialog()
+        {
+            Title = "New folder name:",
+            PrimaryButtonText = "Ok",
+            SecondaryButtonText = "Cancel",
+        };
+
+        var viewModel = new UserInputDialog
+        {
+            UserInput = archiveName
+        };
+        dialog.Content = new UserInput()
+        {
+            DataContext = viewModel,
+            OnEnterPressed = (_, _) => { dialog.Hide(); },
+            OnEscapePressed = (_, _) => { dialog.Hide(); }
+        };
+
+        var dialogResult = await dialog.ShowAsync();
+        return dialogResult is ContentDialogResult.Secondary ? null : viewModel.UserInput;
+    }
+
+    private async Task<bool> ShowDeleteDialogAsync(string fileName)
+    {
+        var dialog = new ContentDialog
+        {
+            Title = "Delete",
+            Content = "Are you sure you want to delete " + fileName + " ?",
+            PrimaryButtonText = "Yes",
+            SecondaryButtonText = "No",
+        };
+        var dialogResult = await dialog.ShowAsync();
+        return dialogResult is ContentDialogResult.Primary;
     }
 
     private void OpenInFileExplorer(OpenInFileExplorerCommand command)
@@ -329,9 +386,18 @@ public class MainViewViewModel : ViewModelBase
         Process.Start(vivaldiPath, fileUri.ToString());
     }
 
-    private void ExtractFile(ExtractCommand command)
+    private async void ExtractFile(ExtractCommand command)
     {
-        Helper.ExtractDirectory(command.Path);
+        if (!Settings.Instance.FileManagerPreference.ShouldAskExtractionFolderName)
+        {
+            Helper.ExtractDirectory(command.Path);
+        }
+        else
+        {
+            var result = await ShowExtractDialogAsync(Path.GetFileNameWithoutExtension(command.Path));
+            if (result == null) return;
+            Helper.ExtractDirectory(command.Path, result);
+        }
     }
 
     private void ShowPreview()

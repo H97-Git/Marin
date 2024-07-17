@@ -7,7 +7,7 @@ using WaifuGallery.ViewModels.Dialogs;
 
 namespace WaifuGallery.Controls.Dialogs;
 
-public partial class NewFolder : UserControl
+public partial class UserInput : UserControl
 {
     private void Input_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
@@ -20,8 +20,8 @@ public partial class NewFolder : UserControl
 
     private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (DataContext is not NewFolderViewModel newFolderViewModel) return;
-        if (string.IsNullOrWhiteSpace(newFolderViewModel.NewFolderName)) return;
+        if (DataContext is not UserInputDialog newFolderViewModel) return;
+        if (string.IsNullOrWhiteSpace(newFolderViewModel.UserInput)) return;
         switch (e.Key)
         {
             case Key.Enter:
@@ -33,7 +33,7 @@ public partial class NewFolder : UserControl
         }
     }
 
-    public NewFolder()
+    public UserInput()
     {
         InitializeComponent();
     }

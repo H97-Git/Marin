@@ -18,15 +18,19 @@ public class PreferencesTabViewModel : TabViewModelBase
     private bool _isSettingsTabCycled;
     private bool _isTabSettingsClosable;
     private bool _previewFollowMouse;
+    private bool _shouldAskExtractionFolderName;
     private bool _shouldCalculateFolderSize;
     private bool _shouldHideFileManager;
     private bool _shouldHideMenuBar;
     private bool _shouldHideStatusBar;
     private bool _shouldHideTabsHeader;
+    private bool _shouldImageLoop;
+    private bool _shouldImagePreviewLoop;
     private bool _shouldSaveLastPathOnExit;
+    private int _autoHideStatusBarDelay;
     private int _previewDefaultZoom;
     private int _previewDepth;
-   
+
     private string _currentThemeVariant = string.Empty;
 
     #endregion
@@ -35,20 +39,24 @@ public class PreferencesTabViewModel : TabViewModelBase
 
     private void InitializePreferences()
     {
-        CurrentThemeVariant = Settings.Instance.Theme;
-        IsDuplicateTabsAllowed = Settings.Instance.IsDuplicateTabsAllowed;
-        IsSettingsTabCycled = Settings.Instance.IsSettingsTabCycled;
-        IsTabSettingsClosable = Settings.Instance.IsTabSettingsClosable;
-        ShouldHideMenuBar = Settings.Instance.ShouldHideMenuBar;
-        ShouldHideTabsHeader = Settings.Instance.ShouldHideTabsHeader;
-        ShouldHideFileManager = Settings.Instance.ShouldHideFileManager;
-        ShouldHideStatusBar = Settings.Instance.ShouldHideStatusBar;
-        ShouldSaveLastPathOnExit = Settings.Instance.ShouldSaveLastPathOnExit;
-        ShouldCalculateFolderSize = Settings.Instance.ShouldCalculateFolderSize;
-        PreviewDepth = Settings.Instance.PreviewDepth;
         AutoHideStatusBar = Settings.Instance.AutoHideStatusBar;
-        PreviewDefaultZoom = Settings.Instance.PreviewDefaultZoom;
-        PreviewFollowMouse = Settings.Instance.PreviewFollowMouse;
+        AutoHideStatusBarDelay = Settings.Instance.AutoHideStatusBarDelay;
+        CurrentThemeVariant = Settings.Instance.Theme;
+        IsDuplicateTabsAllowed = Settings.Instance.TabsPreference.IsDuplicateTabsAllowed;
+        IsSettingsTabCycled = Settings.Instance.TabsPreference.IsSettingsTabCycled;
+        IsTabSettingsClosable = Settings.Instance.TabsPreference.IsTabSettingsClosable;
+        PreviewDefaultZoom = Settings.Instance.ImagePreviewPreference.DefaultZoom;
+        PreviewDepth = Settings.Instance.ImagePreviewPreference.Depth;
+        PreviewFollowMouse = Settings.Instance.ImagePreviewPreference.FollowMouse;
+        ShouldAskExtractionFolderName = Settings.Instance.FileManagerPreference.ShouldAskExtractionFolderName;
+        ShouldCalculateFolderSize = Settings.Instance.FileManagerPreference.ShouldCalculateFolderSize;
+        ShouldHideFileManager = Settings.Instance.FileManagerPreference.ShouldHideFileManager;
+        ShouldHideMenuBar = Settings.Instance.ShouldHideMenuBar;
+        ShouldHideStatusBar = Settings.Instance.ShouldHideStatusBar;
+        ShouldHideTabsHeader = Settings.Instance.ShouldHideTabsHeader;
+        ShouldImagePreviewLoop = Settings.Instance.ImagePreviewPreference.Loop;
+        ShouldImageLoop = Settings.Instance.TabsPreference.Loop;
+        ShouldSaveLastPathOnExit = Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit;
     }
 
     #endregion
@@ -76,33 +84,38 @@ public class PreferencesTabViewModel : TabViewModelBase
                 if (fluentAvaloniaTheme != null)
                     fluentAvaloniaTheme.PreferSystemTheme = value == "System";
             });
+        this.WhenAnyValue(x => x.AutoHideStatusBar).Subscribe(value => Settings.Instance.AutoHideStatusBar = value);
+        this.WhenAnyValue(x => x.AutoHideStatusBarDelay)
+            .Subscribe(value => Settings.Instance.AutoHideStatusBarDelay = value);
         this.WhenAnyValue(x => x.IsDuplicateTabsAllowed)
-            .Subscribe(value => Settings.Instance.IsDuplicateTabsAllowed = value);
+            .Subscribe(value => Settings.Instance.TabsPreference.IsDuplicateTabsAllowed = value);
         this.WhenAnyValue(x => x.IsSettingsTabCycled)
-            .Subscribe(value => Settings.Instance.IsSettingsTabCycled = value);
+            .Subscribe(value => Settings.Instance.TabsPreference.IsSettingsTabCycled = value);
         this.WhenAnyValue(x => x.IsTabSettingsClosable)
-            .Subscribe(value => Settings.Instance.IsTabSettingsClosable = value);
-        this.WhenAnyValue(x => x.ShouldHideMenuBar)
-            .Subscribe(value => Settings.Instance.ShouldHideMenuBar = value);
+            .Subscribe(value => Settings.Instance.TabsPreference.IsTabSettingsClosable = value);
+        this.WhenAnyValue(x => x.PreviewDefaultZoom)
+            .Subscribe(value => Settings.Instance.ImagePreviewPreference.DefaultZoom = value);
+        this.WhenAnyValue(x => x.PreviewDepth)
+            .Subscribe(value => Settings.Instance.ImagePreviewPreference.Depth = value);
+        this.WhenAnyValue(x => x.PreviewFollowMouse)
+            .Subscribe(value => Settings.Instance.ImagePreviewPreference.FollowMouse = value);
+        this.WhenAnyValue(x => x.ShouldAskExtractionFolderName).Subscribe(value =>
+            Settings.Instance.FileManagerPreference.ShouldAskExtractionFolderName = value);
+        this.WhenAnyValue(x => x.ShouldCalculateFolderSize).Subscribe(value =>
+            Settings.Instance.FileManagerPreference.ShouldCalculateFolderSize = value);
+        this.WhenAnyValue(x => x.ShouldHideFileManager).Subscribe(value =>
+            Settings.Instance.FileManagerPreference.ShouldHideFileManager = value);
+        this.WhenAnyValue(x => x.ShouldHideMenuBar).Subscribe(value => Settings.Instance.ShouldHideMenuBar = value);
+        this.WhenAnyValue(x => x.ShouldHideStatusBar).Subscribe(value => Settings.Instance.ShouldHideStatusBar = value);
         this.WhenAnyValue(x => x.ShouldHideTabsHeader)
             .Subscribe(value => Settings.Instance.ShouldHideTabsHeader = value);
-        this.WhenAnyValue(x => x.ShouldHideFileManager)
-            .Subscribe(value => Settings.Instance.ShouldHideFileManager = value);
-        this.WhenAnyValue(x => x.ShouldHideStatusBar)
-            .Subscribe(value => Settings.Instance.ShouldHideStatusBar = value);
-        this.WhenAnyValue(x => x.ShouldSaveLastPathOnExit)
-            .Subscribe(value => Settings.Instance.ShouldSaveLastPathOnExit = value);
-        this.WhenAnyValue(x => x.PreviewDepth)
-            .Subscribe(value => Settings.Instance.PreviewDepth = value);
-        this.WhenAnyValue(x => x.ShouldCalculateFolderSize)
-            .Subscribe(value => Settings.Instance.ShouldCalculateFolderSize = value);
-        this.WhenAnyValue(x => x.AutoHideStatusBar)
-            .Subscribe(value => Settings.Instance.AutoHideStatusBar = value);
-        this.WhenAnyValue(x => x.PreviewDefaultZoom)
-            .Subscribe(value => Settings.Instance.PreviewDefaultZoom = value);
-        this.WhenAnyValue(x => x.PreviewFollowMouse)
-            .Subscribe(value => Settings.Instance.PreviewFollowMouse = value);
-       
+        this.WhenAnyValue(x => x.ShouldImagePreviewLoop)
+            .Subscribe(value => Settings.Instance.ImagePreviewPreference.Loop = value);
+        this.WhenAnyValue(x => x.ShouldSaveLastPathOnExit).Subscribe(value =>
+            Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit = value);
+        this.WhenAnyValue(x => x.ShouldImageLoop)
+            .Subscribe(value => Settings.Instance.TabsPreference.Loop = value);
+
         var groups = Settings.Instance.HotKeyManager.UserKeymap.GroupBy(x => x.Value);
         foreach (var group in groups)
         {
@@ -140,11 +153,17 @@ public class PreferencesTabViewModel : TabViewModelBase
         get => _isSettingsTabCycled;
         set => this.RaiseAndSetIfChanged(ref _isSettingsTabCycled, value);
     }
-    
+
     public bool AutoHideStatusBar
     {
         get => _autoHideStatusBar;
         set => this.RaiseAndSetIfChanged(ref _autoHideStatusBar, value);
+    }
+
+    public int AutoHideStatusBarDelay
+    {
+        get => _autoHideStatusBarDelay;
+        set => this.RaiseAndSetIfChanged(ref _autoHideStatusBarDelay, value);
     }
 
     public bool ShouldHideStatusBar
@@ -153,12 +172,30 @@ public class PreferencesTabViewModel : TabViewModelBase
         set => this.RaiseAndSetIfChanged(ref _shouldHideStatusBar, value);
     }
 
+    public bool ShouldAskExtractionFolderName
+    {
+        get => _shouldAskExtractionFolderName;
+        set => this.RaiseAndSetIfChanged(ref _shouldAskExtractionFolderName, value);
+    }
+
+    public bool ShouldImagePreviewLoop
+    {
+        get => _shouldImagePreviewLoop;
+        set => this.RaiseAndSetIfChanged(ref _shouldImagePreviewLoop, value);
+    }
+
+    public bool ShouldImageLoop
+    {
+        get => _shouldImageLoop;
+        set => this.RaiseAndSetIfChanged(ref _shouldImageLoop, value);
+    }
+
     public bool ShouldHideFileManager
     {
         get => _shouldHideFileManager;
         set => this.RaiseAndSetIfChanged(ref _shouldHideFileManager, value);
     }
-    
+
     public bool PreviewFollowMouse
     {
         get => _previewFollowMouse;
@@ -200,7 +237,7 @@ public class PreferencesTabViewModel : TabViewModelBase
         get => _previewDepth;
         set => this.RaiseAndSetIfChanged(ref _previewDepth, value);
     }
-    
+
     public int PreviewDefaultZoom
     {
         get => _previewDefaultZoom;

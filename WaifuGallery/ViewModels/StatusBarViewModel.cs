@@ -13,11 +13,10 @@ public class StatusBarViewModel : ViewModelBase
     #region Priate Fields
 
     private IBrush _backgroundColor = new SolidColorBrush(Colors.Transparent);
-    private IBrush _foregroundColor = new SolidColorBrush(Colors.White);
-    private InfoBarSeverity _severity = InfoBarSeverity.Informational;
+    private InfoBarSeverity _severity;
     private bool _isStatusBarVisible = true;
-    private string _message = "Welcome to WaifuGallery!";
-    private string _title = "Information";
+    private string _message = "";
+    private string _title = "";
     private int _countDuplicates;
     private readonly Timer _timer;
 
@@ -43,6 +42,7 @@ public class StatusBarViewModel : ViewModelBase
 
         if (!Settings.Instance.AutoHideStatusBar) return;
         _timer.Stop();
+        _timer.Interval = Settings.Instance.AutoHideStatusBarDelay;
         _timer.Start();
     }
 
@@ -52,12 +52,13 @@ public class StatusBarViewModel : ViewModelBase
 
     public StatusBarViewModel()
     {
-        _timer = new Timer(3000);
+        _timer = new Timer(Settings.Instance.AutoHideStatusBarDelay);
         _timer.Elapsed += (_, _) => IsStatusBarVisible = false;
         _timer.AutoReset = false;
         MessageBus.Current.Listen<SendMessageToStatusBarCommand>()
             .Subscribe(SetMessage);
 
+        SetMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, "Welcome to WaifuGallery!"));
         this.WhenAnyValue(x => x.Severity).Subscribe(x =>
         {
             BackgroundColor = x switch
@@ -106,12 +107,6 @@ public class StatusBarViewModel : ViewModelBase
     {
         get => _backgroundColor;
         set => this.RaiseAndSetIfChanged(ref _backgroundColor, value);
-    }
-
-    public IBrush ForegroundColor
-    {
-        get => _foregroundColor;
-        set => this.RaiseAndSetIfChanged(ref _foregroundColor, value);
     }
 
     public bool IsStatusBarVisible

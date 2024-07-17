@@ -21,6 +21,9 @@ public class FitToHeightCommand : ITabCommand;
 
 public class FitToWidthCommand : ITabCommand;
 
+public class RotateClockwiseCommand : ITabCommand;
+public class RotateAntiClockwiseCommand : ITabCommand;
+
 public class SetZoomCommand(Matrix matrix) : ITabCommand
 {
     public Matrix Matrix { get; } = matrix;

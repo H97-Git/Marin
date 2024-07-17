@@ -71,7 +71,12 @@ public class MenuBarViewModel : ViewModelBase
     public ICommand FitToWidthCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new FitToWidthCommand()); });
 
+    public ICommand RotateClockwiseCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new RotateClockwiseCommand()); });
 
+    public ICommand RotateAntiClockwiseCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new RotateAntiClockwiseCommand()); });
+    
     public ICommand OpenFileCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenFileCommand()); });
 
