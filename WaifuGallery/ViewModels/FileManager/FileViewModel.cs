@@ -44,7 +44,7 @@ public sealed class FileViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _sizeInBytes, value);
     }
 
-    private bool IsFileReadOnly
+    public bool IsFileReadOnly
     {
         get => _isFileReadOnly;
         set => this.RaiseAndSetIfChanged(ref _isFileReadOnly, value);
@@ -61,7 +61,7 @@ public sealed class FileViewModel : ViewModelBase
         {
             case DirectoryInfo directoryInfo:
                 ParentPath = directoryInfo.Parent?.FullName;
-                if (Settings.Instance.ShouldCalculateFolderSize)
+                if (Settings.Instance.FileManagerPreference.ShouldCalculateFolderSize)
                     SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
                 _isDirectoryEmpty = Helper.IsDirectoryEmpty(_fileSystemInfo);
                 Symbol = _isDirectoryEmpty ? Symbol.Folder : Symbol.FolderFilled;
@@ -194,8 +194,6 @@ public sealed class FileViewModel : ViewModelBase
         get => _createdTime;
         set => this.RaiseAndSetIfChanged(ref _createdTime, value);
     }
-
-    public string ReadOnly => $"Read Only: {IsFileReadOnly}";
 
     public string SizeInHumanReadable
     {

@@ -246,12 +246,12 @@ public abstract class Helper
 
     #endregion
 
-    public static void ExtractDirectory(string path)
+    public static void ExtractDirectory(string path,string destination = "Extracted")
     {
         using var archive = ArchiveFactory.Open(path);
         foreach (var entry in archive.Entries)
         {
-            entry.WriteToDirectory(Path.Combine(path, "Extracted"), new ExtractionOptions()
+            entry.WriteToDirectory(Path.Combine(path, destination), new ExtractionOptions()
             {
                 ExtractFullPath = true,
                 Overwrite = true

@@ -10,9 +10,9 @@
              xmlns:fileManager="clr-namespace:WaifuGallery.ViewModels.FileManager"
              ZIndex="99">
     <Design.DataContext>
-        <fileManager:PreviewImageViewModel></fileManager:PreviewImageViewModel>
+        <fileManager:PreviewImageViewModel/>
     </Design.DataContext>
-    <Canvas Name="PreviewCanvas">
+    <Canvas Name="PreviewCanvas" PointerWheelChanged="PreviewCanvas_OnPointerWheelChanged">
         <Grid
             IsVisible="{Binding IsPreviewImageVisible}"
             Canvas.Left="{Binding PreviewPosition.X}"

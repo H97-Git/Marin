@@ -1,7 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
-using FluentAvalonia.UI.Controls;
 using WaifuGallery.ViewModels;
 
 namespace WaifuGallery.Views;
@@ -41,19 +39,6 @@ public partial class MainView : UserControl
     {
         if (e.Key is not Key.Tab) return;
         MainViewModel?.HandleTabKeyEvent(e);
-    }
-
-    private void Button_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (MainViewModel != null)
-            MainViewModel.StatusBarViewModel.Severity = (sender as Button) switch
-            {
-                {Content: "Error"} => InfoBarSeverity.Error,
-                {Content: "Warning"} => InfoBarSeverity.Warning,
-                {Content: "Information"} => InfoBarSeverity.Informational,
-                {Content: "Success"} => InfoBarSeverity.Success,
-                _ => MainViewModel.StatusBarViewModel.Severity
-            };
     }
 
     #endregion

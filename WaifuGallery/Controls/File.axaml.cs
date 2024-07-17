@@ -7,6 +7,7 @@ using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
+using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileManager;
 
 namespace WaifuGallery.Controls;
@@ -110,7 +111,7 @@ public partial class File : UserControl
     {
         _previewTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromSeconds(.5),
+            Interval = TimeSpan.FromMilliseconds(200),
         };
         _previewTimer.Tick += OnPreviewTimerTick;
         InitializeComponent();
@@ -118,6 +119,9 @@ public partial class File : UserControl
         // FileControl.PointerExited += OnPointerExited_ClosePreview;
         FileControl.PointerPressed += OnPointerPressed_StartTimerTickPreview;
         FileControl.PointerReleased += OnPointerReleased_OpenInNewTab;
+
+        FileControlGrid.Width = Settings.Instance.FileManagerPreference.FileWidth;
+        FileControlGrid.Height = Settings.Instance.FileManagerPreference.FileHeight;
     }
 
     #endregion

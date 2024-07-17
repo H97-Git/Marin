@@ -7,7 +7,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
-using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Controls.Dialogs;
 using WaifuGallery.ViewModels.Dialogs;
@@ -47,11 +46,9 @@ public class MainViewViewModel : ViewModelBase
                     TabsViewModel.ImageTabViewModel?.LoadLastImage();
                 break;
             case KeyCommand.GoRight:
-            case KeyCommand.NextImage:
                 if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.ImageTabViewModel?.LoadNextImage();
                 break;
-            case KeyCommand.PreviousImage:
             case KeyCommand.GoLeft:
                 if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
                     TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
@@ -138,7 +135,7 @@ public class MainViewViewModel : ViewModelBase
                 MenuBarViewModel.IsMenuVisible = false;
             if (Settings.Instance.ShouldHideTabsHeader)
                 TabsViewModel.IsTabHeadersVisible = false;
-            if (Settings.Instance.ShouldHideFileManager)
+            if (Settings.Instance.FileManagerPreference.ShouldHideFileManager)
                 FileManagerViewModel.IsFileManagerVisible = false;
             if (Settings.Instance.ShouldHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = false;
@@ -149,7 +146,8 @@ public class MainViewViewModel : ViewModelBase
             MenuBarViewModel.IsMenuVisible = true;
             TabsViewModel.IsTabHeadersVisible = true;
             FileManagerViewModel.IsFileManagerVisible = true;
-            StatusBarViewModel.IsStatusBarVisible = true;
+            if (!Settings.Instance.AutoHideStatusBar)
+                StatusBarViewModel.IsStatusBarVisible = true;
         }
     }
 
@@ -190,12 +188,18 @@ public class MainViewViewModel : ViewModelBase
         clipboard.SetTextAsync(command.Path);
     }
 
-    private void DeleteFile(DeleteCommand command)
+    private async void DeleteFile(DeleteCommand command)
     {
         var path = command.Path;
         if (!File.Exists(path) && !Directory.Exists(path))
         {
             SendMessageToStatusBar(InfoBarSeverity.Warning, "File or Directory does not exist!");
+            return;
+        }
+
+        var confirm = await ShowDeleteDialogAsync(Path.GetFileName(path));
+        if (!confirm)
+        {
             return;
         }
 
@@ -223,9 +227,7 @@ public class MainViewViewModel : ViewModelBase
     private void PasteFile(PasteCommand command)
     {
         var sourceFileCommand = _clipBoardDataObject.Get(DataFormats.FileNames) as FileCommand;
-        Log.Debug($"Paste File sourceFileCommand: {sourceFileCommand?.Path}");
         var destination = command.Path;
-        Log.Debug($"Paste File destination: {destination}");
         switch (sourceFileCommand)
         {
             case CopyCommand:
@@ -236,15 +238,12 @@ public class MainViewViewModel : ViewModelBase
                         destination += "_copy";
                     }
 
-                    Log.Debug($"Copy Command File: destination: {destination}");
                     File.Copy(sourceFileCommand.Path, destination);
                     command.Path = Path.Combine(sourceFileCommand.Path, Path.GetFileName(destination));
                 }
                 else
                 {
-                    Log.Debug($"Copy Command Folder: destination: {destination}");
                     var newDir = Helper.CopyDirectory(sourceFileCommand.Path, destination, true);
-                    Log.Debug($"Copy Command Folder: newdir: {newDir.FullName}");
                     command.Path = newDir.FullName;
                 }
 
@@ -257,7 +256,6 @@ public class MainViewViewModel : ViewModelBase
                 else
                 {
                     destination = Path.Combine(command.Path, Path.GetFileName(sourceFileCommand.Path));
-                    Log.Debug($"Cut command: destination: {destination}");
                     Directory.Move(sourceFileCommand.Path, destination);
                 }
 
@@ -314,8 +312,8 @@ public class MainViewViewModel : ViewModelBase
             SecondaryButtonText = "Cancel",
         };
 
-        var viewModel = new NewFolderViewModel();
-        dialog.Content = new NewFolder()
+        var viewModel = new UserInputDialog();
+        dialog.Content = new UserInput()
         {
             DataContext = viewModel,
             OnEnterPressed = (_, _) => { dialog.Hide(); },
@@ -323,7 +321,44 @@ public class MainViewViewModel : ViewModelBase
         };
 
         var dialogResult = await dialog.ShowAsync();
-        return dialogResult is ContentDialogResult.Secondary ? null : viewModel.NewFolderName;
+        return dialogResult is ContentDialogResult.Secondary ? null : viewModel.UserInput;
+    }
+
+    private async Task<string?> ShowExtractDialogAsync(string archiveName)
+    {
+        var dialog = new ContentDialog()
+        {
+            Title = "New folder name:",
+            PrimaryButtonText = "Ok",
+            SecondaryButtonText = "Cancel",
+        };
+
+        var viewModel = new UserInputDialog
+        {
+            UserInput = archiveName
+        };
+        dialog.Content = new UserInput()
+        {
+            DataContext = viewModel,
+            OnEnterPressed = (_, _) => { dialog.Hide(); },
+            OnEscapePressed = (_, _) => { dialog.Hide(); }
+        };
+
+        var dialogResult = await dialog.ShowAsync();
+        return dialogResult is ContentDialogResult.Secondary ? null : viewModel.UserInput;
+    }
+
+    private async Task<bool> ShowDeleteDialogAsync(string fileName)
+    {
+        var dialog = new ContentDialog
+        {
+            Title = "Delete",
+            Content = "Are you sure you want to delete " + fileName + " ?",
+            PrimaryButtonText = "Yes",
+            SecondaryButtonText = "No",
+        };
+        var dialogResult = await dialog.ShowAsync();
+        return dialogResult is ContentDialogResult.Primary;
     }
 
     private void OpenInFileExplorer(OpenInFileExplorerCommand command)
@@ -339,9 +374,18 @@ public class MainViewViewModel : ViewModelBase
         Process.Start(vivaldiPath, fileUri.ToString());
     }
 
-    private void ExtractFile(ExtractCommand command)
+    private async void ExtractFile(ExtractCommand command)
     {
-        Helper.ExtractDirectory(command.Path);
+        if (!Settings.Instance.FileManagerPreference.ShouldAskExtractionFolderName)
+        {
+            Helper.ExtractDirectory(command.Path);
+        }
+        else
+        {
+            var result = await ShowExtractDialogAsync(Path.GetFileNameWithoutExtension(command.Path));
+            if (result == null) return;
+            Helper.ExtractDirectory(command.Path, result);
+        }
     }
 
     private void ShowPreview()

@@ -2,13 +2,13 @@
 
 namespace WaifuGallery.ViewModels.Dialogs;
 
-public class NewFolderViewModel: ViewModelBase
+public class UserInputDialog: ViewModelBase
 {
     
-    private string? _newFolderName;
-    public string? NewFolderName
+    private string? _userInput;
+    public string? UserInput
     {
-        get => _newFolderName;
-        set => this.RaiseAndSetIfChanged(ref _newFolderName, value);
+        get => _userInput;
+        set => this.RaiseAndSetIfChanged(ref _userInput, value);
     }
 }

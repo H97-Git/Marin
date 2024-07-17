@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileManager;
 
 namespace WaifuGallery.Controls;
@@ -17,11 +18,6 @@ public partial class FileManager : UserControl
 
     #region Private Methods
 
-    private void InputElement_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
-    {
-        FileManagerViewModel?.PreviewImageViewModel.ZoomPreview(e.Delta.Y);
-    }
-
     private void OnPointerMoved_ChangePreviewPosition(object? sender, PointerEventArgs e)
     {
         // if (e.KeyModifiers is not KeyModifiers.Control) return;
@@ -33,21 +29,25 @@ public partial class FileManager : UserControl
 
         // FileManagerViewModel?.SendMessageToStatusBar(
         //     $"PointerMoved: X:{point.X}, Y:{point.Y} - Width:{size.Width}, Height:{size.Height}");
-        FileManagerViewModel?.PreviewImageViewModel.ChangePreviewPosition(newPoint);
+        FileManagerViewModel.PreviewImageViewModel.ChangePreviewPosition(newPoint);
     }
 
-    private static Point CalcNewPoint(Size gridSize, Point pointerPosition, Size previewImageSize)
+    private static Point CalcNewPoint(Size panelSize, Point pointerPosition, Size previewImageSize)
     {
         const int offset = 30;
-        var x = gridSize.Width - previewImageSize.Width;
-        var y = gridSize.Height - previewImageSize.Height;
-        x -= offset;
-        y -= offset;
-        if (x < 0) x = 0;
-        if (y < 0) y = 0;
-        var xClamp = Math.Clamp(pointerPosition.X - offset, 0, x);
-        var yClamp = Math.Clamp(pointerPosition.Y - offset, 0, y);
-        return new Point(xClamp, yClamp);
+
+        // Calculate the initial position to center the preview image around the mouse pointer
+        var initialX = pointerPosition.X - previewImageSize.Width / 2;
+        var initialY = pointerPosition.Y - previewImageSize.Height / 2;
+
+        // Adjust to ensure the preview image stays within the bounds of the panel
+        var maxX = panelSize.Width - previewImageSize.Width - offset;
+        var maxY = panelSize.Height - previewImageSize.Height - offset;
+
+        var x = Math.Clamp(initialX, offset, maxX);
+        var y = Math.Clamp(initialY, offset, maxY);
+
+        return new Point(x, y);
     }
 
     #endregion
@@ -57,7 +57,6 @@ public partial class FileManager : UserControl
     public FileManager()
     {
         InitializeComponent();
-        ImagePreviewControl.PointerWheelChanged += InputElement_OnPointerWheelChanged;
         FileManagerContent.PointerMoved += OnPointerMoved_ChangePreviewPosition;
     }
 
@@ -69,10 +68,18 @@ public partial class FileManager : UserControl
     {
         if (FileManagerViewModel is null) return;
         var fileManagerWidth = (int) FileManagerListBox.Bounds.Size.Width;
-        //Todo: This should be taken from settings (or something like that) since this value doesn't reflect the actual desired size of the control.
-        const int fileWidth = 165;
+        var fileWidth = Settings.Instance.FileManagerPreference.FileWidth;
         FileManagerViewModel.ColumnsCount = fileManagerWidth / fileWidth;
     }
 
     #endregion
+
+    private void FileManagerListBox_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        if(FileManagerViewModel is null) return;
+        if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
+        {
+            e.Handled = true;
+        }
+    }
 }

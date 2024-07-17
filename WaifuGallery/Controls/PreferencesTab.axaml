@@ -29,7 +29,7 @@
             <ui:SettingsExpander Header="FullScreen"
                                  Description="Hide UI elements when fullscreen"
                                  IconSource="{DynamicResource ArrowsOutSvg}">
-                <ui:SettingsExpanderItem Content="Menu Bar">
+                <ui:SettingsExpanderItem Content="Menu">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldHideMenuBar}" />
                     </ui:SettingsExpanderItem.Footer>
@@ -44,7 +44,7 @@
                         <CheckBox IsChecked="{Binding ShouldHideFileManager}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Status Bar">
+                <ui:SettingsExpanderItem Content="Info">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldHideStatusBar}" />
                     </ui:SettingsExpanderItem.Footer>
@@ -65,25 +65,34 @@
             </ui:SettingsExpander>
             <!-- File Manager -->
             <ui:SettingsExpander Header="File Manager"
-                                 Description="Configure Tabs behaviours"
+                                 Description="Configure Tabs behaviours."
                                  IconSource="{DynamicResource FoldersSvg}">
 
-                <ui:SettingsExpanderItem Content="Save last path on exit">
+                <ui:SettingsExpanderItem Content="Keep last path stored ?"
+                                         Description="At launch the file manager will start in the last path visited.">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldSaveLastPathOnExit}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Calculate all folder size">
+                <ui:SettingsExpanderItem Content="Divulge each folder size ?"
+                                         Description="Instead of using the context menu to get a folder size individually set this to true to get all folders sizes. (Only cached in memory so I don't recommend turning this on.)">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldCalculateFolderSize}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Ask where to extract archive"
+                                         Description="When set to true a dialog will pop asking you to input the name of the new folder where an archive will be extracted. When false extract to 'Extracted'. ">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox IsChecked="{Binding ShouldAskExtractionFolderName}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
             <!-- Image Preview -->
             <ui:SettingsExpander Header="Image Preview"
-                                 Description="Test"
+                                 Description="Configure Image Preview behaviours"
                                  IconSource="{DynamicResource PictureInPictureSvg}">
-                <ui:SettingsExpanderItem Content="Image Preview depth">
+                <ui:SettingsExpanderItem Content="Image Preview depth"
+                                         Description="How many levels of subfolders the image preview will scan for images. Default: 0">
                     <ui:SettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal">
                             <RadioButton Content="0"
@@ -98,14 +107,15 @@
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
                 <ui:SettingsExpanderItem Content="Default Size"
-                                         Description="Min: 150 Max: 600">
+                                         Description="Simply the size of the image preview when opening. Min: 150 Max: 600 Default: 300">
                     <ui:SettingsExpanderItem.Footer>
                         <NumericUpDown Value="{Binding PreviewDefaultZoom}" Minimum="150" Maximum="600" Increment="1" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Follow Mouse">
+                <ui:SettingsExpanderItem Content="Follow Mouse"
+                                         Description="Whether the image preview should follow the pointer mouse.">
                     <ui:SettingsExpanderItem.Footer>
-                        <CheckBox IsChecked="{Binding PreviewFollowMouse}"/>
+                        <CheckBox IsChecked="{Binding PreviewFollowMouse}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
@@ -136,6 +146,11 @@
                 <ui:SettingsExpanderItem Content="Auto hide status bar">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding AutoHideStatusBar}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Hide status bar delay">
+                    <ui:SettingsExpanderItem.Footer>
+                        <NumericUpDown Value="{Binding AutoHideStatusBarDelay}" Minimum="3000" Maximum="10000" Increment="500" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>

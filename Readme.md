@@ -38,7 +38,7 @@ To run Waifu Gallery, follow these steps:
 
 ## Usage
 
-### Keyboard Shortcuts (Not yet implemented)
+### Keyboard Shortcuts
 
 The application comes with customizable keyboard shortcuts. To configure these shortcuts, go to the settings menu and set your preferred key bindings for various actions.
 
@@ -100,6 +100,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [Magick.NET](https://www.nuget.org/packages/Magick.NET.Core) for image processing.
 - [NaturalSort](https://www.nuget.org/packages/NaturalSort.Extension/) for natural sorting of file names.
 - [PanAndZoom](https://www.nuget.org/packages/Avalonia.Controls.PanAndZoom) for zooming and panning images in Tab.
+- [Serilog](https://www.nuget.org/packages/Serilog) for logging.
 - [SharpCompress](https://www.nuget.org/packages/SharpCompress) for archives extraction.
 
 ---

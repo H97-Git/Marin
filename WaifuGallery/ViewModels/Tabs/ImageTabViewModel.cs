@@ -20,6 +20,7 @@ public class ImageTabViewModel : TabViewModelBase
     private readonly string[] _imagesInPath;
     private readonly string? _parentFolderName;
     private int _index;
+    private int _rotationAngle;
 
     #endregion
 
@@ -107,6 +108,12 @@ public class ImageTabViewModel : TabViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _imageSize, value);
     }
 
+    public int RotationAngle
+    {
+        get => _rotationAngle;
+        set => this.RaiseAndSetIfChanged(ref _rotationAngle, value);
+    }
+
     public Matrix Matrix { get; set; }
     public bool IsDefaultZoom { get; set; } = true;
 
@@ -139,6 +146,20 @@ public class ImageTabViewModel : TabViewModelBase
 
     public void ResizeImageByWidth(double targetHeight) =>
         ImageSize = Helper.GetScaledSizeByWidth(BitmapImage, (int) targetHeight);
+
+    public void RotateImage(bool clockwise)
+    {
+        if (clockwise)
+        {
+            RotationAngle = (RotationAngle + 90) % 360;
+        }
+        else
+        {
+            RotationAngle = (RotationAngle - 90) % 360;
+            if(RotationAngle < 0)
+                RotationAngle += 360;
+        }
+    }
 
     public static ImageTabViewModel? CreateImageTabFromCommand(ICommandMessage command)
     {

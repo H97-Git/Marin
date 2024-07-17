@@ -41,10 +41,6 @@ public class HotKeyManager
     {
         //App
         {new KeyGesture(Key.F11), KeyCommand.FullScreen},
-        {new KeyGesture(Key.K), KeyCommand.GoUp},
-        {new KeyGesture(Key.Up), KeyCommand.GoUp},
-        {new KeyGesture(Key.J), KeyCommand.GoDown},
-        {new KeyGesture(Key.Down), KeyCommand.GoDown},
         {new KeyGesture(Key.H), KeyCommand.GoLeft},
         {new KeyGesture(Key.Left), KeyCommand.GoLeft},
         {new KeyGesture(Key.PageUp), KeyCommand.PreviousImage},
@@ -64,6 +60,10 @@ public class HotKeyManager
         {new KeyGesture(Key.W, KeyModifiers.Control), KeyCommand.FitToWidthAndResetZoom},
         {new KeyGesture(Key.W, KeyModifiers.Shift), KeyCommand.FitToWidthAndResetZoom},
         //File Manager
+        {new KeyGesture(Key.K), KeyCommand.GoUp},
+        {new KeyGesture(Key.Up), KeyCommand.GoUp},
+        {new KeyGesture(Key.J), KeyCommand.GoDown},
+        {new KeyGesture(Key.Down), KeyCommand.GoDown},
         {new KeyGesture(Key.Back), KeyCommand.GoToParentFolder},
         {new KeyGesture(Key.Enter), KeyCommand.OpenFolder},
         {new KeyGesture(Key.F), KeyCommand.ToggleFileManager},
@@ -126,7 +126,6 @@ public class HotKeyManager
     {
         UserKeymap.Remove(oldBinding);
         UserKeymap[newBinding] = action;
-        // SaveUserKeymap();
     }
 
     private Dictionary<KeyGesture, KeyCommand>? LoadUserKeymap()

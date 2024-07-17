@@ -17,6 +17,7 @@ public class PreviewImageViewModel : ViewModelBase
     private Point _previewPosition = new(0, 0);
     private Size _previewSize = new(0, 0);
     private bool _isPreviewVisible;
+    private bool _isZooming;
     private int _previewImageIndex;
     private string[] _previewImagePaths = [];
     private string _previewImageCounter = "0/0";
@@ -42,7 +43,7 @@ public class PreviewImageViewModel : ViewModelBase
             PreviewCounter = $"{_previewImageIndex + 1}/{_previewImagePaths.Length}";
             PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
             PreviewSize = _previewImageIndex is 0
-                ? Helper.GetScaledSize(PreviewImage, Settings.Instance.PreviewDefaultZoom)
+                ? Helper.GetScaledSize(PreviewImage, Settings.Instance.FileManagerPreference.PreviewDefaultZoom)
                 : PreviewSize;
         }
     }
@@ -78,6 +79,12 @@ public class PreviewImageViewModel : ViewModelBase
         get => _previewSize;
         private set => this.RaiseAndSetIfChanged(ref _previewSize, value);
     }
+    
+    public bool IsZooming
+    {
+        get => _isZooming;
+        set => this.RaiseAndSetIfChanged(ref _isZooming, value);
+    }
 
     public bool IsPreviewImageVisible
     {
@@ -98,16 +105,24 @@ public class PreviewImageViewModel : ViewModelBase
     public void ShowPreview(string path)
     {
         if (IsPreviewImageVisible) return;
-        _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.PreviewDepth);
+        _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.FileManagerPreference.PreviewDepth);
         if (_previewImagePaths is {Length: 0})
         {
-            const string message = "No images found for preview";
+            const string message = "No images found for preview.";
             SendMessageToStatusBar(InfoBarSeverity.Warning, message);
             return;
         }
 
         IsPreviewImageVisible = true;
         PreviewImageIndex = 0;
+    }
+
+    public void HidePreview()
+    {
+        if (!IsPreviewImageVisible) return;
+        IsPreviewImageVisible = false;
+        PreviewImage = null;
+        _previewImagePaths = Array.Empty<string>();
     }
 
     public void NextPreview()
@@ -142,15 +157,6 @@ public class PreviewImageViewModel : ViewModelBase
                 : Math.Min(600, PreviewSize.Width + newDelta);
 
         PreviewSize = Helper.GetScaledSize(PreviewImage, (int) newSize);
-    }
-
-
-    public void HidePreview()
-    {
-        if (!IsPreviewImageVisible) return;
-        IsPreviewImageVisible = false;
-        PreviewImage = null;
-        _previewImagePaths = Array.Empty<string>();
     }
 
     #endregion
