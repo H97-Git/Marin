@@ -38,7 +38,7 @@ public class TabsViewModel : ViewModelBase
     private void CloseTab()
     {
         if (SelectedTab is null) return;
-        if (SelectedTab is PreferencesTabViewModel && !Settings.Instance.IsTabSettingsClosable) return;
+        if (SelectedTab is PreferencesTabViewModel && !Settings.Instance.TabsPreference.IsTabSettingsClosable) return;
         OpenTabs.Remove(SelectedTab);
         if (OpenTabs.Count is 0)
         {
@@ -215,7 +215,7 @@ public class TabsViewModel : ViewModelBase
     {
         var imageTabViewModel = ImageTabViewModel.CreateImageTabFromCommand(command);
         if (imageTabViewModel is null) return;
-        if (!Settings.Instance.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
+        if (!Settings.Instance.TabsPreference.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
 
         AddTab(imageTabViewModel);
     }
@@ -244,7 +244,7 @@ public class TabsViewModel : ViewModelBase
 
         if (!isCtrlKey)
         {
-            if (!Settings.Instance.IsSettingsTabCycled)
+            if (!Settings.Instance.TabsPreference.IsSettingsTabCycled)
             {
                 if (OpenTabs[newIndex] is PreferencesTabViewModel)
                 {

@@ -3,7 +3,8 @@
         xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
         <ThemeVariantScope RequestedThemeVariant="Dark">
-            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Background="{DynamicResource Brush.Background}" Width="800" Margin="10" Classes="fileManagerToolBar">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Background="{DynamicResource Brush.Background}"
+                  Width="800" Margin="10" Classes="fileManagerToolBar">
                 <Button Grid.Column="0">
                     <!-- <ui:SymbolIcon Symbol="OpenFolder" FontSize="16" /> -->
                     <Svg Path="{StaticResource FolderOpenPath}" Width="18" />

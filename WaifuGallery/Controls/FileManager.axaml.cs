@@ -69,7 +69,7 @@ public partial class FileManager : UserControl
         if (FileManagerViewModel is null) return;
         var fileManagerWidth = (int) FileManagerListBox.Bounds.Size.Width;
         var fileWidth = Settings.Instance.FileManagerPreference.FileWidth;
-        FileManagerViewModel.ColumnsCount = fileManagerWidth / fileWidth;
+        FileManagerViewModel.ColumnsCount = fileManagerWidth / (fileWidth + 28); // 28 is the padding
     }
 
     #endregion

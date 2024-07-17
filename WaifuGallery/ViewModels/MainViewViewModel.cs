@@ -82,8 +82,8 @@ public class MainViewViewModel : ViewModelBase
     private void HandleFileManagerKeyboardEvent(KeyEventArgs e)
     {
         var keyGesture = new KeyGesture(e.Key, e.KeyModifiers);
-        var hk = Settings.Instance.HotKeyManager.GetBinding(keyGesture);
-        switch (hk)
+        var keyCommand = Settings.Instance.HotKeyManager.GetBinding(keyGesture);
+        switch (keyCommand)
         {
             case KeyCommand.NextImage:
                 PreviewImageViewModel.NextPreview();
@@ -119,9 +119,21 @@ public class MainViewViewModel : ViewModelBase
                 PreviewImageViewModel.HidePreview();
                 break;
             case KeyCommand.None:
-                break;
+            case KeyCommand.FirstImage:
+            case KeyCommand.LastImage:
+            case KeyCommand.ToggleFileManager:
+            case KeyCommand.ToggleFileManagerVisibility:
+            case KeyCommand.FullScreen:
+            case KeyCommand.FitToWidthAndResetZoom:
+            case KeyCommand.FitToHeightAndResetZoom:
+            case KeyCommand.OpenPreferences:
+            case KeyCommand.ZAutoFit:
+            case KeyCommand.ZFill:
+            case KeyCommand.ZResetMatrix:
+            case KeyCommand.ZToggleStretchMode:
+            case KeyCommand.ZUniform:
             default:
-                return;
+                break;
         }
     }
 

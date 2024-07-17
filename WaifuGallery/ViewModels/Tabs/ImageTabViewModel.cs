@@ -8,6 +8,7 @@ using Avalonia.Media.Imaging;
 using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
+using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.Tabs;
 
@@ -31,13 +32,33 @@ public class ImageTabViewModel : TabViewModelBase
         get => _index;
         set
         {
-            if (value < 0)
-                value = 0;
-            else if (value >= _imagesInPath.Length)
-                value = _imagesInPath.Length - 1;
-            _index = value;
+            _index = SetIndexInBound(value);
             LoadImage();
         }
+    }
+
+    private int SetIndexInBound(int value)
+    {
+        if (value < 0)
+        {
+            if (Settings.Instance.TabsPreference.Loop)
+            {
+                return _imagesInPath.Length - 1;
+                
+            }
+            return 0;
+        }
+
+        if (value >= _imagesInPath.Length)
+        {
+            if (Settings.Instance.TabsPreference.Loop)
+            {
+                return 0;
+            }
+            return _imagesInPath.Length - 1;
+        }
+
+        return value;
     }
 
     private string CurrentImagePath => _imagesInPath[Index];
@@ -156,7 +177,7 @@ public class ImageTabViewModel : TabViewModelBase
         else
         {
             RotationAngle = (RotationAngle - 90) % 360;
-            if(RotationAngle < 0)
+            if (RotationAngle < 0)
                 RotationAngle += 360;
         }
     }

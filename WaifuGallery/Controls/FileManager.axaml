@@ -68,7 +68,7 @@
                 <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                          ScrollViewer.VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"
                          ItemsSource="{Binding FilesInDir}"
-                         Margin="0,0,20,0"
+                         Margin="0,0,0,0"
                          SelectedIndex="{Binding SelectedIndex}"
                          Name="FileManagerListBox"
                          SelectionMode="Multiple"

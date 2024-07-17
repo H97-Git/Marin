@@ -49,6 +49,15 @@ public class Settings
 
 
             _instance.DefaultFont ??= FontManager.Current.DefaultFontFamily;
+            if (_instance.ImagePreviewPreference.DefaultZoom is 0)
+            {
+                _instance.ImagePreviewPreference.DefaultZoom = 300;
+            }
+
+            if (_instance.AutoHideStatusBarDelay is 0)
+            {
+                _instance.AutoHideStatusBarDelay = 5000;
+            }
 
             return _instance;
         }
@@ -59,16 +68,14 @@ public class Settings
     #region Public Properties
 
     [JsonIgnore] public HotKeyManager HotKeyManager { get; init; } = new();
-    public FileManagerPreference FileManagerPreference { get; set; } = new();
-    public bool IsDuplicateTabsAllowed { get; set; }
-    public bool IsSettingsTabCycled { get; set; }
-    public bool IsTabSettingsClosable { get; set; }
-    public bool ShouldHideMenuBar { get; set; }
+    public FileManagerPreference FileManagerPreference { get; init; } = new();
+    public ImagePreviewPreference ImagePreviewPreference { get; init; } = new();
+    public TabsPreference TabsPreference { get; init; } = new();
     public bool AutoHideStatusBar { get; set; }
+    public bool ShouldHideMenuBar { get; set; }
     public bool ShouldHideStatusBar { get; set; }
     public bool ShouldHideTabsHeader { get; set; }
-    public bool PreviewFollowMouse { get; set; }
-    public int AutoHideStatusBarDelay { get; set; } = 5000;
+    public int AutoHideStatusBarDelay { get; set; }
     public string Theme { get; set; } = "System";
 
     public static string SettingsPath
@@ -100,16 +107,29 @@ public class Settings
     #endregion
 }
 
+public class TabsPreference
+{
+    public bool IsDuplicateTabsAllowed { get; set; }
+    public bool IsSettingsTabCycled { get; set; }
+    public bool IsTabSettingsClosable { get; set; }
+    public bool Loop { get; set; }
+}
+
 public class FileManagerPreference
 {
-    public bool ShouldCalculateFolderSize { get; set; } = true;
-    public bool ShouldSaveLastPathOnExit { get; set; } = true;
-    public bool ShouldHideFileManager { get; set; } = true;
-    public bool ShouldAskExtractionFolderName { get; set; } = true;
-    public bool PreviewFollowMouse { get; set; } = true;
-    public int PreviewDepth { get; set; } = 1;
-    public int PreviewDefaultZoom { get; set; } = 100;
+    public bool ShouldCalculateFolderSize { get; set; }
+    public bool ShouldSaveLastPathOnExit { get; set; }
+    public bool ShouldHideFileManager { get; set; }
+    public bool ShouldAskExtractionFolderName { get; set; }
     public string? FileManagerLastPath { get; set; }
     public int FileWidth { get; set; } = 170;
     public int FileHeight { get; set; } = 170;
+}
+
+public class ImagePreviewPreference
+{
+    public bool FollowMouse { get; set; }
+    public bool Loop { get; set; }
+    public int DefaultZoom { get; set; }
+    public int Depth { get; set; }
 }

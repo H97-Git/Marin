@@ -34,18 +34,39 @@ public class PreviewImageViewModel : ViewModelBase
         set
         {
             if (!IsPreviewImageVisible) return;
-            // A potential to let user loop through images in preview.
-            if (value < 0)
-                value = 0;
-            if (value >= _previewImagePaths.Length)
-                value = _previewImagePaths.Length - 1;
-            _previewImageIndex = value;
+            _previewImageIndex = SetIndexInBound(value);
             PreviewCounter = $"{_previewImageIndex + 1}/{_previewImagePaths.Length}";
             PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
             PreviewSize = _previewImageIndex is 0
-                ? Helper.GetScaledSize(PreviewImage, Settings.Instance.FileManagerPreference.PreviewDefaultZoom)
+                ? Helper.GetScaledSize(PreviewImage, Settings.Instance.ImagePreviewPreference.DefaultZoom)
                 : PreviewSize;
+            ZoomPreview(0);
         }
+    }
+
+    private int SetIndexInBound(int value)
+    {
+        if (value < 0) // value is less than 0
+        {
+            if (Settings.Instance.ImagePreviewPreference.Loop) // If loop is enabled
+            {
+                return _previewImagePaths.Length - 1; // Return last index
+            }
+
+            return 0; // Else fix value to 0
+        }
+
+        if (value >= _previewImagePaths.Length) // value is greater than _previewImagePaths.Length
+        {
+            if (Settings.Instance.ImagePreviewPreference.Loop) // If loop is enabled
+            {
+                return 0; // Return 0
+            }
+
+            return _previewImagePaths.Length - 1; // Else fix value to last index
+        }
+
+        return value;
     }
 
     #endregion
@@ -79,7 +100,7 @@ public class PreviewImageViewModel : ViewModelBase
         get => _previewSize;
         private set => this.RaiseAndSetIfChanged(ref _previewSize, value);
     }
-    
+
     public bool IsZooming
     {
         get => _isZooming;
@@ -105,7 +126,7 @@ public class PreviewImageViewModel : ViewModelBase
     public void ShowPreview(string path)
     {
         if (IsPreviewImageVisible) return;
-        _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.FileManagerPreference.PreviewDepth);
+        _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.ImagePreviewPreference.Depth);
         if (_previewImagePaths is {Length: 0})
         {
             const string message = "No images found for preview.";
@@ -137,7 +158,7 @@ public class PreviewImageViewModel : ViewModelBase
 
     public void ChangePreviewPosition(Point point)
     {
-        if (Settings.Instance.PreviewFollowMouse)
+        if (Settings.Instance.ImagePreviewPreference.FollowMouse)
         {
             PreviewPosition = new Point(point.X, point.Y);
         }

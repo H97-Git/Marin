@@ -118,6 +118,11 @@
                         <CheckBox IsChecked="{Binding PreviewFollowMouse}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Loop">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox IsChecked="{Binding ShouldImagePreviewLoop}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
             <!-- Tabs -->
             <ui:SettingsExpander Header="Tabs"
@@ -139,6 +144,11 @@
                         <CheckBox Content="" IsChecked="{Binding IsDuplicateTabsAllowed}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Loop">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox IsChecked="{Binding ShouldImageLoop}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
             <!-- StatusBar -->
             <ui:SettingsExpander Header="Status Bar"
@@ -150,7 +160,8 @@
                 </ui:SettingsExpanderItem>
                 <ui:SettingsExpanderItem Content="Hide status bar delay">
                     <ui:SettingsExpanderItem.Footer>
-                        <NumericUpDown Value="{Binding AutoHideStatusBarDelay}" Minimum="3000" Maximum="10000" Increment="500" />
+                        <NumericUpDown Value="{Binding AutoHideStatusBarDelay}" Minimum="3000" Maximum="10000"
+                                       Increment="500" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
