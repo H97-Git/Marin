@@ -121,7 +121,7 @@ public partial class File : UserControl
         FileControl.PointerReleased += OnPointerReleased_OpenInNewTab;
 
         FileControlGrid.Width = Settings.Instance.FileManagerPreference.FileWidth;
-        FileControlGrid.Height = Settings.Instance.FileManagerPreference.FileHeight;
+        // FileControlGrid.Height = Settings.Instance.FileManagerPreference.FileHeight;
     }
 
     #endregion

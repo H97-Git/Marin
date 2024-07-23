@@ -17,6 +17,11 @@ public class StartPreviewCommand(string path) : IFileManagerCommand
     public string Path { get; } = path;
 }
 
+public class SetFileManagerPositionCommand(string position) : IFileManagerCommand
+{
+    public string Position { get; } = position;
+}
+
 public class ToggleFileManagerCommand : ICommandMessage;
 
 public class ToggleFileManagerVisibilityCommand : IFileManagerCommand;

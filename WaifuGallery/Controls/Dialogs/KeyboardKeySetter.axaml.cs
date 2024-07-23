@@ -13,13 +13,14 @@ public partial class KeyboardKeySetter : UserControl
 
     private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
     {
+        if (DataContext is not KeyboardKeySetterViewModel viewModel) return;
         if (e.Key is Key.Escape)
         {
             OnEscapePressed?.Invoke(this, EventArgs.Empty);
+            viewModel.KeyGesture = null;
             return;
         }
 
-        if (DataContext is not KeyboardKeySetterViewModel viewModel) return;
         viewModel.KeyGesture = new KeyGesture(e.Key, e.KeyModifiers);
         e.Handled = true;
     }
@@ -43,5 +44,6 @@ public partial class KeyboardKeySetter : UserControl
     }
 
     #endregion
+
     public EventHandler? OnEscapePressed { get; init; }
 }

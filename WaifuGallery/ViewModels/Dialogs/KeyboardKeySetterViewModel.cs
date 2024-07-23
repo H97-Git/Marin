@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia.Input;
 using ReactiveUI;
+using Serilog;
 
 namespace WaifuGallery.ViewModels.Dialogs;
 
@@ -19,6 +20,8 @@ public class KeyboardKeySetterViewModel : ViewModelBase
     {
         this.WhenAnyValue(x => x.KeyGesture).Subscribe(x =>
         {
+            Log.Debug("x: {S}", x?.ToString());
+            Log.Debug("KeyGesture: {S}", KeyGesture?.ToString());
             KeyName = KeyGesture?.ToString() ?? "";
         });
     }

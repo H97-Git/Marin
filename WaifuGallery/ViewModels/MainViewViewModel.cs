@@ -85,12 +85,6 @@ public class MainViewViewModel : ViewModelBase
         var keyCommand = Settings.Instance.HotKeyManager.GetBinding(keyGesture);
         switch (keyCommand)
         {
-            case KeyCommand.NextImage:
-                PreviewImageViewModel.NextPreview();
-                break;
-            case KeyCommand.PreviousImage:
-                PreviewImageViewModel.NextPreview();
-                break;
             case KeyCommand.GoUp:
                 FileManagerViewModel.GoUp();
                 break;
@@ -98,10 +92,30 @@ public class MainViewViewModel : ViewModelBase
                 FileManagerViewModel.GoDown();
                 break;
             case KeyCommand.GoLeft:
-                FileManagerViewModel.SelectedIndex -= 1;
+                if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
+                {
+                    PreviewImageViewModel.PreviousPreview();
+                    break;
+                }
+                if (FileManagerViewModel.IsFileManagerExpandedAndVisible)
+                {
+                    FileManagerViewModel.SelectedIndex -= 1;
+                    break;
+                }
+                TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
                 break;
             case KeyCommand.GoRight:
-                FileManagerViewModel.SelectedIndex += 1;
+                if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
+                {
+                    PreviewImageViewModel.NextPreview();
+                    break;
+                }
+                if (FileManagerViewModel.IsFileManagerExpandedAndVisible)
+                {
+                    FileManagerViewModel.SelectedIndex += 1;
+                    break;
+                }
+                TabsViewModel.ImageTabViewModel?.LoadNextImage();
                 break;
             case KeyCommand.GoToParentFolder:
                 FileManagerViewModel.GoToParentFolder();
@@ -455,7 +469,6 @@ public class MainViewViewModel : ViewModelBase
         MessageBus.Current.Listen<OpenInFileExplorerCommand>().Subscribe(OpenInFileExplorer);
         MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
         MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
-        MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
     }
 
     #endregion

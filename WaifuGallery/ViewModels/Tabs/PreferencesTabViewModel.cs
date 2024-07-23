@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Styling;
 using FluentAvalonia.Styling;
 using ReactiveUI;
+using WaifuGallery.Commands;
 using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.Tabs;
@@ -30,6 +32,7 @@ public class PreferencesTabViewModel : TabViewModelBase
     private int _autoHideStatusBarDelay;
     private int _previewDefaultZoom;
     private int _previewDepth;
+    private bool _shouldOpenPreferencesOnStartUp;
 
     private string _currentThemeVariant = string.Empty;
 
@@ -57,6 +60,7 @@ public class PreferencesTabViewModel : TabViewModelBase
         ShouldImagePreviewLoop = Settings.Instance.ImagePreviewPreference.Loop;
         ShouldImageLoop = Settings.Instance.TabsPreference.Loop;
         ShouldSaveLastPathOnExit = Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit;
+        ShouldOpenPreferencesOnStartUp = Settings.Instance.TabsPreference.OpenPreferencesOnStartup;
     }
 
     #endregion
@@ -109,13 +113,13 @@ public class PreferencesTabViewModel : TabViewModelBase
         this.WhenAnyValue(x => x.ShouldHideStatusBar).Subscribe(value => Settings.Instance.ShouldHideStatusBar = value);
         this.WhenAnyValue(x => x.ShouldHideTabsHeader)
             .Subscribe(value => Settings.Instance.ShouldHideTabsHeader = value);
+        this.WhenAnyValue(x => x.ShouldImageLoop).Subscribe(value => Settings.Instance.TabsPreference.Loop = value);
         this.WhenAnyValue(x => x.ShouldImagePreviewLoop)
             .Subscribe(value => Settings.Instance.ImagePreviewPreference.Loop = value);
         this.WhenAnyValue(x => x.ShouldSaveLastPathOnExit).Subscribe(value =>
             Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit = value);
-        this.WhenAnyValue(x => x.ShouldImageLoop)
-            .Subscribe(value => Settings.Instance.TabsPreference.Loop = value);
-
+        this.WhenAnyValue(x => x.ShouldOpenPreferencesOnStartUp).Subscribe(value =>
+            Settings.Instance.TabsPreference.OpenPreferencesOnStartup = value);
         var groups = Settings.Instance.HotKeyManager.UserKeymap.GroupBy(x => x.Value);
         foreach (var group in groups)
         {
@@ -127,6 +131,8 @@ public class PreferencesTabViewModel : TabViewModelBase
 
             Shortcuts.Add(shortcut);
         }
+
+        Shortcuts = new ObservableCollection<ShortcutViewModel>(Shortcuts.OrderBy(x => x.KeyCommandString));
     }
 
     #endregion
@@ -232,6 +238,12 @@ public class PreferencesTabViewModel : TabViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isTabSettingsClosable, value);
     }
 
+    public bool ShouldOpenPreferencesOnStartUp
+    {
+        get => _shouldOpenPreferencesOnStartUp;
+        set => this.RaiseAndSetIfChanged(ref _shouldOpenPreferencesOnStartUp, value);
+    }
+
     public int PreviewDepth
     {
         get => _previewDepth;
@@ -248,6 +260,12 @@ public class PreferencesTabViewModel : TabViewModelBase
 
     public string? CurrentAvaloniaVersion =>
         typeof(Application).Assembly.GetName().Version?.ToString();
+
+    public ICommand SetFileManagerPosition => ReactiveCommand.Create<string>((args) =>
+    {
+        Settings.Instance.FileManagerPreference.Position = args;
+        MessageBus.Current.SendMessage(new SetFileManagerPositionCommand(args));
+    });
 
     #endregion
 }

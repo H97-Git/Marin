@@ -54,8 +54,13 @@
             <ui:SettingsExpander Header="HotKey Manager"
                                  Description="Change keyboard shortcuts"
                                  IconSource="{DynamicResource KeyboardSvg}"
-                                 IsExpanded="False">
+                                 IsExpanded="True">
                 <ItemsControl ItemsSource="{Binding Shortcuts}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <controls:Shortcut DataContext="{Binding}" />
@@ -84,6 +89,24 @@
                                          Description="When set to true a dialog will pop asking you to input the name of the new folder where an archive will be extracted. When false extract to 'Extracted'. ">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldAskExtractionFolderName}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Position">
+                    <ui:SettingsExpanderItem.Footer>
+                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto">
+                            <Button Grid.Row="0" Grid.Column="0" Content="TL" CommandParameter="TL"
+                                    Command="{Binding SetFileManagerPosition}" />
+                            <Button Grid.Row="0" Grid.Column="1" Content="TC" CommandParameter="TC"
+                                    Command="{Binding SetFileManagerPosition}" />
+                            <Button Grid.Row="0" Grid.Column="2" Content="TR" CommandParameter="TR"
+                                    Command="{Binding SetFileManagerPosition}" />
+                            <Button Grid.Row="1" Grid.Column="0" Content="BL" CommandParameter="BL"
+                                    Command="{Binding SetFileManagerPosition}" />
+                            <Button Grid.Row="1" Grid.Column="1" Content="BC" CommandParameter="BC"
+                                    Command="{Binding SetFileManagerPosition}" />
+                            <Button Grid.Row="1" Grid.Column="2" Content="BR" CommandParameter="BR"
+                                    Command="{Binding SetFileManagerPosition}" />
+                        </Grid>
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
@@ -118,7 +141,8 @@
                         <CheckBox IsChecked="{Binding PreviewFollowMouse}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Loop">
+                <ui:SettingsExpanderItem Content="Loop back"
+                                         Description="Loop back when first/last image is reached.">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldImagePreviewLoop}" />
                     </ui:SettingsExpanderItem.Footer>
@@ -144,24 +168,32 @@
                         <CheckBox Content="" IsChecked="{Binding IsDuplicateTabsAllowed}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Loop">
+                <ui:SettingsExpanderItem Content="Loop back"
+                                         Description="Loop back when first/last image is reached.">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldImageLoop}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Open preferences at start">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox IsChecked="{Binding ShouldOpenPreferencesOnStartUp}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
             <!-- StatusBar -->
             <ui:SettingsExpander Header="Status Bar"
+                                 Description="Auto Hide - Delay"
                                  IconSource="{DynamicResource BarricadeSvg}">
                 <ui:SettingsExpanderItem Content="Auto hide status bar">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding AutoHideStatusBar}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
-                <ui:SettingsExpanderItem Content="Hide status bar delay">
+                <ui:SettingsExpanderItem Content="Hide status bar delay"
+                                         Description="Min: 3000 Max:1000">
                     <ui:SettingsExpanderItem.Footer>
                         <NumericUpDown Value="{Binding AutoHideStatusBarDelay}" Minimum="3000" Maximum="10000"
-                                       Increment="500" />
+                                       Increment="500" IsEnabled="{Binding AutoHideStatusBar}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>

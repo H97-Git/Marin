@@ -1,6 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <x:String x:Key="ArrowBendRightUp">/Resources/SVGs/arrow-bend-right-up.svg</x:String>
     <x:String x:Key="ArrowSquareOutPath">/Resources/SVGs/arrow-square-out.svg</x:String>
+    <x:String x:Key="ArrowAntiClockWisePath">/Resources/SVGs/arrow-counter-clockwise.svg</x:String>
+    <x:String x:Key="ArrowClockWisePath">/Resources/SVGs/arrow-clockwise.svg</x:String>
     <x:String x:Key="ArrowsOutHorizontalPath">/Resources/SVGs/arrows-out-line-horizontal.svg</x:String>
     <x:String x:Key="ArrowsOutPath">/Resources/SVGs/arrows-out.svg</x:String>
     <x:String x:Key="ArrowsOutVerticalPath">/Resources/SVGs/arrows-out-line-vertical.svg</x:String>
@@ -8,9 +10,9 @@
     <x:String x:Key="BinaryPath">/Resources/SVGs/binary.svg</x:String>
     <x:String x:Key="BinocularsPath">/Resources/SVGs/binoculars.svg</x:String>
     <x:String x:Key="BrowserPath">/Resources/SVGs/browser.svg</x:String>
-    <x:String x:Key="CopyPath">/Resources/SVGs/copy.svg</x:String>
     <x:String x:Key="CaretLeftPath">/Resources/SVGs/caret-left.svg</x:String>
     <x:String x:Key="CaretRightPath">/Resources/SVGs/caret-right.svg</x:String>
+    <x:String x:Key="CopyPath">/Resources/SVGs/copy.svg</x:String>
     <x:String x:Key="CopySimplePath">/Resources/SVGs/copy-simple.svg</x:String>
     <x:String x:Key="CursorTextPath">/Resources/SVGs/cursor-text.svg</x:String>
     <x:String x:Key="EyePath">/Resources/SVGs/eye.svg</x:String>
@@ -25,6 +27,7 @@
     <x:String x:Key="GoogleChromeLogoPath">/Resources/SVGs/google-chrome-logo.svg</x:String>
     <x:String x:Key="KeyboardPath">/Resources/SVGs/keyboard.svg</x:String>
     <x:String x:Key="PictureInPicturePath">/Resources/SVGs/picture-in-picture.svg</x:String>
+    <x:String x:Key="PlusPath">/Resources/SVGs/plus.svg</x:String>
     <x:String x:Key="ScissorsPath">/Resources/SVGs/scissors.svg</x:String>
     <x:String x:Key="TabsPath">/Resources/SVGs/tabs.svg</x:String>
     <x:String x:Key="TrashPath">/Resources/SVGs/trash.svg</x:String>
@@ -33,17 +36,17 @@
     <x:String x:Key="UploadSimplePath">/Resources/SVGs/upload-simple.svg</x:String>
     <x:String x:Key="XCirclePath">/Resources/SVGs/x-circle.svg</x:String>
     <x:String x:Key="YinYangPath">/Resources/SVGs/yin-yang.svg</x:String>
+    <Svg x:Key="ArrowAntiClockWise" Path="{StaticResource ArrowAntiClockWisePath}" />
+    <Svg x:Key="ArrowClockWise" Path="{StaticResource ArrowClockWisePath}" />
     <Svg x:Key="ArrowsOutHorizontal" Path="{StaticResource ArrowsOutHorizontalPath}" />
     <Svg x:Key="ArrowsOutVertical" Path="{StaticResource ArrowsOutVerticalPath}" />
-    <!-- <Svg x:Key="ArrowSquareOut" Path="{StaticResource ArrowSquareOutPath}" /> -->
     <Svg x:Key="Binoculars" Path="{StaticResource BinocularsPath}" />
     <Svg x:Key="Browser" Path="{StaticResource GoogleChromeLogoPath}" />
     <Svg x:Key="Eye" Path="{StaticResource EyePath}" />
-    <Svg x:Key="Trash" Path="{StaticResource TrashPath}" />
-    <!-- <Svg x:Key="FileArchive" Path="{StaticResource FileArchivePath}" /> -->
     <Svg x:Key="FolderOpen" Path="{StaticResource FolderOpenPath}" />
     <Svg x:Key="FrameCorners" Path="{StaticResource FrameCornersPath}" />
     <Svg x:Key="Gear" Path="{StaticResource GearPath}" />
+    <Svg x:Key="Trash" Path="{StaticResource TrashPath}" />
     <Svg x:Key="TrayArrowDown" Path="{StaticResource TrayArrowDownPath}" />
     <Svg x:Key="TrayArrowUp" Path="{StaticResource TrayArrowUpPath}" />
     <Svg x:Key="XCircle" Path="{StaticResource XCirclePath}" />

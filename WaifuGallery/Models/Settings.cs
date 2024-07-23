@@ -30,6 +30,8 @@ public class Settings
         {
             if (_instance is not null)
                 return _instance;
+
+            var isSettingsLoadedFromJson = false;
             if (!File.Exists(JsonPath))
             {
                 _instance = new Settings();
@@ -38,8 +40,15 @@ public class Settings
             {
                 try
                 {
-                    _instance = JsonSerializer.Deserialize<Settings>(File.ReadAllText(JsonPath)) ??
-                                new Settings();
+                    _instance = JsonSerializer.Deserialize<Settings>(File.ReadAllText(JsonPath));
+                    if (_instance is not null)
+                    {
+                        isSettingsLoadedFromJson = true;
+                    }
+                    else
+                    {
+                        _instance = new Settings();
+                    }
                 }
                 catch
                 {
@@ -48,6 +57,7 @@ public class Settings
             }
 
 
+            if (isSettingsLoadedFromJson) return _instance;
             _instance.DefaultFont ??= FontManager.Current.DefaultFontFamily;
             if (_instance.ImagePreviewPreference.DefaultZoom is 0)
             {
@@ -113,6 +123,7 @@ public class TabsPreference
     public bool IsSettingsTabCycled { get; set; }
     public bool IsTabSettingsClosable { get; set; }
     public bool Loop { get; set; }
+    public bool OpenPreferencesOnStartup { get; set; }
 }
 
 public class FileManagerPreference
@@ -124,6 +135,7 @@ public class FileManagerPreference
     public string? FileManagerLastPath { get; set; }
     public int FileWidth { get; set; } = 170;
     public int FileHeight { get; set; } = 170;
+    public string? Position { get; set; }
 }
 
 public class ImagePreviewPreference

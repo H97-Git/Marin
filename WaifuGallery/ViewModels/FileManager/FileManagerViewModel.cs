@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls.Primitives;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -36,10 +36,44 @@ public class FileManagerViewModel : ViewModelBase
     private int _selectedIndexInFileManager;
     private readonly FileManagerHistory _pathHistory = new();
     private string _currentPath = string.Empty;
+    private VerticalAlignment _fileManagerVerticalAlignment = VerticalAlignment.Bottom;
+    private HorizontalAlignment _fileManagerHorizontalAlignment = HorizontalAlignment.Left;
 
     #endregion
 
     #region Private Methods
+
+    private void SetFileManagerPosition(SetFileManagerPositionCommand command)
+    {
+        var position = command.Position;
+        switch (position)
+        {
+            case "TL":
+                FileManagerVerticalAlignment = VerticalAlignment.Top;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Left;
+                break;
+            case "TC":
+                FileManagerVerticalAlignment = VerticalAlignment.Top;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Center;
+                break;
+            case "TR":
+                FileManagerVerticalAlignment = VerticalAlignment.Top;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Right;
+                break;
+            case "BL":
+                FileManagerVerticalAlignment = VerticalAlignment.Bottom;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Left;
+                break;
+            case "BC":
+                FileManagerVerticalAlignment = VerticalAlignment.Bottom;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Center;
+                break;
+            case "BR":
+                FileManagerVerticalAlignment = VerticalAlignment.Bottom;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Right;
+                break;
+        }
+    }
 
     private void SortFileInDir()
     {
@@ -201,7 +235,6 @@ public class FileManagerViewModel : ViewModelBase
     {
         FileManagerBackground = new SolidColorBrush(Colors.Transparent);
         this.WhenAnyValue(x => x.CurrentPath)
-            .Throttle(TimeSpan.FromMilliseconds(500))
             .Subscribe(GetFilesFromPath);
         this.WhenAnyValue(x => x.IsFileManagerExpanded)
             .Subscribe(_ =>
@@ -228,11 +261,17 @@ public class FileManagerViewModel : ViewModelBase
             ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
         }
 
+        if (Settings.Instance.FileManagerPreference.Position is not null)
+        {
+            SetFileManagerPosition(new SetFileManagerPositionCommand(Settings.Instance.FileManagerPreference.Position));
+        }
+
         MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
         MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => PreviewImageViewModel.ShowPreview(x.Path));
         MessageBus.Current.Listen<ToggleFileManagerCommand>().Subscribe(_ => ToggleFileManager());
         MessageBus.Current.Listen<ToggleFileManagerVisibilityCommand>().Subscribe(_ => ToggleFileManagerVisibility());
         MessageBus.Current.Listen<RefreshFileManagerCommand>().Subscribe(x => RefreshFileManager(x.FileCommand));
+        MessageBus.Current.Listen<SetFileManagerPositionCommand>().Subscribe(SetFileManagerPosition);
     }
 
     private void ToggleScrollbarVisibility(bool isPreviewImageVisible)
@@ -317,6 +356,18 @@ public class FileManagerViewModel : ViewModelBase
     {
         get => _currentPath;
         set => this.RaiseAndSetIfChanged(ref _currentPath, value);
+    }
+
+    public VerticalAlignment FileManagerVerticalAlignment
+    {
+        get => _fileManagerVerticalAlignment;
+        set => this.RaiseAndSetIfChanged(ref _fileManagerVerticalAlignment, value);
+    }
+
+    public HorizontalAlignment FileManagerHorizontalAlignment
+    {
+        get => _fileManagerHorizontalAlignment;
+        set => this.RaiseAndSetIfChanged(ref _fileManagerHorizontalAlignment, value);
     }
 
     #endregion

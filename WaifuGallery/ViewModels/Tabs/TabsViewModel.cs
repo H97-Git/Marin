@@ -37,19 +37,15 @@ public class TabsViewModel : ViewModelBase
 
     private void CloseTab()
     {
-        if (SelectedTab is null) return;
-        if (SelectedTab is PreferencesTabViewModel && !Settings.Instance.TabsPreference.IsTabSettingsClosable) return;
-        OpenTabs.Remove(SelectedTab);
-        if (OpenTabs.Count is 0)
+        switch (SelectedTab)
         {
-            TabSettingsViewModel = null;
-            ImageTabViewModel = null;
-            IsSettingsTabVisible = false;
-            IsImageTabVisible = false;
-            return;
+            case null:
+            case PreferencesTabViewModel when !Settings.Instance.TabsPreference.IsTabSettingsClosable:
+                return;
+            default:
+                OpenTabs.Remove(SelectedTab);
+                break;
         }
-
-        SelectedTab = OpenTabs.First();
     }
 
     private void AddTab(TabViewModelBase tab)
@@ -76,8 +72,38 @@ public class TabsViewModel : ViewModelBase
 
     public TabsViewModel()
     {
-        OpenSettingsTab();
-        SelectedTab = OpenTabs.First();
+        this.WhenAnyValue(x => x.OpenTabs.Count).Subscribe(_ =>
+        {
+            if (OpenTabs.Count is 0)
+            {
+                SelectedTab = null;
+                TabSettingsViewModel = null;
+                ImageTabViewModel = null;
+                IsSettingsTabVisible = false;
+                IsImageTabVisible = false;
+                return;
+            }
+
+            SelectedTab = OpenTabs.Count is 1 ? OpenTabs.First() : OpenTabs.Last();
+            if (SelectedTab is PreferencesTabViewModel)
+            {
+                IsSettingsTabVisible = true;
+                IsImageTabVisible = false;
+                TabSettingsViewModel = SelectedTab as PreferencesTabViewModel;
+            }
+            else if (SelectedTab is ImageTabViewModel)
+            {
+                IsSettingsTabVisible = false;
+                IsImageTabVisible = true;
+                ImageTabViewModel = SelectedTab as ImageTabViewModel;
+            }
+        });
+
+        if (Settings.Instance.TabsPreference.OpenPreferencesOnStartup)
+        {
+            OpenSettingsTab();
+        }
+
         MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFile);
         MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
         MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
@@ -215,7 +241,8 @@ public class TabsViewModel : ViewModelBase
     {
         var imageTabViewModel = ImageTabViewModel.CreateImageTabFromCommand(command);
         if (imageTabViewModel is null) return;
-        if (!Settings.Instance.TabsPreference.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
+        if (!Settings.Instance.TabsPreference.IsDuplicateTabsAllowed &&
+            OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
 
         AddTab(imageTabViewModel);
     }

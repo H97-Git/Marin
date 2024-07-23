@@ -11,8 +11,6 @@ public enum KeyCommand
     None,
     FirstImage,
     LastImage,
-    NextImage,
-    PreviousImage,
     GoUp,
     GoDown,
     GoLeft,
@@ -43,10 +41,10 @@ public class HotKeyManager
         {new KeyGesture(Key.F11), KeyCommand.FullScreen},
         {new KeyGesture(Key.H), KeyCommand.GoLeft},
         {new KeyGesture(Key.Left), KeyCommand.GoLeft},
-        {new KeyGesture(Key.PageUp), KeyCommand.PreviousImage},
+        {new KeyGesture(Key.PageUp), KeyCommand.GoLeft},
         {new KeyGesture(Key.L), KeyCommand.GoRight},
         {new KeyGesture(Key.Right), KeyCommand.GoRight},
-        {new KeyGesture(Key.PageDown), KeyCommand.NextImage},
+        {new KeyGesture(Key.PageDown), KeyCommand.GoRight},
         //Tabs
         {new KeyGesture(Key.A), KeyCommand.ZAutoFit},
         // {new KeyGesture(Key.F), Hk.ZFill},
@@ -102,29 +100,33 @@ public class HotKeyManager
         //     ? binding
     }
 
-    public bool TrySetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture oldBindingG,
-        out KeyCommand oldBindingC, bool overwrite = false)
+    public bool TrySetBinding(KeyCommand action, KeyGesture keyGesture,
+        out KeyCommand oldCommand, KeyGesture? oldKeyGesture = null, bool overwrite = false)
     {
-        oldBindingC = KeyCommand.None;
+        oldCommand = KeyCommand.None;
         if (overwrite)
         {
-            SetBinding(action, newBinding, oldBindingG);
+            SetBinding(action, keyGesture, oldKeyGesture);
             return true;
         }
 
-        if (UserKeymap.TryGetValue(newBinding, out var value))
+        if (UserKeymap.TryGetValue(keyGesture, out var value))
         {
-            oldBindingC = value;
+            oldCommand = value;
             return false;
         }
 
-        SetBinding(action, newBinding, oldBindingG);
+        SetBinding(action, keyGesture, oldKeyGesture);
         return true;
     }
 
-    private void SetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture oldBinding)
+    private void SetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture? oldBinding = null)
     {
-        UserKeymap.Remove(oldBinding);
+        if (oldBinding is not null)
+        {
+            UserKeymap.Remove(oldBinding);
+        }
+
         UserKeymap[newBinding] = action;
     }
 

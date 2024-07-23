@@ -115,12 +115,12 @@
         </Border>
         <!-- File Name -->
         <TextBox Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" MaxWidth="170"
-                 Margin="0,10,0,0" Text="{Binding FileName}" IsVisible="{Binding IsRenaming}"
+                 Margin="0,15" Text="{Binding FileName}" IsVisible="{Binding IsRenaming}"
                  KeyDown="Rename_OnKeyDown" />
         <TextBlock Grid.Row="2"
                    HorizontalAlignment="Center"
                    MaxWidth="170"
-                   Margin="0,10,0,0"
+                   Margin="0,15"
                    Text="{Binding FileName}"
                    IsVisible="{Binding !IsRenaming}"
                    TextTrimming="CharacterEllipsis"
