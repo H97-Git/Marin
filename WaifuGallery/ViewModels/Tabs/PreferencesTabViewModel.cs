@@ -33,6 +33,8 @@ public class PreferencesTabViewModel : TabViewModelBase
     private int _previewDefaultZoom;
     private int _previewDepth;
     private bool _shouldOpenPreferencesOnStartUp;
+    private bool _shouldLoadLastSessionOnStartUp;
+    private bool _shouldSaveLastSessionOnExit;
 
     private string _currentThemeVariant = string.Empty;
 
@@ -42,8 +44,8 @@ public class PreferencesTabViewModel : TabViewModelBase
 
     private void InitializePreferences()
     {
-        AutoHideStatusBar = Settings.Instance.AutoHideStatusBar;
-        AutoHideStatusBarDelay = Settings.Instance.AutoHideStatusBarDelay;
+        AutoHideStatusBar = Settings.Instance.StatusBarPreference.AutoHideStatusBar;
+        AutoHideStatusBarDelay = Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay;
         CurrentThemeVariant = Settings.Instance.Theme;
         IsDuplicateTabsAllowed = Settings.Instance.TabsPreference.IsDuplicateTabsAllowed;
         IsSettingsTabCycled = Settings.Instance.TabsPreference.IsSettingsTabCycled;
@@ -55,12 +57,14 @@ public class PreferencesTabViewModel : TabViewModelBase
         ShouldCalculateFolderSize = Settings.Instance.FileManagerPreference.ShouldCalculateFolderSize;
         ShouldHideFileManager = Settings.Instance.FileManagerPreference.ShouldHideFileManager;
         ShouldHideMenuBar = Settings.Instance.ShouldHideMenuBar;
-        ShouldHideStatusBar = Settings.Instance.ShouldHideStatusBar;
-        ShouldHideTabsHeader = Settings.Instance.ShouldHideTabsHeader;
+        ShouldHideStatusBar = Settings.Instance.StatusBarPreference.ShouldHideStatusBar;
+        ShouldHideTabsHeader = Settings.Instance.TabsPreference.ShouldHideTabsHeader;
         ShouldImagePreviewLoop = Settings.Instance.ImagePreviewPreference.Loop;
         ShouldImageLoop = Settings.Instance.TabsPreference.Loop;
         ShouldSaveLastPathOnExit = Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit;
         ShouldOpenPreferencesOnStartUp = Settings.Instance.TabsPreference.OpenPreferencesOnStartup;
+        ShouldLoadLastSessionOnStartUp = Settings.Instance.TabsPreference.LoadLastSessionOnStartUp;
+        ShouldSaveLastSessionOnExit = Settings.Instance.TabsPreference.SaveLastSessionOnExit;
     }
 
     #endregion
@@ -88,9 +92,10 @@ public class PreferencesTabViewModel : TabViewModelBase
                 if (fluentAvaloniaTheme != null)
                     fluentAvaloniaTheme.PreferSystemTheme = value == "System";
             });
-        this.WhenAnyValue(x => x.AutoHideStatusBar).Subscribe(value => Settings.Instance.AutoHideStatusBar = value);
+        this.WhenAnyValue(x => x.AutoHideStatusBar)
+            .Subscribe(value => Settings.Instance.StatusBarPreference.AutoHideStatusBar = value);
         this.WhenAnyValue(x => x.AutoHideStatusBarDelay)
-            .Subscribe(value => Settings.Instance.AutoHideStatusBarDelay = value);
+            .Subscribe(value => Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay = value);
         this.WhenAnyValue(x => x.IsDuplicateTabsAllowed)
             .Subscribe(value => Settings.Instance.TabsPreference.IsDuplicateTabsAllowed = value);
         this.WhenAnyValue(x => x.IsSettingsTabCycled)
@@ -110,9 +115,10 @@ public class PreferencesTabViewModel : TabViewModelBase
         this.WhenAnyValue(x => x.ShouldHideFileManager).Subscribe(value =>
             Settings.Instance.FileManagerPreference.ShouldHideFileManager = value);
         this.WhenAnyValue(x => x.ShouldHideMenuBar).Subscribe(value => Settings.Instance.ShouldHideMenuBar = value);
-        this.WhenAnyValue(x => x.ShouldHideStatusBar).Subscribe(value => Settings.Instance.ShouldHideStatusBar = value);
+        this.WhenAnyValue(x => x.ShouldHideStatusBar)
+            .Subscribe(value => Settings.Instance.StatusBarPreference.ShouldHideStatusBar = value);
         this.WhenAnyValue(x => x.ShouldHideTabsHeader)
-            .Subscribe(value => Settings.Instance.ShouldHideTabsHeader = value);
+            .Subscribe(value => Settings.Instance.TabsPreference.ShouldHideTabsHeader = value);
         this.WhenAnyValue(x => x.ShouldImageLoop).Subscribe(value => Settings.Instance.TabsPreference.Loop = value);
         this.WhenAnyValue(x => x.ShouldImagePreviewLoop)
             .Subscribe(value => Settings.Instance.ImagePreviewPreference.Loop = value);
@@ -120,6 +126,10 @@ public class PreferencesTabViewModel : TabViewModelBase
             Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit = value);
         this.WhenAnyValue(x => x.ShouldOpenPreferencesOnStartUp).Subscribe(value =>
             Settings.Instance.TabsPreference.OpenPreferencesOnStartup = value);
+        this.WhenAnyValue(x => x.ShouldSaveLastSessionOnExit)
+            .Subscribe(value => Settings.Instance.TabsPreference.SaveLastSessionOnExit = value);
+        this.WhenAnyValue(x => x.ShouldLoadLastSessionOnStartUp)
+            .Subscribe(value => Settings.Instance.TabsPreference.LoadLastSessionOnStartUp = value);
         var groups = Settings.Instance.HotKeyManager.UserKeymap.GroupBy(x => x.Value);
         foreach (var group in groups)
         {
@@ -132,7 +142,7 @@ public class PreferencesTabViewModel : TabViewModelBase
             Shortcuts.Add(shortcut);
         }
 
-        Shortcuts = new ObservableCollection<ShortcutViewModel>(Shortcuts.OrderBy(x => x.KeyCommandString));
+        Shortcuts = new ObservableCollection<ShortcutViewModel>(Shortcuts.OrderBy(x => x.KeyCommandText));
     }
 
     #endregion
@@ -254,6 +264,18 @@ public class PreferencesTabViewModel : TabViewModelBase
     {
         get => _previewDefaultZoom;
         set => this.RaiseAndSetIfChanged(ref _previewDefaultZoom, value);
+    }
+
+    public bool ShouldSaveLastSessionOnExit
+    {
+        get => _shouldSaveLastSessionOnExit;
+        set => this.RaiseAndSetIfChanged(ref _shouldSaveLastSessionOnExit, value);
+    }
+
+    public bool ShouldLoadLastSessionOnStartUp
+    {
+        get => _shouldLoadLastSessionOnStartUp;
+        set => this.RaiseAndSetIfChanged(ref _shouldLoadLastSessionOnStartUp, value);
     }
 
     public string CurrentVersion => "0.0.1";

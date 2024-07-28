@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
+using DynamicData;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
+using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.Tabs;
@@ -66,6 +71,29 @@ public class TabsViewModel : ViewModelBase
         }
     }
 
+    private void LoadSession(string sessionName = "Last")
+    {
+        var sessionPath = Path.Combine(Settings.SessionsPath, $"{sessionName}.json");
+        if (!File.Exists(sessionPath)) return;
+        var session = JsonSerializer.Deserialize<string[]>(File.ReadAllText(sessionPath));
+        if (session is null) return;
+        OpenTabs.Clear();
+        foreach (var path in session)
+        {
+            var imagesInPath = Helper.GetAllImagesInPath(path);
+            if (imagesInPath is {Length: 0}) continue;
+            var index = imagesInPath.IndexOf(path);
+            AddImageTab(new OpenInNewTabCommand(index, imagesInPath));
+        }
+
+        // TODO: Fix this ugly hack.
+        if (SelectedTab is ImageTabViewModel imageTabViewModel)
+        {
+            imageTabViewModel.LoadNextImage();
+            imageTabViewModel.LoadPreviousImage();
+        }
+    }
+
     #endregion
 
     #region CTOR
@@ -104,6 +132,11 @@ public class TabsViewModel : ViewModelBase
             OpenSettingsTab();
         }
 
+        if (Settings.Instance.TabsPreference.LoadLastSessionOnStartUp)
+        {
+            Dispatcher.UIThread.Post(() => LoadSession());
+        }
+
         MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFile);
         MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
         MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
@@ -111,6 +144,9 @@ public class TabsViewModel : ViewModelBase
         MessageBus.Current.Listen<OpenSettingsTabCommand>().Subscribe(_ => OpenSettingsTab());
         MessageBus.Current.Listen<RotateClockwiseCommand>().Subscribe(_ => RotateAndResetZoom());
         MessageBus.Current.Listen<RotateAntiClockwiseCommand>().Subscribe(_ => RotateAndResetZoom(false));
+
+        MessageBus.Current.Listen<LoadSessionCommand>().Subscribe(_ => LoadSession());
+        MessageBus.Current.Listen<SaveSessionCommand>().Subscribe(_ => Settings.SaveSession());
     }
 
     #endregion

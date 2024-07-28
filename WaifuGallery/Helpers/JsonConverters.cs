@@ -44,9 +44,6 @@ public class DictionaryKeyGestureKeyCommandConverter : JsonConverter<Dictionary<
         var jsonObject = JsonDocument.ParseValue(ref reader).RootElement;
         foreach (var property in jsonObject.EnumerateObject())
         {
-            // var keyGesture = KeyGesture.Parse(property.Name);
-            // var keyCommand = JsonSerializer.Deserialize<KeyCommand>(property.Value.GetRawText(), options);
-            // result[keyGesture] = keyCommand;
             var keyGesture = KeyGesture.Parse(property.Value.GetString()!);
             var keyCommand = (KeyCommand) Enum.Parse(typeof(KeyCommand), property.Name!);
             result[keyGesture] = keyCommand;
@@ -62,8 +59,6 @@ public class DictionaryKeyGestureKeyCommandConverter : JsonConverter<Dictionary<
 
         foreach (var kvp in value)
         {
-            // writer.WritePropertyName(kvp.Key.ToString());
-            // JsonSerializer.Serialize(writer, kvp.Value, options);
             writer.WritePropertyName(ConvertKeyCommandToString(kvp.Value)); //KeyCommand
             JsonSerializer.Serialize(writer, kvp.Key, options); //KeyGesture
         }
@@ -75,31 +70,6 @@ public class DictionaryKeyGestureKeyCommandConverter : JsonConverter<Dictionary<
     {
         return keyCommand switch
         {
-            // KeyCommand.None => nameof(KeyCommand.None),
-            // KeyCommand.FirstImage => nameof(KeyCommand.FirstImage),
-            // KeyCommand.FitToHeightAndResetZoom => nameof(KeyCommand.FitToHeightAndResetZoom),
-            // KeyCommand.FitToWidthAndResetZoom => nameof(KeyCommand.FitToWidthAndResetZoom),
-            // KeyCommand.FullScreen => nameof(KeyCommand.FullScreen),
-            // KeyCommand.GoDown => nameof(KeyCommand.GoDown),
-            // KeyCommand.GoLeft => nameof(KeyCommand.GoLeft),
-            // KeyCommand.GoRight => nameof(KeyCommand.GoRight),
-            // KeyCommand.GoToParentFolder => nameof(KeyCommand.GoToParentFolder),
-            // KeyCommand.GoUp => nameof(KeyCommand.GoUp),
-            // KeyCommand.HidePreview => nameof(KeyCommand.HidePreview),
-            // KeyCommand.LastImage => nameof(KeyCommand.LastImage),
-            // KeyCommand.NextImage => nameof(KeyCommand.NextImage),
-            // KeyCommand.OpenFolder => nameof(KeyCommand.OpenFolder),
-            // KeyCommand.OpenImageInNewTab => nameof(KeyCommand.OpenImageInNewTab),
-            // KeyCommand.OpenPreferences => nameof(KeyCommand.OpenPreferences),
-            // KeyCommand.PreviousImage => nameof(KeyCommand.PreviousImage),
-            // KeyCommand.ShowPreview => nameof(KeyCommand.ShowPreview),
-            // KeyCommand.ToggleFileExplorer => nameof(KeyCommand.ToggleFileExplorer),
-            // KeyCommand.ToggleFileExplorerVisibility => nameof(KeyCommand.ToggleFileExplorerVisibility),
-            // KeyCommand.ZAutoFit => nameof(KeyCommand.ZAutoFit),
-            // KeyCommand.ZFill => nameof(KeyCommand.ZFill),
-            // KeyCommand.ZResetMatrix => nameof(KeyCommand.ZResetMatrix),
-            // KeyCommand.ZToggleStretchMode => nameof(KeyCommand.ZToggleStretchMode),
-            // KeyCommand.ZUniform => nameof(KeyCommand.ZUniform),
             KeyCommand.None => "None",
             KeyCommand.FirstImage => "FirstImage",
             KeyCommand.FitToHeightAndResetZoom => "FitToHeightAndResetZoom",
@@ -118,6 +88,7 @@ public class DictionaryKeyGestureKeyCommandConverter : JsonConverter<Dictionary<
             KeyCommand.ShowPreview => "ShowPreview",
             KeyCommand.ToggleFileManager => "ToggleFileManager",
             KeyCommand.ToggleFileManagerVisibility => "ToggleFileManagerVisibility",
+            KeyCommand.ToggleGrid => "ToggleGrid",
             KeyCommand.ZAutoFit => "ZAutoFit",
             KeyCommand.ZFill => "ZFill",
             KeyCommand.ZResetMatrix => "ZResetMatrix",

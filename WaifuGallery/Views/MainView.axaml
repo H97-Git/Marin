@@ -5,6 +5,8 @@
              xmlns:vm="clr-namespace:WaifuGallery.ViewModels"
              xmlns:controls="clr-namespace:WaifuGallery.Controls"
              xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:tabs="clr-namespace:WaifuGallery.Controls.Tabs"
+             xmlns:fileManager="clr-namespace:WaifuGallery.Controls.FileManager"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
              x:Class="WaifuGallery.Views.MainView"
              x:DataType="vm:MainViewViewModel"
@@ -23,10 +25,10 @@
         <!-- Main Area -->
         <Grid Grid.Row="1" Name="MainArea">
             <!-- Tabs -->
-            <controls:TabsControl DataContext="{Binding TabsViewModel}" />
+            <tabs:TabsControl DataContext="{Binding TabsViewModel}" />
             <!-- File Manager -->
             <Panel Name="FileManagerPanel" Background="{Binding FileManagerViewModel.FileManagerBackground}">
-                <controls:FileManager DataContext="{Binding FileManagerViewModel}" />
+                <fileManager:FileManager DataContext="{Binding FileManagerViewModel}" />
             </Panel>
         </Grid>
         <ui:InfoBar Grid.Row="2"
@@ -40,7 +42,6 @@
                     Severity="{Binding StatusBarViewModel.Severity}"
                     Title="{Binding StatusBarViewModel.Title}"
                     Height="32"
-                    Margin="1">
-        </ui:InfoBar>
+                    Margin="1" />
     </Grid>
 </UserControl>

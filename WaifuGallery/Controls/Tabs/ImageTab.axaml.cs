@@ -6,7 +6,7 @@ using ReactiveUI;
 using WaifuGallery.Commands;
 using WaifuGallery.ViewModels.Tabs;
 
-namespace WaifuGallery.Controls;
+namespace WaifuGallery.Controls.Tabs;
 
 public partial class ImageTab : UserControl
 {
@@ -90,4 +90,19 @@ public partial class ImageTab : UserControl
     }
 
     #endregion
+
+    private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case Key.G:
+                ImageTabViewModel?.Grid();
+                break;
+        }
+    }
+
+    private void PreviewList_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        ImageTabViewModel?.GridSelected((e.Source as ListBox)?.SelectedIndex);
+    }
 }

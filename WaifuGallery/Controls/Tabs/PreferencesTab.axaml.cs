@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace WaifuGallery.Controls;
+namespace WaifuGallery.Controls.Tabs;
 
 public partial class PreferencesTab : UserControl
 {

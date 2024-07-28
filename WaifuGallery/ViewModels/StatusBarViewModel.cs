@@ -40,9 +40,9 @@ public class StatusBarViewModel : ViewModelBase
             Message = command.Message;
         }
 
-        if (!Settings.Instance.AutoHideStatusBar) return;
+        if (!Settings.Instance.StatusBarPreference.AutoHideStatusBar) return;
         _timer.Stop();
-        _timer.Interval = Settings.Instance.AutoHideStatusBarDelay;
+        _timer.Interval = Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay;
         _timer.Start();
     }
 
@@ -52,7 +52,7 @@ public class StatusBarViewModel : ViewModelBase
 
     public StatusBarViewModel()
     {
-        _timer = new Timer(Settings.Instance.AutoHideStatusBarDelay);
+        _timer = new Timer(Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay);
         _timer.Elapsed += (_, _) => IsStatusBarVisible = false;
         _timer.AutoReset = false;
         MessageBus.Current.Listen<SendMessageToStatusBarCommand>()

@@ -76,7 +76,7 @@ public class MenuBarViewModel : ViewModelBase
 
     public ICommand RotateAntiClockwiseCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new RotateAntiClockwiseCommand()); });
-    
+
     public ICommand OpenFileCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenFileCommand()); });
 
@@ -90,6 +90,11 @@ public class MenuBarViewModel : ViewModelBase
             MessageBus.Current.SendMessage(new ToggleFileManagerCommand());
         });
 
+    public ICommand LoadSessionCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new LoadSessionCommand("Last")); });
+
+    public ICommand SaveSessionCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new SaveSessionCommand("Last")); });
 
     public ICommand ToggleFileManagerVisibilityCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileManagerVisibilityCommand()); });
@@ -99,6 +104,9 @@ public class MenuBarViewModel : ViewModelBase
 
     public ICommand ClearCache =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ClearCacheCommand()); });
+
+    public ICommand GoToOxfordPet =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new GoToOxfordPet()); });
 
     #endregion
 }

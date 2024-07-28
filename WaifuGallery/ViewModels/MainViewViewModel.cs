@@ -97,11 +97,13 @@ public class MainViewViewModel : ViewModelBase
                     PreviewImageViewModel.PreviousPreview();
                     break;
                 }
+
                 if (FileManagerViewModel.IsFileManagerExpandedAndVisible)
                 {
                     FileManagerViewModel.SelectedIndex -= 1;
                     break;
                 }
+
                 TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
                 break;
             case KeyCommand.GoRight:
@@ -110,11 +112,13 @@ public class MainViewViewModel : ViewModelBase
                     PreviewImageViewModel.NextPreview();
                     break;
                 }
+
                 if (FileManagerViewModel.IsFileManagerExpandedAndVisible)
                 {
                     FileManagerViewModel.SelectedIndex += 1;
                     break;
                 }
+
                 TabsViewModel.ImageTabViewModel?.LoadNextImage();
                 break;
             case KeyCommand.GoToParentFolder:
@@ -131,6 +135,9 @@ public class MainViewViewModel : ViewModelBase
                 break;
             case KeyCommand.HidePreview:
                 PreviewImageViewModel.HidePreview();
+                break;
+            case KeyCommand.ToggleGrid:
+                TabsViewModel.ImageTabViewModel?.Grid();
                 break;
             case KeyCommand.None:
             case KeyCommand.FirstImage:
@@ -159,11 +166,11 @@ public class MainViewViewModel : ViewModelBase
             mainWindow.WindowState = WindowState.FullScreen;
             if (Settings.Instance.ShouldHideMenuBar)
                 MenuBarViewModel.IsMenuVisible = false;
-            if (Settings.Instance.ShouldHideTabsHeader)
+            if (Settings.Instance.TabsPreference.ShouldHideTabsHeader)
                 TabsViewModel.IsTabHeadersVisible = false;
             if (Settings.Instance.FileManagerPreference.ShouldHideFileManager)
                 FileManagerViewModel.IsFileManagerVisible = false;
-            if (Settings.Instance.ShouldHideStatusBar)
+            if (Settings.Instance.StatusBarPreference.ShouldHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = false;
         }
         else
@@ -172,7 +179,7 @@ public class MainViewViewModel : ViewModelBase
             MenuBarViewModel.IsMenuVisible = true;
             TabsViewModel.IsTabHeadersVisible = true;
             FileManagerViewModel.IsFileManagerVisible = true;
-            if (!Settings.Instance.AutoHideStatusBar)
+            if (!Settings.Instance.StatusBarPreference.AutoHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = true;
         }
     }
@@ -462,7 +469,7 @@ public class MainViewViewModel : ViewModelBase
         MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
         MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
         MessageBus.Current.Listen<DeleteCommand>().Subscribe(DeleteFile);
-        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.CloseOnExitCommand());
+        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.SaveSettings(true));
         MessageBus.Current.Listen<ExtractCommand>().Subscribe(ExtractFile);
         MessageBus.Current.Listen<NewFolderCommand>().Subscribe(NewFolder);
         MessageBus.Current.Listen<OpenInBrowserCommand>().Subscribe(OpenInBrowser);

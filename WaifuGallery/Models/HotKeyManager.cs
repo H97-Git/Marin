@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using Avalonia.Input;
+using Serilog;
 using WaifuGallery.Helpers;
 
 namespace WaifuGallery.Models;
@@ -11,21 +12,22 @@ public enum KeyCommand
     None,
     FirstImage,
     LastImage,
-    GoUp,
+    FitToHeightAndResetZoom,
+    FitToWidthAndResetZoom,
+    FullScreen,
     GoDown,
     GoLeft,
     GoRight,
     GoToParentFolder,
+    GoUp,
+    HidePreview,
     OpenFolder,
     OpenImageInNewTab,
+    OpenPreferences,
+    ShowPreview,
     ToggleFileManager,
     ToggleFileManagerVisibility,
-    ShowPreview,
-    HidePreview,
-    FullScreen,
-    FitToWidthAndResetZoom,
-    FitToHeightAndResetZoom,
-    OpenPreferences,
+    ToggleGrid,
     ZAutoFit,
     ZFill,
     ZResetMatrix,
@@ -35,6 +37,8 @@ public enum KeyCommand
 
 public class HotKeyManager
 {
+    #region Private Fields
+
     private readonly Dictionary<KeyGesture, KeyCommand> _defaultKeymap = new()
     {
         //App
@@ -47,7 +51,8 @@ public class HotKeyManager
         {new KeyGesture(Key.PageDown), KeyCommand.GoRight},
         //Tabs
         {new KeyGesture(Key.A), KeyCommand.ZAutoFit},
-        // {new KeyGesture(Key.F), Hk.ZFill},
+        // {new KeyGesture(Key.F), KeyCommand.ZFill},
+        {new KeyGesture(Key.G), KeyCommand.ToggleGrid},
         {new KeyGesture(Key.H, KeyModifiers.Control), KeyCommand.FitToHeightAndResetZoom},
         {new KeyGesture(Key.H, KeyModifiers.Shift), KeyCommand.FitToHeightAndResetZoom},
         {new KeyGesture(Key.OemComma, KeyModifiers.Control), KeyCommand.OpenPreferences},
@@ -75,8 +80,6 @@ public class HotKeyManager
         {new KeyGesture(Key.P), KeyCommand.ShowPreview},
     };
 
-    public readonly Dictionary<KeyGesture, KeyCommand> UserKeymap;
-
     private static string HotKeyPath => Path.Combine(Settings.SettingsPath, "Hotkeys.json");
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
@@ -88,20 +91,57 @@ public class HotKeyManager
             {new KeyGestureConverter(), new KeyCommandConverter(), new DictionaryKeyGestureKeyCommandConverter(),}
     };
 
+    #endregion
+
+    #region Private Methods
+
+    private void SetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture? oldBinding = null)
+    {
+        if (oldBinding is not null)
+        {
+            UserKeymap.Remove(oldBinding);
+        }
+
+        UserKeymap[newBinding] = action;
+    }
+
+    private Dictionary<KeyGesture, KeyCommand>? LoadUserKeymap()
+    {
+        Log.Debug($"HotKeyManager: LoadUserKeymap, Loading user keymap from {HotKeyPath}");
+        if (!File.Exists(HotKeyPath))
+            return null;
+
+        var json = File.ReadAllText(HotKeyPath);
+        var dictionary = JsonSerializer.Deserialize<Dictionary<KeyGesture, KeyCommand>>(json, JsonSerializerOptions);
+        return dictionary is {Count: 0} ? _defaultKeymap : dictionary;
+    }
+
+    #endregion
+
+    #region CTOR
+
     public HotKeyManager()
     {
         UserKeymap = LoadUserKeymap() ?? new Dictionary<KeyGesture, KeyCommand>(_defaultKeymap);
     }
 
+    #endregion
+
+    #region Public Properties
+
+    public readonly Dictionary<KeyGesture, KeyCommand> UserKeymap;
+
+    #endregion
+
+    #region Public Methods
+
     public KeyCommand GetBinding(KeyGesture action)
     {
         return UserKeymap.GetValueOrDefault(action, KeyCommand.None);
-        // : _defaultKeymap.TryGetValue(action, out binding)
-        //     ? binding
     }
 
-    public bool TrySetBinding(KeyCommand action, KeyGesture keyGesture,
-        out KeyCommand oldCommand, KeyGesture? oldKeyGesture = null, bool overwrite = false)
+
+    public bool TrySetBinding(KeyCommand action, KeyGesture keyGesture, out KeyCommand oldCommand, KeyGesture? oldKeyGesture = null, bool overwrite = false)
     {
         oldCommand = KeyCommand.None;
         if (overwrite)
@@ -120,30 +160,12 @@ public class HotKeyManager
         return true;
     }
 
-    private void SetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture? oldBinding = null)
-    {
-        if (oldBinding is not null)
-        {
-            UserKeymap.Remove(oldBinding);
-        }
-
-        UserKeymap[newBinding] = action;
-    }
-
-    private Dictionary<KeyGesture, KeyCommand>? LoadUserKeymap()
-    {
-        if (!File.Exists(HotKeyPath))
-            return null;
-
-        var json = File.ReadAllText(HotKeyPath);
-        var dictionary = JsonSerializer.Deserialize<Dictionary<KeyGesture, KeyCommand>>(json, JsonSerializerOptions);
-        return dictionary is {Count: 0} ? _defaultKeymap : dictionary;
-    }
-
     public void SaveUserKeymap()
     {
-        // Implement saving logic (e.g., to a JSON file)
+        Log.Debug($"HotKeyManager: SaveUserKeymap, Saving user keymap to {HotKeyPath}");
         var jsonKeymap = JsonSerializer.Serialize(UserKeymap, JsonSerializerOptions);
         File.WriteAllText(HotKeyPath, jsonKeymap);
     }
+
+    #endregion
 }

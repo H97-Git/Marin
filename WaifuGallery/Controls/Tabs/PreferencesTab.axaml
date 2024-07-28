@@ -2,12 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:WaifuGallery.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="WaifuGallery.Controls.PreferencesTab"
+             x:Class="WaifuGallery.Controls.Tabs.PreferencesTab"
              xmlns:ui="using:FluentAvalonia.UI.Controls"
              xmlns:tabs="clr-namespace:WaifuGallery.ViewModels.Tabs"
              xmlns:helpers="clr-namespace:WaifuGallery.Helpers"
+             xmlns:control="clr-namespace:WaifuGallery.Controls.Tabs"
              x:DataType="tabs:PreferencesTabViewModel">
     <UserControl.Resources>
         <helpers:DepthToBooleanConverter x:Key="DepthToBooleanConverter" />
@@ -53,8 +53,7 @@
             <!-- HotKey Manager -->
             <ui:SettingsExpander Header="HotKey Manager"
                                  Description="Change keyboard shortcuts"
-                                 IconSource="{DynamicResource KeyboardSvg}"
-                                 IsExpanded="True">
+                                 IconSource="{DynamicResource KeyboardSvg}">
                 <ItemsControl ItemsSource="{Binding Shortcuts}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -63,7 +62,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <controls:Shortcut DataContext="{Binding}" />
+                            <control:Shortcut DataContext="{Binding}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -177,6 +176,17 @@
                 <ui:SettingsExpanderItem Content="Open preferences at start">
                     <ui:SettingsExpanderItem.Footer>
                         <CheckBox IsChecked="{Binding ShouldOpenPreferencesOnStartUp}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Save session on exit">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox IsChecked="{Binding ShouldSaveLastSessionOnExit}" />
+                    </ui:SettingsExpanderItem.Footer>
+                </ui:SettingsExpanderItem>
+                <ui:SettingsExpanderItem Content="Load last session on start">
+                    <ui:SettingsExpanderItem.Footer>
+                        <CheckBox IsChecked="{Binding ShouldLoadLastSessionOnStartUp}"
+                                  IsEnabled="{Binding ShouldSaveLastSessionOnExit}" />
                     </ui:SettingsExpanderItem.Footer>
                 </ui:SettingsExpanderItem>
             </ui:SettingsExpander>
