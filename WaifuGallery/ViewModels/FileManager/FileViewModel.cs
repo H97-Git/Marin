@@ -220,7 +220,7 @@ public sealed class FileViewModel : ViewModelBase
     {
         if (_fileSystemInfo is not FileInfo fileInfo)
         {
-            throw new InvalidOperationException();
+            return;
         }
 
         if (Helper.ThumbnailExists(fileInfo, out var thumbnailPath))
@@ -230,7 +230,7 @@ public sealed class FileViewModel : ViewModelBase
         }
 
         var outputFileInfo = new FileInfo(Path.Combine(thumbnailPath, fileInfo.Name));
-        Thumbnail = await Helper.GenerateBitmapThumb(fileInfo, outputFileInfo);
+        Thumbnail = await Task.Run(() => Helper.GenerateBitmapThumbAsync(fileInfo, outputFileInfo));
     }
 
     #endregion

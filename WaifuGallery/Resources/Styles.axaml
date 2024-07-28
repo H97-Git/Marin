@@ -1,6 +1,5 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <ThemeVariantScope RequestedThemeVariant="Dark">
             <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Background="{DynamicResource Brush.Background}"
@@ -53,7 +52,7 @@
     </Style>
     <Style Selector="TextBox /template/ Border#PART_BorderElement">
         <Setter Property="BorderBrush" Value="Red" />
-        <Setter Property="BorderThickness" Value="0,0,0,0"></Setter>
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
     </Style>
 
     <Style Selector="Grid.fileManagerToolBar TextBox">

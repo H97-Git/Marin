@@ -6,7 +6,7 @@ using Avalonia.Media;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileManager;
 
-namespace WaifuGallery.Controls;
+namespace WaifuGallery.Controls.FileManager;
 
 public partial class FileManager : UserControl
 {
@@ -43,10 +43,13 @@ public partial class FileManager : UserControl
         // Adjust to ensure the preview image stays within the bounds of the panel
         var maxX = panelSize.Width - previewImageSize.Width - offset;
         var maxY = panelSize.Height - previewImageSize.Height - offset;
+        
+        if(maxX < offset) maxX = offset;
+        if(maxY < offset) maxY = offset;
 
         var x = Math.Clamp(initialX, offset, maxX);
         var y = Math.Clamp(initialY, offset, maxY);
-
+        
         return new Point(x, y);
     }
 

@@ -2,17 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:WaifuGallery.Controls"
              xmlns:tabs="clr-namespace:WaifuGallery.ViewModels.Tabs"
              xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:controls="clr-namespace:WaifuGallery.Controls.Tabs"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="tabs:TabsViewModel"
-             x:Class="WaifuGallery.Controls.TabsControl"
-             Name="TabsUserControl"
-             KeyDown="ImagesTabControl_OnKeyDown">
+             x:Class="WaifuGallery.Controls.Tabs.TabsControl"
+             Name="TabsUserControl">
     <Grid RowDefinitions="Auto,*">
         <!-- Tab Headers -->
-
         <ScrollViewer Grid.Row="0"
                       Name="launcherTabsScroller"
                       VerticalScrollBarVisibility="Disabled"

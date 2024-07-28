@@ -16,7 +16,7 @@ public class ShortcutViewModel(KeyCommand keyCommand) : ViewModelBase
 {
     public ObservableCollection<KeyGesture> Gestures { get; set; } = [];
 
-    public string KeyCommandString
+    public string KeyCommandText
         => keyCommand switch
         {
             KeyCommand.None => "none",
@@ -25,18 +25,19 @@ public class ShortcutViewModel(KeyCommand keyCommand) : ViewModelBase
             KeyCommand.GoUp => "Go Up",
             KeyCommand.GoDown => "Go Down",
             KeyCommand.GoLeft => "Go Left / Load next image",
+            KeyCommand.FitToHeightAndResetZoom => "Fit To Height And Reset Zoom",
+            KeyCommand.FitToWidthAndResetZoom => "Fit To Width And Reset Zoom",
+            KeyCommand.FullScreen => "Full Screen",
             KeyCommand.GoRight => "Go Right / Load next image",
             KeyCommand.GoToParentFolder => "Go To Parent Folder",
+            KeyCommand.HidePreview => "Hide Preview",
             KeyCommand.OpenFolder => "Open Folder",
             KeyCommand.OpenImageInNewTab => "Open Image In New Tab",
+            KeyCommand.OpenPreferences => "Open Preferences",
+            KeyCommand.ShowPreview => "Show Preview",
             KeyCommand.ToggleFileManager => "Toggle File Manager",
             KeyCommand.ToggleFileManagerVisibility => "Toggle File Manager Visibility",
-            KeyCommand.ShowPreview => "Show Preview",
-            KeyCommand.HidePreview => "Hide Preview",
-            KeyCommand.FullScreen => "Full Screen",
-            KeyCommand.FitToWidthAndResetZoom => "Fit To Width And Reset Zoom",
-            KeyCommand.FitToHeightAndResetZoom => "Fit To Height And Reset Zoom",
-            KeyCommand.OpenPreferences => "Open Preferences",
+            KeyCommand.ToggleGrid => "Toggle Grid",
             KeyCommand.ZAutoFit => "Auto Fit",
             KeyCommand.ZFill => "Fill",
             KeyCommand.ZResetMatrix => "Reset Matrix",
@@ -45,7 +46,7 @@ public class ShortcutViewModel(KeyCommand keyCommand) : ViewModelBase
             _ => throw new ArgumentOutOfRangeException(nameof(keyCommand), keyCommand, null)
         };
 
-    public string KeyCommandToolTipString => keyCommand switch
+    public string KeyCommandToolTipText => keyCommand switch
     {
         KeyCommand.None => "WTF?",
         KeyCommand.FirstImage => "Load the first image",
@@ -54,17 +55,18 @@ public class ShortcutViewModel(KeyCommand keyCommand) : ViewModelBase
         KeyCommand.GoDown => "Go down in file manager",
         KeyCommand.GoLeft => "Go left in file manager / Load the previous image",
         KeyCommand.GoRight => "Go right in file manager / Load the next image",
+        KeyCommand.FitToHeightAndResetZoom => "Fit the image to the height and reset the zoom",
+        KeyCommand.FitToWidthAndResetZoom => "Fit the image to the width and reset the zoom",
+        KeyCommand.FullScreen => "Toggle full screen mode",
         KeyCommand.GoToParentFolder => "Go to parent folder",
+        KeyCommand.HidePreview => "Hide the image preview",
         KeyCommand.OpenFolder => "Open folder",
         KeyCommand.OpenImageInNewTab => "Open the selected image in a new tab",
+        KeyCommand.OpenPreferences => "Open the preferences",
+        KeyCommand.ShowPreview => "Show the image preview",
         KeyCommand.ToggleFileManager => "Open or close the file manager",
         KeyCommand.ToggleFileManagerVisibility => "Toggle the visibility of the file manager",
-        KeyCommand.ShowPreview => "Show the image preview",
-        KeyCommand.HidePreview => "Hide the image preview",
-        KeyCommand.FullScreen => "Toggle full screen mode",
-        KeyCommand.FitToWidthAndResetZoom => "Fit the image to the width and reset the zoom",
-        KeyCommand.FitToHeightAndResetZoom => "Fit the image to the height and reset the zoom",
-        KeyCommand.OpenPreferences => "Open the preferences",
+        KeyCommand.ToggleGrid => "Toggle Grid preview mode",
         KeyCommand.ZAutoFit => "Auto fit the image to the screen",
         KeyCommand.ZFill => "Fill the image to the screen",
         KeyCommand.ZResetMatrix => "Reset the image zoom matrix",

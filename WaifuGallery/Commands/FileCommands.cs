@@ -17,11 +17,11 @@ public class DeleteCommand(string path) : FileCommand(path);
 
 public class ExtractCommand(string path) : FileCommand(path);
 
-public class OpenInFileExplorerCommand(string path) : FileCommand(path);
+public class NewFolderCommand(string path) : FileCommand(path);
 
 public class OpenInBrowserCommand(string path) : FileCommand(path);
 
-public class NewFolderCommand(string path) : FileCommand(path);
+public class OpenInFileExplorerCommand(string path) : FileCommand(path);
 
 public class PasteCommand(string path) : FileCommand(path);
 

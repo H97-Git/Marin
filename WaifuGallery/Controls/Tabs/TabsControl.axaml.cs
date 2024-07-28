@@ -2,10 +2,9 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Serilog;
 using WaifuGallery.ViewModels.Tabs;
 
-namespace WaifuGallery.Controls;
+namespace WaifuGallery.Controls.Tabs;
 
 public partial class TabsControl : UserControl
 {
@@ -93,11 +92,6 @@ public partial class TabsControl : UserControl
         _pressedTab = false;
         _startDrag = false;
         e.Handled = true;
-    }
-
-    private void ImagesTabControl_OnKeyDown(object? sender, KeyEventArgs e)
-    {
-        Log.Debug($"ImagesTabControl_OnKeyDown: {e.Key.ToString()}");
     }
 
     #endregion

@@ -1,20 +1,14 @@
 ﻿namespace WaifuGallery.Commands;
 
 public interface IFileManagerCommand : ICommandMessage;
-
-public class RefreshFileManagerCommand(IFileCommand fileCommand) : IFileManagerCommand
-{
-    public IFileCommand FileCommand { get; } = fileCommand;
-}
-
 public class ChangePathCommand(string path) : IFileManagerCommand
 {
     public string Path { get; } = path;
 }
 
-public class StartPreviewCommand(string path) : IFileManagerCommand
+public class RefreshFileManagerCommand(IFileCommand fileCommand) : IFileManagerCommand
 {
-    public string Path { get; } = path;
+    public IFileCommand FileCommand { get; } = fileCommand;
 }
 
 public class SetFileManagerPositionCommand(string position) : IFileManagerCommand
@@ -22,6 +16,11 @@ public class SetFileManagerPositionCommand(string position) : IFileManagerComman
     public string Position { get; } = position;
 }
 
-public class ToggleFileManagerCommand : ICommandMessage;
+public class StartPreviewCommand(string path) : IFileManagerCommand
+{
+    public string Path { get; } = path;
+}
+
+public class ToggleFileManagerCommand : IFileManagerCommand;
 
 public class ToggleFileManagerVisibilityCommand : IFileManagerCommand;

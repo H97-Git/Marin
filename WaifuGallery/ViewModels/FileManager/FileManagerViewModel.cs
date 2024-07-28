@@ -272,6 +272,7 @@ public class FileManagerViewModel : ViewModelBase
         MessageBus.Current.Listen<ToggleFileManagerVisibilityCommand>().Subscribe(_ => ToggleFileManagerVisibility());
         MessageBus.Current.Listen<RefreshFileManagerCommand>().Subscribe(x => RefreshFileManager(x.FileCommand));
         MessageBus.Current.Listen<SetFileManagerPositionCommand>().Subscribe(SetFileManagerPosition);
+        MessageBus.Current.Listen<GoToOxfordPet>().Subscribe(_ => ChangePath(@"C:\oxford-iiit-pet\images"));
     }
 
     private void ToggleScrollbarVisibility(bool isPreviewImageVisible)

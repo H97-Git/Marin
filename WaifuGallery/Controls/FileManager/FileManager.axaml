@@ -1,13 +1,13 @@
 ﻿<UserControl
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
-    x:Class="WaifuGallery.Controls.FileManager"
+    x:Class="WaifuGallery.Controls.FileManager.FileManager"
     x:DataType="fileManager:FileManagerViewModel"
-    xmlns:controls="clr-namespace:WaifuGallery.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns="https://github.com/avaloniaui"
     xmlns:fileManager="clr-namespace:WaifuGallery.ViewModels.FileManager"
+    xmlns:controls="clr-namespace:WaifuGallery.Controls.FileManager"
     Name="FileManagerControl"
     Margin="10,40,10,10">
     <Design.DataContext>

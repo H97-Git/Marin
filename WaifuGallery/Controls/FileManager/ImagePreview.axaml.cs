@@ -4,7 +4,7 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using WaifuGallery.ViewModels.FileManager;
 
-namespace WaifuGallery.Controls;
+namespace WaifuGallery.Controls.FileManager;
 
 public partial class ImagePreview : UserControl
 {

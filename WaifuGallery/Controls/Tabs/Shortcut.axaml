@@ -6,11 +6,11 @@
              xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="viewModels:ShortcutViewModel"
-             x:Class="WaifuGallery.Controls.Shortcut"
+             x:Class="WaifuGallery.Controls.Tabs.Shortcut"
              Name="ShortcutControl"
              Margin="5">
-    <Border CornerRadius="5" ClipToBounds="True" ToolTip.Tip="{Binding KeyCommandToolTipString}">
-        <ui:SettingsExpanderItem Content="{Binding KeyCommandString}">
+    <Border CornerRadius="5" ClipToBounds="True" ToolTip.Tip="{Binding KeyCommandToolTipText}">
+        <ui:SettingsExpanderItem Content="{Binding KeyCommandText}">
             <ui:SettingsExpanderItem.Footer>
                 <StackPanel Orientation="Horizontal">
                     <ItemsControl ItemsSource="{Binding Gestures}">
@@ -24,8 +24,7 @@
                                 <Button Content="{Binding}"
                                         Margin="5,0"
                                         Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).UpdateKeyCommand}"
-                                        CommandParameter="{Binding}">
-                                </Button>
+                                        CommandParameter="{Binding}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

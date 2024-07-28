@@ -10,7 +10,7 @@ using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels.FileManager;
 
-namespace WaifuGallery.Controls;
+namespace WaifuGallery.Controls.FileManager;
 
 public partial class File : UserControl
 {

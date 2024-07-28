@@ -9,6 +9,7 @@ using FluentAvalonia.UI.Controls;
 using ImageMagick;
 using NaturalSort.Extension;
 using ReactiveUI;
+using Serilog;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using WaifuGallery.Commands;
@@ -21,13 +22,16 @@ public abstract class Helper
 {
     #region Private Methods
 
+    private static PathType IsPathFile(string path) => File.Exists(path) ? PathType.File :
+        Directory.Exists(path) ? PathType.Directory : PathType.None;
+
     private static string GetAllImagesInPathKey(string fullName, int depth)
     {
         var hash = fullName.GetHashCode();
         return $"AllImagesInPath_{hash}_{depth}";
     }
 
-    private static string GetSizeKey(FileSystemInfo fileSystemInfo)
+    private static string GetDirectorySizeKey(FileSystemInfo fileSystemInfo)
     {
         var hash = fileSystemInfo.FullName.GetHashCode();
         var name = fileSystemInfo.Name;
@@ -44,6 +48,7 @@ public abstract class Helper
     {
         if (di is null || depth < 0)
             return Array.Empty<string>();
+        Log.Debug("Get all images in path: {Path}", di.FullName);
 
         var key = GetAllImagesInPathKey(di.FullName, depth);
         var allImagesInPath = MemoryCacheService.Get<string[]>(key);
@@ -137,7 +142,7 @@ public abstract class Helper
         return File.Exists(thumbnailPath);
     }
 
-    public static async Task<Bitmap> GenerateBitmapThumb(FileInfo sourceFileInfo, FileInfo outputFileInfo)
+    public static async Task<Bitmap> GenerateBitmapThumbAsync(FileInfo sourceFileInfo, FileInfo outputFileInfo)
     {
         using var image = new MagickImage(sourceFileInfo);
         image.Resize(new MagickGeometry(100, 100)
@@ -171,11 +176,11 @@ public abstract class Helper
 
         try
         {
-            var sizeInCache = MemoryCacheService.Get<long>(GetSizeKey(fileSystemInfo));
+            var sizeInCache = MemoryCacheService.Get<long>(GetDirectorySizeKey(fileSystemInfo));
             if (sizeInCache is not 0) return sizeInCache;
             var files = Directory.GetFiles(fileSystemInfo.FullName, "*.*", SearchOption.AllDirectories);
             var size = files.Select(file => new FileInfo(file)).Select(fileInfo => fileInfo.Length).Sum();
-            MemoryCacheService.AddOrUpdate(GetSizeKey(fileSystemInfo), size);
+            MemoryCacheService.AddOrUpdate(GetDirectorySizeKey(fileSystemInfo), size);
             return size;
         }
         catch (Exception)
@@ -196,10 +201,6 @@ public abstract class Helper
         }
     }
 
-    public static PathType IsPathFile(string path) => File.Exists(path) ? PathType.File :
-        Directory.Exists(path) ? PathType.Directory : PathType.None;
-
-
     /// <summary>
     /// https://learn.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
     /// </summary>
@@ -209,6 +210,7 @@ public abstract class Helper
     /// <exception cref="DirectoryNotFoundException"></exception>
     public static DirectoryInfo CopyDirectory(string source, string destination, bool recursive)
     {
+        Log.Debug("Copying directory {Source} to {Destination}", source, destination);
         // Get information about the source directory
         var directoryInfoSource = new DirectoryInfo(source);
 
@@ -244,10 +246,9 @@ public abstract class Helper
         return directoryInfoDestination;
     }
 
-    #endregion
-
-    public static void ExtractDirectory(string path,string destination = "Extracted")
+    public static void ExtractDirectory(string path, string destination = "Extracted")
     {
+        Log.Debug("Extracting archive {Path} to {Destination}", path, destination);
         using var archive = ArchiveFactory.Open(path);
         foreach (var entry in archive.Entries)
         {
@@ -279,6 +280,8 @@ public abstract class Helper
             MessageBus.Current.SendMessage(command);
         }
     }
+
+    #endregion
 }
 
 public enum PathType
