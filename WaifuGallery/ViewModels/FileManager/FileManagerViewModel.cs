@@ -15,6 +15,7 @@ using DynamicData;
 using FluentAvalonia.UI.Controls;
 using NaturalSort.Extension;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
@@ -45,6 +46,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private void SetFileManagerPosition(SetFileManagerPositionCommand command)
     {
+        Log.Debug("SetFileManagerPosition: {Position}", command.Position);
         var position = command.Position;
         switch (position)
         {
@@ -83,6 +85,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private void RefreshFileManager(IFileCommand fileCommand)
     {
+        Log.Debug("Refreshing FileManager...");
         switch (fileCommand)
         {
             case NewFolderCommand newFolderCommand:
@@ -116,6 +119,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private void GetFilesFromPath(string? path)
     {
+        Log.Debug("GetFilesFromPath: {Path}", path);
         if (string.IsNullOrWhiteSpace(path)) return;
         //Remove last backslash if it exists
         if (path.Last() is '\\')
@@ -140,6 +144,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private async void SetDirsAndFiles(DirectoryInfo currentDir, CancellationToken token)
     {
+        Log.Debug("SetDirsAndFiles: {CurrentDir}", currentDir.FullName);
         var dirs = currentDir.GetDirectories().Where(f => f.Name.First() is not '.' && f.Name.First() is not '$')
             .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
@@ -155,6 +160,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private async Task SetDirs(IEnumerable<DirectoryInfo> dirs, CancellationToken token)
     {
+        Log.Debug("SetDirs");
         var dirInfos = dirs.ToList();
         for (var i = 0; i < dirInfos.Count; i += BatchSize)
         {
@@ -173,6 +179,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private async Task SetFiles(IEnumerable<FileInfo> files, CancellationToken token)
     {
+        Log.Debug("SetFiles");
         var fileInfos = files.ToList();
         for (var i = 0; i < fileInfos.Count; i += BatchSize)
         {
@@ -191,6 +198,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private async void OpenPathInFileManager()
     {
+        Log.Debug("OpenPathInFileManager");
         var storageProvider = App.GetTopLevel()?.StorageProvider;
         if (storageProvider is null) return;
         var result = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
@@ -220,6 +228,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private void AddToCollectionAndSort(FileViewModel fileViewModel)
     {
+        Log.Debug("AddToCollectionAndSort");
         var buffer = FilesInDir.ToList();
         buffer.Add(fileViewModel);
         buffer = buffer.OrderBy(x => x.FileName, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
@@ -245,6 +254,7 @@ public class FileManagerViewModel : ViewModelBase
         if (Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit &&
             Settings.Instance.FileManagerPreference.FileManagerLastPath is not null)
         {
+            Log.Debug("FileManager: Restoring last path");
             var path = Settings.Instance.FileManagerPreference.FileManagerLastPath;
             if (Directory.Exists(path))
             {
@@ -377,6 +387,7 @@ public class FileManagerViewModel : ViewModelBase
 
     public void GoToParentFolder()
     {
+        Log.Debug("GoToParentFolder");
         var parent = Directory.GetParent(CurrentPath)?.FullName;
         if (parent is null) return;
         ChangePath(parent);
@@ -384,6 +395,7 @@ public class FileManagerViewModel : ViewModelBase
 
     public void ChangePath(string path)
     {
+        Log.Debug("ChangePath: {Path}", path);
         _pathHistory.AddPath(path);
         UpdatePath(path);
     }
@@ -414,6 +426,7 @@ public class FileManagerViewModel : ViewModelBase
 
     public void OpenImageTabFromKeyboardEvent()
     {
+        Log.Debug("OpenImageTabFromKeyboardEvent");
         var imagesInPath = Helper.GetAllImagesInPath(SelectedFile);
         var command = SelectedFile.IsImage
             ? new OpenInNewTabCommand(SelectedIndex, imagesInPath)

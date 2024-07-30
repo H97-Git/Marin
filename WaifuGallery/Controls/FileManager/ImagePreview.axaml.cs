@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Threading;
 using WaifuGallery.ViewModels.FileManager;
 
 namespace WaifuGallery.Controls.FileManager;
@@ -40,12 +38,12 @@ public partial class ImagePreview : UserControl
     private void PreviewCanvas_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
         if (PreviewImageViewModel is null) return;
-        PreviewImageViewModel.IsZooming = true;
-        e.Handled = true;
         PreviewImageViewModel.ZoomPreview(e.Delta.Y);
-        Task.Delay(1000).ContinueWith(_ =>
-        {
-            Dispatcher.UIThread.InvokeAsync(() => PreviewImageViewModel.IsZooming = false);
-        });
+        // PreviewImageViewModel.IsZooming = true;
+        // Task.Delay(1000).ContinueWith(_ =>
+        // {
+        //     Dispatcher.UIThread.InvokeAsync(() => PreviewImageViewModel.IsZooming = false);
+        // });
+        e.Handled = true;
     }
 }

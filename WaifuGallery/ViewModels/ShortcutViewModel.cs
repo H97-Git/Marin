@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Avalonia.Input;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Controls.Dialogs;
 using WaifuGallery.Models;
@@ -81,6 +82,7 @@ public class ShortcutViewModel(KeyCommand keyCommand) : ViewModelBase
 
     private async void AddKey()
     {
+        Log.Debug("Add Key: {KeyCommandText}", KeyCommandText);
         var keyGesture = await ShowSetKeyDialogAsync();
         if (keyGesture is null) return;
         if (Gestures.Contains(keyGesture)) return;
@@ -97,6 +99,7 @@ public class ShortcutViewModel(KeyCommand keyCommand) : ViewModelBase
 
     private async void UpdateKey(KeyGesture oldKeyGesture)
     {
+        Log.Debug("Update Key: {KeyCommandText}", KeyCommandText);
         var keyGesture = await ShowSetKeyDialogAsync();
         if (keyGesture is null) return;
         if (!Gestures.Remove(oldKeyGesture)) return;
@@ -115,6 +118,7 @@ public class ShortcutViewModel(KeyCommand keyCommand) : ViewModelBase
 
     private async Task<KeyGesture?> ShowSetKeyDialogAsync()
     {
+        Log.Debug("Open Set Key Dialog");
         var dialog = new ContentDialog()
         {
             Title = "Press any key",

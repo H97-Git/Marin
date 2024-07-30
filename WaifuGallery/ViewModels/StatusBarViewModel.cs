@@ -2,6 +2,7 @@
 using Avalonia.Media;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Models;
 using Timer = System.Timers.Timer;
@@ -26,6 +27,7 @@ public class StatusBarViewModel : ViewModelBase
 
     private void SetMessage(SendMessageToStatusBarCommand command)
     {
+        Log.Debug("Set status bar message: {Message}", command.Message);
         IsStatusBarVisible = true;
         Severity = command.Severity;
         Message = Message.Replace($" ({_countDuplicates})", "");

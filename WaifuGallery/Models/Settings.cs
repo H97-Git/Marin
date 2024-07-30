@@ -97,6 +97,7 @@ public class Settings
     }
 
     public static string SessionsPath => Path.Combine(SettingsPath, "Sessions");
+    public static string LogsPath => Path.Combine(SettingsPath, "Logs");
     public static string LastSessionsPath => Path.Combine(SessionsPath, "Last.json");
     public static string ThumbnailsPath => Path.Combine(SettingsPath, "Thumbnails");
     [JsonIgnore] public FontFamily? DefaultFont { get; set; }
@@ -120,6 +121,7 @@ public class Settings
 
     public static void SaveSession(string sessionName = "Last")
     {
+        Log.Debug("Saving session... {SessionName}", sessionName);
         if (App.GetMainViewViewModel()?.TabsViewModel.OpenTabs is not { } openTabs) return;
         var list = new List<string>();
         foreach (var tab in openTabs)

@@ -48,7 +48,6 @@ public abstract class Helper
     {
         if (di is null || depth < 0)
             return Array.Empty<string>();
-        Log.Debug("Get all images in path: {Path}", di.FullName);
 
         var key = GetAllImagesInPathKey(di.FullName, depth);
         var allImagesInPath = MemoryCacheService.Get<string[]>(key);
@@ -108,6 +107,7 @@ public abstract class Helper
 
     public static Size GetScaledSize(Bitmap image, int desiredSize)
     {
+        Log.Debug("GetScaledSize: {DesiredSize}", desiredSize);
         var isPortrait = image.Size.Width < image.Size.Height;
         return isPortrait
             ? GetScaledSizeByHeight(image, desiredSize)
@@ -144,8 +144,9 @@ public abstract class Helper
 
     public static async Task<Bitmap> GenerateBitmapThumbAsync(FileInfo sourceFileInfo, FileInfo outputFileInfo)
     {
+        Log.Debug("Generating thumb for: {Path}", sourceFileInfo.FullName);
         using var image = new MagickImage(sourceFileInfo);
-        image.Resize(new MagickGeometry(100, 100)
+        image.Resize(new MagickGeometry(200, 200)
         {
             IgnoreAspectRatio = false
         });
@@ -169,6 +170,7 @@ public abstract class Helper
 
     public static long GetDirectorySizeInByte(FileSystemInfo fileSystemInfo)
     {
+        Log.Debug("Getting directory size: {Path}", fileSystemInfo.FullName);
         if (fileSystemInfo is DirectoryInfo directoryInfo)
         {
             if (directoryInfo.Root.FullName == directoryInfo.FullName) return 0;
@@ -262,13 +264,13 @@ public abstract class Helper
 
     public static void ClearThumbnailsCache()
     {
-        var path = Settings.ThumbnailsPath;
-        if (!Directory.Exists(path)) return;
+        Log.Debug("Clearing thumbnails cache");
+        if (!Directory.Exists(Settings.ThumbnailsPath)) return;
         var command = new SendMessageToStatusBarCommand(InfoBarSeverity.Success,
             "Thumbnails cache cleared successfully!");
         try
         {
-            Directory.Delete(path, true);
+            Directory.Delete(Settings.ThumbnailsPath, true);
         }
         catch (Exception e)
         {

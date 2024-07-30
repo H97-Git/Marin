@@ -17,10 +17,7 @@ public class KeyboardKeySetterViewModel : ViewModelBase
 
     public KeyboardKeySetterViewModel()
     {
-        this.WhenAnyValue(x => x.KeyGesture).Subscribe(x =>
-        {
-            KeyName = KeyGesture?.ToString() ?? "";
-        });
+        this.WhenAnyValue(x => x.KeyGesture).Subscribe(_ => KeyName = KeyGesture?.ToString() ?? "");
     }
 
     #endregion

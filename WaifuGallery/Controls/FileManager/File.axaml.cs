@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
@@ -25,10 +26,10 @@ public partial class File : UserControl
 
     private void OnFolderDoubleClick_ChangePath(object? sender, TappedEventArgs e)
     {
+        Log.Debug("ChangePath on DoubleClick");
         StopTimer();
         if (FileViewModel is null) return;
-        var command = new ChangePathCommand(FileViewModel.FullPath);
-        MessageBus.Current.SendMessage(command);
+        MessageBus.Current.SendMessage(new ChangePathCommand(FileViewModel.FullPath));
     }
 
     private void OnPointerPressed_StartTimerTickPreview(object? sender, PointerPressedEventArgs e)
@@ -47,9 +48,9 @@ public partial class File : UserControl
     {
         if (!_previewTimer.IsEnabled) return;
         if (FileViewModel is null) return;
+        Log.Debug("PreviewTimerTick");
         _previewTimer.Stop();
-        var command = new StartPreviewCommand(FileViewModel.FullPath);
-        MessageBus.Current.SendMessage(command);
+        MessageBus.Current.SendMessage(new StartPreviewCommand(FileViewModel.FullPath));
     }
 
     // private void OnPointerExited_ClosePreview(object? sender, PointerEventArgs e) =>
@@ -57,6 +58,7 @@ public partial class File : UserControl
 
     private void OnPointerReleased_OpenInNewTab(object? sender, PointerReleasedEventArgs e)
     {
+        Log.Debug("OpenInNewTab on PointerReleased");
         StopTimer();
         if (e.InitialPressMouseButton is not MouseButton.Middle) return;
         if (FileViewModel is null) return;
@@ -89,7 +91,6 @@ public partial class File : UserControl
 
     private void Rename_OnKeyDown(object? sender, KeyEventArgs e)
     {
-        e.Handled = true;
         if (FileViewModel is null) return;
         if (e.Key is Key.Escape)
         {
@@ -98,9 +99,9 @@ public partial class File : UserControl
         }
 
         if (e.Key is not Key.Enter) return;
-        var command = new RenameCommand(FileViewModel.FullPath, FileViewModel.FileName);
-        MessageBus.Current.SendMessage(command);
+        MessageBus.Current.SendMessage(new RenameCommand(FileViewModel.FullPath, FileViewModel.FileName));
         FileViewModel.IsRenaming = false;
+        e.Handled = true;
     }
 
     #endregion

@@ -9,7 +9,7 @@ using WaifuGallery.Models;
 
 namespace WaifuGallery.Desktop;
 
-sealed class Program
+internal static class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -17,7 +17,9 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        const string outputTemplate = "[{Timestamp:HH:mm:ss} {Level}]: {Message:lj}{NewLine}{Exception}";
+        Directory.CreateDirectory(Settings.LogsPath);
+        var today = DateTime.Today.ToString("dd-MM-yyyy");
+        const string outputTemplate = "[{Timestamp:HH:mm:ss.fff} {Level}]: {Message:lj}{NewLine}{Exception}";
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .Enrich.FromLogContext()
@@ -26,12 +28,11 @@ sealed class Program
                 theme: AnsiConsoleTheme.Literate)
             .WriteTo.File(
                 outputTemplate: outputTemplate,
-                path: Path.Combine(Settings.SettingsPath, "WaifuGallery.log"))
+                path: Path.Combine(Settings.LogsPath, $"{today}.log"))
             .CreateLogger();
         try
         {
-            BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime(args);
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e)
         {
@@ -48,8 +49,10 @@ sealed class Program
     // ReSharper disable once MemberCanBePrivate.Global
     public static AppBuilder BuildAvaloniaApp() //
     {
+#if DEBUG
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
+#endif
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()

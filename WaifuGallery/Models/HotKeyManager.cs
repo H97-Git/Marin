@@ -97,6 +97,7 @@ public class HotKeyManager
 
     private void SetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture? oldBinding = null)
     {
+        Log.Debug("HotKeyManager: SetBinding, {Action}, {NewBinding}, {OldBinding}", action, newBinding, oldBinding);
         if (oldBinding is not null)
         {
             UserKeymap.Remove(oldBinding);
@@ -107,7 +108,7 @@ public class HotKeyManager
 
     private Dictionary<KeyGesture, KeyCommand>? LoadUserKeymap()
     {
-        Log.Debug($"HotKeyManager: LoadUserKeymap, Loading user keymap from {HotKeyPath}");
+        Log.Debug("HotKeyManager: LoadUserKeymap, Loading user keymap from {HotKeyPath}", HotKeyPath);
         if (!File.Exists(HotKeyPath))
             return null;
 
@@ -122,6 +123,7 @@ public class HotKeyManager
 
     public HotKeyManager()
     {
+        Log.Debug("Loading user keymap...");
         UserKeymap = LoadUserKeymap() ?? new Dictionary<KeyGesture, KeyCommand>(_defaultKeymap);
     }
 
@@ -141,28 +143,36 @@ public class HotKeyManager
     }
 
 
-    public bool TrySetBinding(KeyCommand action, KeyGesture keyGesture, out KeyCommand oldCommand, KeyGesture? oldKeyGesture = null, bool overwrite = false)
+    public bool TrySetBinding(KeyCommand action, KeyGesture keyGesture, out KeyCommand oldCommand,
+        KeyGesture? oldKeyGesture = null, bool overwrite = false)
     {
+        Log.Debug("HotKeyManager: TrySetBinding, {Action}, {KeyGesture}, {OldBinding}", action, keyGesture,
+            oldKeyGesture);
         oldCommand = KeyCommand.None;
+        // Overwrite path
         if (overwrite)
         {
             SetBinding(action, keyGesture, oldKeyGesture);
             return true;
         }
 
+        // Bad path
         if (UserKeymap.TryGetValue(keyGesture, out var value))
         {
             oldCommand = value;
+            Log.Debug("HotKeyManager: TrySetBinding, {KeyGesture} already bound to {OldCommand}", keyGesture,
+                oldCommand);
             return false;
         }
 
+        // Good path
         SetBinding(action, keyGesture, oldKeyGesture);
         return true;
     }
 
     public void SaveUserKeymap()
     {
-        Log.Debug($"HotKeyManager: SaveUserKeymap, Saving user keymap to {HotKeyPath}");
+        Log.Debug("HotKeyManager: SaveUserKeymap, Saving user keymap to {HotKeyPath}", HotKeyPath);
         var jsonKeymap = JsonSerializer.Serialize(UserKeymap, JsonSerializerOptions);
         File.WriteAllText(HotKeyPath, jsonKeymap);
     }

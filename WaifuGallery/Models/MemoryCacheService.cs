@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
-using Serilog;
 
 namespace WaifuGallery.Models;
 
@@ -20,7 +19,7 @@ public static class MemoryCacheService
 
     public static void AddOrUpdate<T>(string key, T value, int expirationInMinutes = 30)
     {
-        Log.Debug("MemoryCacheService: AddOrUpdate, Adding {T} to cache", key);
+        // Log.Debug("MemoryCacheService: AddOrUpdate, Adding {T} to cache", key);
         Cache.Set(key, value, new MemoryCacheEntryOptions()
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(expirationInMinutes),
@@ -30,7 +29,7 @@ public static class MemoryCacheService
 
     public static T? Get<T>(string key)
     {
-        Log.Debug("MemoryCacheService: Get, Getting {T} from cache", key);
+        // Log.Debug("MemoryCacheService: Get, Getting {T} from cache", key);
         Cache.TryGetValue(key, out var value);
         if (value is not null)
             return (T) value;

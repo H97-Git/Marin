@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Styling;
 using FluentAvalonia.Styling;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Models;
 
@@ -44,6 +45,7 @@ public class PreferencesTabViewModel : TabViewModelBase
 
     private void InitializePreferences()
     {
+        Log.Debug("Initialize Preferences Tab");
         AutoHideStatusBar = Settings.Instance.StatusBarPreference.AutoHideStatusBar;
         AutoHideStatusBarDelay = Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay;
         CurrentThemeVariant = Settings.Instance.Theme;

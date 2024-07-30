@@ -44,7 +44,7 @@
                             PointerPressed="OnPointerPressedTab"
                             PointerMoved="OnPointerMovedOverTab"
                             PointerReleased="OnPointerReleasedTab"
-                            Loaded="SetupDragAndDrop">
+                            Loaded="OnLoaded_SetupDragAndDrop">
                             <TextBlock Text="{Binding Header}" />
                         </Border>
                     </DataTemplate>

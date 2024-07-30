@@ -33,7 +33,7 @@ public class FileManagerHistory
 
     public void AddPath(string path)
     {
-        Log.Debug($"FileManagerHistory: AddPath({path})");
+        Log.Debug("FileManagerHistory: AddPath({Path})", path);
         lock (_history)
         {
             if (_currentIndex < _history.Count - 1)

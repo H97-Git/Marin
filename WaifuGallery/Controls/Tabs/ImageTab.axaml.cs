@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.ViewModels.Tabs;
 
@@ -103,6 +104,7 @@ public partial class ImageTab : UserControl
 
     private void PreviewList_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
+        Log.Debug("[SelectionChanged] {Index}", (e.Source as ListBox)?.SelectedIndex);
         ImageTabViewModel?.GridSelected((e.Source as ListBox)?.SelectedIndex);
     }
 }

@@ -15,7 +15,7 @@ public class MenuBarViewModel : ViewModelBase
     #region Private Members
 
     private bool _isMenuOpen;
-    private bool _isMenuVisible = true;
+    private bool _isMenuBarVisible = true;
     private double _toggleFileManagerIconAngle = 0;
     private bool _isDebugMenuVisible = false;
 
@@ -40,10 +40,10 @@ public class MenuBarViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isMenuOpen, value);
     }
 
-    public bool IsMenuVisible
+    public bool IsMenuBarVisible
     {
-        get => _isMenuVisible;
-        set => this.RaiseAndSetIfChanged(ref _isMenuVisible, value);
+        get => _isMenuBarVisible;
+        set => this.RaiseAndSetIfChanged(ref _isMenuBarVisible, value);
     }
 
     public bool IsDebugMenuVisible

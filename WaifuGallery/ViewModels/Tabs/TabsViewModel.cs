@@ -9,8 +9,8 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DynamicData;
-using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
@@ -35,13 +35,9 @@ public class TabsViewModel : ViewModelBase
 
     #region Private Methods
 
-    private void SendMessageToStatusBar(string message)
-    {
-        SendMessageToStatusBar(InfoBarSeverity.Informational, message);
-    }
-
     private void CloseTab()
     {
+        Log.Debug("Close selected tab");
         switch (SelectedTab)
         {
             case null:
@@ -55,6 +51,7 @@ public class TabsViewModel : ViewModelBase
 
     private void AddTab(TabViewModelBase tab)
     {
+        Log.Debug("Add new tab {Tab}", tab.Id);
         OpenTabs.Add(tab);
         SelectedTab = OpenTabs.First(x => x.Id == tab.Id);
         if (SelectedTab is ImageTabViewModel)
@@ -73,6 +70,7 @@ public class TabsViewModel : ViewModelBase
 
     private void LoadSession(string sessionName = "Last")
     {
+        Log.Debug("Load session {SessionName}", sessionName);
         var sessionPath = Path.Combine(Settings.SessionsPath, $"{sessionName}.json");
         if (!File.Exists(sessionPath)) return;
         var session = JsonSerializer.Deserialize<string[]>(File.ReadAllText(sessionPath));
@@ -137,7 +135,7 @@ public class TabsViewModel : ViewModelBase
             Dispatcher.UIThread.Post(() => LoadSession());
         }
 
-        MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFile);
+        MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFileInNewTab);
         MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
         MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
         MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidthAndResetZoom());
@@ -210,7 +208,7 @@ public class TabsViewModel : ViewModelBase
 
     #region Public Methods
 
-    private async void OpenFile(OpenFileCommand command)
+    private async void OpenFileInNewTab(OpenFileCommand command)
     {
         var storageProvider = App.GetTopLevel()?.StorageProvider;
         if (storageProvider is null) return;
@@ -222,6 +220,7 @@ public class TabsViewModel : ViewModelBase
         });
 
         if (result.Count is 0) return;
+        Log.Debug("Opening file in a new tab {Path}", command.Path);
         command.Path = result[0].Path.LocalPath;
         AddImageTab(command);
     }
@@ -254,6 +253,7 @@ public class TabsViewModel : ViewModelBase
 
     public void FitToWidthAndResetZoom()
     {
+        Log.Debug("FitToWidthAndResetZoom");
         if (ImageTabViewModel is null) return;
         ImageTabViewModel.ResizeImageByWidth(ControlSize.Width);
         MessageBus.Current.SendMessage(new ResetZoomCommand());
@@ -261,6 +261,7 @@ public class TabsViewModel : ViewModelBase
 
     public void FitToHeightAndResetZoom()
     {
+        Log.Debug("FitToHeightAndResetZoom");
         if (ImageTabViewModel is null) return;
         ImageTabViewModel.ResizeImageByHeight(ControlSize.Height);
         MessageBus.Current.SendMessage(new ResetZoomCommand());
@@ -268,6 +269,7 @@ public class TabsViewModel : ViewModelBase
 
     private void RotateAndResetZoom(bool clockwise = true)
     {
+        Log.Debug("RotateAndResetZoom");
         if (ImageTabViewModel is null) return;
         ImageTabViewModel.RotateImage(clockwise);
         MessageBus.Current.SendMessage(new ResetZoomCommand());
@@ -329,6 +331,7 @@ public class TabsViewModel : ViewModelBase
 
     public void MoveTab(TabViewModelBase from, TabViewModelBase to)
     {
+        Log.Debug("Move tab {From} to {To}", from.Id, to.Id);
         var fromIdx = OpenTabs.IndexOf(from);
         var toIdx = OpenTabs.IndexOf(to);
         OpenTabs.Move(fromIdx, toIdx);

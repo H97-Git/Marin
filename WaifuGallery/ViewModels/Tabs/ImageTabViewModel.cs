@@ -12,6 +12,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using DynamicData;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
@@ -77,6 +78,7 @@ public class ImageTabViewModel : TabViewModelBase
 
     private void LoadImage()
     {
+        Log.Debug("LoadImage");
         BitmapImage = new Bitmap(CurrentImagePath);
         SetTabHeaderContent();
         MessageBus.Current.SendMessage(new FitToHeightCommand());
@@ -84,6 +86,7 @@ public class ImageTabViewModel : TabViewModelBase
 
     private void SetTabHeaderContent()
     {
+        Log.Debug("SetTabHeaderContent");
         const int maxLength = 12;
         if (_parentFolderName is null)
         {
@@ -106,13 +109,16 @@ public class ImageTabViewModel : TabViewModelBase
             hashStringBuilder.Append(b.ToString("x2"));
         }
 
-        return hashStringBuilder.ToString();
+        var hash = hashStringBuilder.ToString();
+        Log.Debug("GenerateUniqueId path: {Path}, hash: {Hash}", path, hash);
+        return hash;
     }
 
     private async void LoadBitmaps()
     {
+        Log.Debug("Loading Bitmaps for grid mode(?)");
         const int batchSize = 10;
-        var bufferList = new List<Bitmap>();
+        var bufferList = new List<Bitmap>(); // So we can use AddRange.
         if (Bitmaps.Count is not 0) return;
         for (var index = 0; index < _imagesInPath.Length; index += batchSize)
         {
@@ -209,14 +215,21 @@ public class ImageTabViewModel : TabViewModelBase
         Index = _imagesInPath.Length - 1;
     }
 
-    public void ResizeImageByHeight(double targetHeight) =>
-        ImageSize = Helper.GetScaledSizeByHeight(BitmapImage, (int) targetHeight);
+    public void ResizeImageByHeight(double targetHeight)
+    {
+        Log.Debug("ResizeImageByHeight");
+        if (BitmapImage != null) ImageSize = Helper.GetScaledSizeByHeight(BitmapImage, (int) targetHeight);
+    }
 
-    public void ResizeImageByWidth(double targetHeight) =>
-        ImageSize = Helper.GetScaledSizeByWidth(BitmapImage, (int) targetHeight);
+    public void ResizeImageByWidth(double targetHeight)
+    {
+        Log.Debug("ResizeImageByWidth");
+        if (BitmapImage != null) ImageSize = Helper.GetScaledSizeByWidth(BitmapImage, (int) targetHeight);
+    }
 
     public void RotateImage(bool clockwise)
     {
+        Log.Debug("RotateImage");
         if (clockwise)
         {
             RotationAngle = (RotationAngle + 90) % 360;
@@ -231,11 +244,13 @@ public class ImageTabViewModel : TabViewModelBase
 
     public void Grid()
     {
+        Log.Debug("Open grid mode");
         IsGridOpen = !IsGridOpen;
     }
 
     public void GridSelected(int? selectedIndex)
     {
+        Log.Debug("GridSelected {Index}", selectedIndex);
         if (selectedIndex is null) return;
         Index = selectedIndex.Value;
         IsGridOpen = false;
@@ -243,6 +258,7 @@ public class ImageTabViewModel : TabViewModelBase
 
     public static ImageTabViewModel? CreateImageTabFromCommand(ICommandMessage command)
     {
+        Log.Debug("Creating an image tab from ICommandMessage");
         switch (command)
         {
             case OpenInNewTabCommand openInNewTabCommand:

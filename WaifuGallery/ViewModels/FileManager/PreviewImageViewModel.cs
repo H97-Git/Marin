@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
@@ -17,7 +18,6 @@ public class PreviewImageViewModel : ViewModelBase
     private Point _previewPosition = new(0, 0);
     private Size _previewSize = new(0, 0);
     private bool _isPreviewVisible;
-    private bool _isZooming;
     private int _previewImageIndex;
     private string[] _previewImagePaths = [];
     private string _previewImageCounter = "0/0";
@@ -35,6 +35,7 @@ public class PreviewImageViewModel : ViewModelBase
         {
             if (!IsPreviewImageVisible) return;
             _previewImageIndex = SetIndexInBound(value);
+            Log.Debug("PreviewImageIndex: {PreviewImageIndex}", _previewImageIndex);
             PreviewCounter = $"{_previewImageIndex + 1}/{_previewImagePaths.Length}";
             PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
             PreviewSize = _previewImageIndex is 0
@@ -101,12 +102,6 @@ public class PreviewImageViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _previewSize, value);
     }
 
-    public bool IsZooming
-    {
-        get => _isZooming;
-        set => this.RaiseAndSetIfChanged(ref _isZooming, value);
-    }
-
     public bool IsPreviewImageVisible
     {
         get => _isPreviewVisible;
@@ -125,6 +120,7 @@ public class PreviewImageViewModel : ViewModelBase
 
     public void ShowPreview(string path)
     {
+        Log.Debug("ShowPreview: {Path}", path);
         if (IsPreviewImageVisible) return;
         _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.ImagePreviewPreference.Depth);
         if (_previewImagePaths is {Length: 0})
@@ -140,6 +136,7 @@ public class PreviewImageViewModel : ViewModelBase
 
     public void HidePreview()
     {
+        Log.Debug("HidePreview");
         if (!IsPreviewImageVisible) return;
         IsPreviewImageVisible = false;
         PreviewImage = null;

@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Serilog;
 using WaifuGallery.ViewModels.Tabs;
 
 namespace WaifuGallery.Controls.Tabs;
@@ -24,6 +25,7 @@ public partial class TabsControl : UserControl
 
     private void ScrollTabs(object? sender, PointerWheelEventArgs e)
     {
+        Log.Debug("ScrollTabs");
         if (!e.KeyModifiers.HasFlag(KeyModifiers.Shift))
         {
             if (e.Delta.Y < 0)
@@ -66,8 +68,9 @@ public partial class TabsControl : UserControl
         _startDrag = false;
     }
 
-    private void SetupDragAndDrop(object? sender, RoutedEventArgs e)
+    private void OnLoaded_SetupDragAndDrop(object? sender, RoutedEventArgs e)
     {
+        Log.Debug("SetupDragAndDrop");
         if (sender is Border border)
         {
             DragDrop.SetAllowDrop(border, true);
@@ -79,6 +82,7 @@ public partial class TabsControl : UserControl
 
     private void DropTab(object? sender, DragEventArgs e)
     {
+        Log.Debug("DropTab");
         if (e.Data.Contains("MovedTab") && sender is Border border)
         {
             var to = border.DataContext as TabViewModelBase;
