@@ -63,7 +63,7 @@ public partial class File : UserControl
         if (e.InitialPressMouseButton is not MouseButton.Middle) return;
         if (FileViewModel is null) return;
 
-        var imagesInPath = Helper.GetAllImagesInPath(FileViewModel);
+        var imagesInPath = PathHelper.GetAllImages(FileViewModel);
         if (imagesInPath is {Length: 0})
         {
             MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Warning,

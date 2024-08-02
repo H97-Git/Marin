@@ -13,13 +13,13 @@ public class StatusBarViewModel : ViewModelBase
 {
     #region Priate Fields
 
+    private readonly Timer _timer;
     private IBrush _backgroundColor = new SolidColorBrush(Colors.Transparent);
     private InfoBarSeverity _severity;
     private bool _isStatusBarVisible = true;
+    private int _countDuplicates;
     private string _message = "";
     private string _title = "";
-    private int _countDuplicates;
-    private readonly Timer _timer;
 
     #endregion
 
@@ -28,7 +28,6 @@ public class StatusBarViewModel : ViewModelBase
     private void SetMessage(SendMessageToStatusBarCommand command)
     {
         Log.Debug("Set status bar message: {Message}", command.Message);
-        IsStatusBarVisible = true;
         Severity = command.Severity;
         Message = Message.Replace($" ({_countDuplicates})", "");
         if (command.Message == Message)
@@ -42,10 +41,32 @@ public class StatusBarViewModel : ViewModelBase
             Message = command.Message;
         }
 
+        IsStatusBarVisible = true;
         if (!Settings.Instance.StatusBarPreference.AutoHideStatusBar) return;
         _timer.Stop();
         _timer.Interval = Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay;
         _timer.Start();
+    }
+
+    private void SetTitleAndBackGroundColor(InfoBarSeverity severity)
+    {
+        BackgroundColor = severity switch
+        {
+            InfoBarSeverity.Error => new SolidColorBrush(Color.FromRgb(231, 76, 60)),
+            InfoBarSeverity.Informational => new SolidColorBrush(Color.FromRgb(52, 152, 219)),
+            InfoBarSeverity.Success => new SolidColorBrush(Color.FromRgb(46, 204, 113)),
+            InfoBarSeverity.Warning => new SolidColorBrush(Color.FromRgb(230, 126, 34)),
+            _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null)
+        };
+
+        Title = severity switch
+        {
+            InfoBarSeverity.Error => "Error",
+            InfoBarSeverity.Informational => "Information",
+            InfoBarSeverity.Success => "Success",
+            InfoBarSeverity.Warning => "Warning",
+            _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null)
+        };
     }
 
     #endregion
@@ -57,30 +78,10 @@ public class StatusBarViewModel : ViewModelBase
         _timer = new Timer(Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay);
         _timer.Elapsed += (_, _) => IsStatusBarVisible = false;
         _timer.AutoReset = false;
-        MessageBus.Current.Listen<SendMessageToStatusBarCommand>()
-            .Subscribe(SetMessage);
-
+        MessageBus.Current.Listen<SendMessageToStatusBarCommand>().Subscribe(SetMessage);
+        this.WhenAnyValue(x => x.Severity).Subscribe(SetTitleAndBackGroundColor);
+        
         SetMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, "Welcome to WaifuGallery!"));
-        this.WhenAnyValue(x => x.Severity).Subscribe(x =>
-        {
-            BackgroundColor = x switch
-            {
-                InfoBarSeverity.Error => new SolidColorBrush(Color.FromRgb(231, 76, 60)),
-                InfoBarSeverity.Informational => new SolidColorBrush(Color.FromRgb(52, 152, 219)),
-                InfoBarSeverity.Success => new SolidColorBrush(Color.FromRgb(46, 204, 113)),
-                InfoBarSeverity.Warning => new SolidColorBrush(Color.FromRgb(230, 126, 34)),
-                _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
-            };
-
-            Title = x switch
-            {
-                InfoBarSeverity.Error => "Error",
-                InfoBarSeverity.Informational => "Information",
-                InfoBarSeverity.Success => "Success",
-                InfoBarSeverity.Warning => "Warning",
-                _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
-            };
-        });
     }
 
     #endregion

@@ -39,7 +39,7 @@ public class PreviewImageViewModel : ViewModelBase
             PreviewCounter = $"{_previewImageIndex + 1}/{_previewImagePaths.Length}";
             PreviewImage = new Bitmap(_previewImagePaths[_previewImageIndex]);
             PreviewSize = _previewImageIndex is 0
-                ? Helper.GetScaledSize(PreviewImage, Settings.Instance.ImagePreviewPreference.DefaultZoom)
+                ? ImageSizeHelper.GetScaledSize(PreviewImage, Settings.Instance.ImagePreviewPreference.DefaultZoom)
                 : PreviewSize;
             ZoomPreview(0);
         }
@@ -122,7 +122,7 @@ public class PreviewImageViewModel : ViewModelBase
     {
         Log.Debug("ShowPreview: {Path}", path);
         if (IsPreviewImageVisible) return;
-        _previewImagePaths = Helper.GetAllImagesInPath(path, Settings.Instance.ImagePreviewPreference.Depth);
+        _previewImagePaths = PathHelper.GetAllImages(path, Settings.Instance.ImagePreviewPreference.Depth);
         if (_previewImagePaths is {Length: 0})
         {
             const string message = "No images found for preview.";
@@ -174,7 +174,7 @@ public class PreviewImageViewModel : ViewModelBase
                 ? Math.Max(150, PreviewSize.Width + newDelta)
                 : Math.Min(600, PreviewSize.Width + newDelta);
 
-        PreviewSize = Helper.GetScaledSize(PreviewImage, (int) newSize);
+        PreviewSize = ImageSizeHelper.GetScaledSize(PreviewImage, (int) newSize);
     }
 
     #endregion

@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Media.Imaging;
 using FluentAvalonia.UI.Controls;
-using ImageMagick;
 using NaturalSort.Extension;
 using ReactiveUI;
 using Serilog;
@@ -14,45 +10,26 @@ using SharpCompress.Archives;
 using SharpCompress.Common;
 using WaifuGallery.Commands;
 using WaifuGallery.Models;
-using WaifuGallery.ViewModels.FileManager;
 
 namespace WaifuGallery.Helpers;
 
-public abstract class Helper
+public abstract class DirectoryHelper
 {
-    #region Private Methods
-
-    private static PathType IsPathFile(string path) => File.Exists(path) ? PathType.File :
-        Directory.Exists(path) ? PathType.Directory : PathType.None;
-
-    private static string GetAllImagesInPathKey(string fullName, int depth)
-    {
-        var hash = fullName.GetHashCode();
-        return $"AllImagesInPath_{hash}_{depth}";
-    }
-
-    private static string GetDirectorySizeKey(FileSystemInfo fileSystemInfo)
-    {
-        var hash = fileSystemInfo.FullName.GetHashCode();
-        var name = fileSystemInfo.Name;
-        return $"ImagesInPath_{hash}_{name}";
-    }
-
     /// <summary>
     /// Get all images in path and sort them in natural order: 1, 2, 3, 10, 11, 12
     /// </summary>
     /// <param name="di">The directory info</param>
     /// <param name="depth">The directory info</param>
     /// <returns>An array of FileInfo.FullName</returns>
-    private static string[] GetAllImagesInPath(DirectoryInfo? di, int depth)
+    public static string[] GetAllImagesInPath(DirectoryInfo? di, int depth)
     {
         if (di is null || depth < 0)
             return Array.Empty<string>();
 
-        var key = GetAllImagesInPathKey(di.FullName, depth);
+        var key = InMemoryCacheKeys.GetAllImagesInPathKey(di.FullName, depth);
         var allImagesInPath = MemoryCacheService.Get<string[]>(key);
         if (allImagesInPath is not null) return allImagesInPath;
-        allImagesInPath = GetImagesRecursive(di, depth).ToArray();
+        allImagesInPath = DirectoryHelper.GetImagesRecursive(di, depth).ToArray();
         MemoryCacheService.AddOrUpdate(key, allImagesInPath, 5);
         return allImagesInPath;
     }
@@ -61,7 +38,7 @@ public abstract class Helper
     {
         // Get images in the current directory
         var images = di.GetFiles()
-            .Where(fileInfo => ImageFileExtensions.Contains(fileInfo.Extension.ToLower()))
+            .Where(fileInfo => Extensions.Images.Contains(fileInfo.Extension.ToLower()))
             .OrderBy(fileInfo => fileInfo.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .Select(fileInfo => fileInfo.FullName);
 
@@ -82,93 +59,7 @@ public abstract class Helper
         }
     }
 
-    #endregion
-
-    #region Public Members
-
-    public static readonly string[] ArchiveFileExtensions = [".zip", ".rar", ".7z"];
-    public static readonly string[] ImageFileExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
-    public static readonly string[] VideoFileExtensions = [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".flv"];
-
-    public static readonly string[] AllFileExtensions =
-        ArchiveFileExtensions.Concat(ImageFileExtensions).Concat(VideoFileExtensions).ToArray();
-
-    public static Size GetScaledSizeByWidth(Bitmap image, int targetWidth)
-    {
-        var correspondingHeight = targetWidth / image.Size.AspectRatio;
-        return new Size(targetWidth, correspondingHeight);
-    }
-
-    public static Size GetScaledSizeByHeight(Bitmap image, int targetHeight)
-    {
-        var correspondingWidth = targetHeight * image.Size.AspectRatio;
-        return new Size(correspondingWidth, targetHeight);
-    }
-
-    public static Size GetScaledSize(Bitmap image, int desiredSize)
-    {
-        Log.Debug("GetScaledSize: {DesiredSize}", desiredSize);
-        var isPortrait = image.Size.Width < image.Size.Height;
-        return isPortrait
-            ? GetScaledSizeByHeight(image, desiredSize)
-            : GetScaledSizeByWidth(image, desiredSize);
-    }
-
-    /// <summary>
-    /// Use a string path to get all images
-    /// </summary>
-    /// <param name="path">Path</param>
-    /// <param name="depth">Path</param>
-    /// <returns>An array of FileInfo.FullName</returns>
-    public static string[] GetAllImagesInPath(string path, int depth = 0)
-    {
-        var directoryInfo = IsPathFile(path) switch
-        {
-            PathType.File => Directory.GetParent(path),
-            PathType.Directory => new DirectoryInfo(path),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-
-        return GetAllImagesInPath(directoryInfo, depth);
-    }
-
-    public static bool ThumbnailExists(FileInfo fileInfo, out string thumbnailPath)
-    {
-        var directoryName = fileInfo.Directory is null ? "Root" : fileInfo.Directory.Name;
-        var currentPathInCache = Path.Combine(Settings.ThumbnailsPath, directoryName);
-        Directory.CreateDirectory(currentPathInCache);
-        thumbnailPath = GetAllImagesInPath(currentPathInCache)
-            .FirstOrDefault(x => Path.GetFileName(x) == fileInfo.Name) ?? currentPathInCache;
-        return File.Exists(thumbnailPath);
-    }
-
-    public static async Task<Bitmap> GenerateBitmapThumbAsync(FileInfo sourceFileInfo, FileInfo outputFileInfo)
-    {
-        Log.Debug("Generating thumb for: {Path}", sourceFileInfo.FullName);
-        using var image = new MagickImage(sourceFileInfo);
-        image.Resize(new MagickGeometry(200, 200)
-        {
-            IgnoreAspectRatio = false
-        });
-        await image.WriteAsync(outputFileInfo);
-        return new Bitmap(outputFileInfo.FullName);
-    }
-
-    /// <summary>
-    /// Use a FileViewModel to get all images
-    /// </summary>
-    /// <param name="fileViewModel">FileViewModel with the path</param>
-    /// <returns>An array of FileInfo.FullName</returns>
-    public static string[] GetAllImagesInPath(FileViewModel fileViewModel)
-    {
-        // if it's an image use the parent directory else use the full path
-        var directoryInfo = fileViewModel.IsImage
-            ? new DirectoryInfo(fileViewModel.ParentPath ?? Directory.GetDirectoryRoot(fileViewModel.FullPath))
-            : new DirectoryInfo(fileViewModel.FullPath);
-        return GetAllImagesInPath(directoryInfo, 0);
-    }
-
-    public static long GetDirectorySizeInByte(FileSystemInfo fileSystemInfo)
+    public static long GetSizeInByte(FileSystemInfo fileSystemInfo)
     {
         Log.Debug("Getting directory size: {Path}", fileSystemInfo.FullName);
         if (fileSystemInfo is DirectoryInfo directoryInfo)
@@ -178,11 +69,11 @@ public abstract class Helper
 
         try
         {
-            var sizeInCache = MemoryCacheService.Get<long>(GetDirectorySizeKey(fileSystemInfo));
+            var sizeInCache = MemoryCacheService.Get<long>(InMemoryCacheKeys.GetDirectorySizeKey(fileSystemInfo));
             if (sizeInCache is not 0) return sizeInCache;
             var files = Directory.GetFiles(fileSystemInfo.FullName, "*.*", SearchOption.AllDirectories);
             var size = files.Select(file => new FileInfo(file)).Select(fileInfo => fileInfo.Length).Sum();
-            MemoryCacheService.AddOrUpdate(GetDirectorySizeKey(fileSystemInfo), size);
+            MemoryCacheService.AddOrUpdate(InMemoryCacheKeys.GetDirectorySizeKey(fileSystemInfo), size);
             return size;
         }
         catch (Exception)
@@ -191,7 +82,7 @@ public abstract class Helper
         }
     }
 
-    public static bool IsDirectoryEmpty(FileSystemInfo fileSystemInfo)
+    public static bool IsEmpty(FileSystemInfo fileSystemInfo)
     {
         try
         {
@@ -210,7 +101,7 @@ public abstract class Helper
     /// <param name="destination"></param>
     /// <param name="recursive"></param>
     /// <exception cref="DirectoryNotFoundException"></exception>
-    public static DirectoryInfo CopyDirectory(string source, string destination, bool recursive)
+    public static DirectoryInfo Copy(string source, string destination, bool recursive)
     {
         Log.Debug("Copying directory {Source} to {Destination}", source, destination);
         // Get information about the source directory
@@ -242,13 +133,13 @@ public abstract class Helper
         foreach (var subDir in dirs)
         {
             var newDestinationDir = Path.Combine(safePath, subDir.Name);
-            CopyDirectory(subDir.FullName, newDestinationDir, true);
+            Copy(subDir.FullName, newDestinationDir, true);
         }
 
         return directoryInfoDestination;
     }
 
-    public static void ExtractDirectory(string path, string destination = "Extracted")
+    public static void Extract(string path, string destination = "Extracted")
     {
         Log.Debug("Extracting archive {Path} to {Destination}", path, destination);
         using var archive = ArchiveFactory.Open(path);
@@ -282,8 +173,6 @@ public abstract class Helper
             MessageBus.Current.SendMessage(command);
         }
     }
-
-    #endregion
 }
 
 public enum PathType

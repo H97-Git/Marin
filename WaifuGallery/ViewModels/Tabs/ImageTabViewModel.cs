@@ -126,7 +126,7 @@ public class ImageTabViewModel : TabViewModelBase
             var batchList = batch.Select(path => new FileInfo(path));
             foreach (var fileInfo in batchList)
             {
-                if (Helper.ThumbnailExists(fileInfo, out var thumbnailPath))
+                if (ThumbnailHelper.Exists(fileInfo, out var thumbnailPath))
                 {
                     bufferList.Add(new Bitmap(thumbnailPath));
                 }
@@ -134,7 +134,7 @@ public class ImageTabViewModel : TabViewModelBase
                 {
                     var outputPath = Path.Combine(thumbnailPath, fileInfo.Name);
                     var bitmap = await Task.Run(() =>
-                        Helper.GenerateBitmapThumbAsync(fileInfo, new FileInfo(outputPath)));
+                        ThumbnailHelper.GenerateAsync(fileInfo, new FileInfo(outputPath)));
                     bufferList.Add(bitmap);
                 }
             }
@@ -218,13 +218,13 @@ public class ImageTabViewModel : TabViewModelBase
     public void ResizeImageByHeight(double targetHeight)
     {
         Log.Debug("ResizeImageByHeight");
-        if (BitmapImage != null) ImageSize = Helper.GetScaledSizeByHeight(BitmapImage, (int) targetHeight);
+        if (BitmapImage != null) ImageSize = ImageSizeHelper.GetScaledSizeByHeight(BitmapImage, (int) targetHeight);
     }
 
     public void ResizeImageByWidth(double targetHeight)
     {
         Log.Debug("ResizeImageByWidth");
-        if (BitmapImage != null) ImageSize = Helper.GetScaledSizeByWidth(BitmapImage, (int) targetHeight);
+        if (BitmapImage != null) ImageSize = ImageSizeHelper.GetScaledSizeByWidth(BitmapImage, (int) targetHeight);
     }
 
     public void RotateImage(bool clockwise)
@@ -271,7 +271,7 @@ public class ImageTabViewModel : TabViewModelBase
             {
                 var path = openFileCommand.Path;
                 if (path == null) return null;
-                var imagesInPath = Helper.GetAllImagesInPath(path);
+                var imagesInPath = PathHelper.GetAllImages(path);
                 var index = Array.IndexOf(imagesInPath, path);
                 var id = GenerateUniqueId(imagesInPath.First());
                 return new ImageTabViewModel(id, imagesInPath, index);

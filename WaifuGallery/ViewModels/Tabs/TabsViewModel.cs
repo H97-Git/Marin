@@ -78,7 +78,7 @@ public class TabsViewModel : ViewModelBase
         OpenTabs.Clear();
         foreach (var path in session)
         {
-            var imagesInPath = Helper.GetAllImagesInPath(path);
+            var imagesInPath = PathHelper.GetAllImages(path);
             if (imagesInPath is {Length: 0}) continue;
             var index = imagesInPath.IndexOf(path);
             AddImageTab(new OpenInNewTabCommand(index, imagesInPath));

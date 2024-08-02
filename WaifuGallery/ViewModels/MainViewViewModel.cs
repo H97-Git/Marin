@@ -283,7 +283,7 @@ public class MainViewViewModel : ViewModelBase
                 }
                 else
                 {
-                    var newDir = Helper.CopyDirectory(sourceFileCommand.Path, destination, true);
+                    var newDir = DirectoryHelper.Copy(sourceFileCommand.Path, destination, true);
                     command.Path = newDir.FullName;
                 }
 
@@ -425,13 +425,13 @@ public class MainViewViewModel : ViewModelBase
         Log.Debug("Extracting file: {Path}", command.Path);
         if (!Settings.Instance.FileManagerPreference.ShouldAskExtractionFolderName)
         {
-            Helper.ExtractDirectory(command.Path);
+            DirectoryHelper.Extract(command.Path);
         }
         else
         {
             var result = await ShowExtractDialogAsync(Path.GetFileNameWithoutExtension(command.Path));
             if (result == null) return;
-            Helper.ExtractDirectory(command.Path, result);
+            DirectoryHelper.Extract(command.Path, result);
         }
     }
 
@@ -445,7 +445,7 @@ public class MainViewViewModel : ViewModelBase
         TabsViewModel = new TabsViewModel();
         FileManagerViewModel = new FileManagerViewModel();
         StatusBarViewModel = new StatusBarViewModel();
-        MessageBus.Current.Listen<ClearCacheCommand>().Subscribe(_ => Helper.ClearThumbnailsCache());
+        MessageBus.Current.Listen<ClearCacheCommand>().Subscribe(_ => DirectoryHelper.ClearThumbnailsCache());
         MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
         MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
         MessageBus.Current.Listen<DeleteCommand>().Subscribe(DeleteFile);

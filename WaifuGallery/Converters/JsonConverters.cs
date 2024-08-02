@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Input;
 using WaifuGallery.Models;
 
-namespace WaifuGallery.Helpers;
+namespace WaifuGallery.Converters;
 
 public class KeyGestureConverter : JsonConverter<KeyGesture>
 {

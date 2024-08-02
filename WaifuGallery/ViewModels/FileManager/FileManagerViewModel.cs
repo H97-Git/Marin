@@ -149,7 +149,7 @@ public class FileManagerViewModel : ViewModelBase
             .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
         var imagesFileInfo = currentDir.GetFiles()
-            .Where(file => Helper.AllFileExtensions.Contains(file.Extension.ToLower()))
+            .Where(file => Extensions.All.Contains(file.Extension.ToLower()))
             .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
         if (dirs is not {Length: 0})
@@ -427,7 +427,7 @@ public class FileManagerViewModel : ViewModelBase
     public void OpenImageTabFromKeyboardEvent()
     {
         Log.Debug("OpenImageTabFromKeyboardEvent");
-        var imagesInPath = Helper.GetAllImagesInPath(SelectedFile);
+        var imagesInPath = PathHelper.GetAllImages(SelectedFile);
         var command = SelectedFile.IsImage
             ? new OpenInNewTabCommand(SelectedIndex, imagesInPath)
             : new OpenInNewTabCommand(0, imagesInPath);

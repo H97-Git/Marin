@@ -3,7 +3,7 @@ using System.Globalization;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 
-namespace WaifuGallery.Helpers;
+namespace WaifuGallery.Converters;
 
 public class DepthToBooleanConverter : IValueConverter
 {

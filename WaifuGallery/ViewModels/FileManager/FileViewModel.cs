@@ -62,8 +62,8 @@ public sealed class FileViewModel : ViewModelBase
             case DirectoryInfo directoryInfo:
                 ParentPath = directoryInfo.Parent?.FullName;
                 if (Settings.Instance.FileManagerPreference.ShouldCalculateFolderSize)
-                    SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
-                _isDirectoryEmpty = Helper.IsDirectoryEmpty(_fileSystemInfo);
+                    SizeInBytes = DirectoryHelper.GetSizeInByte(_fileSystemInfo);
+                _isDirectoryEmpty = DirectoryHelper.IsEmpty(_fileSystemInfo);
                 Symbol = _isDirectoryEmpty ? Symbol.Folder : Symbol.FolderFilled;
                 IsDirectory = true;
                 break;
@@ -110,7 +110,7 @@ public sealed class FileViewModel : ViewModelBase
             .Subscribe(_ =>
             {
                 if (Thumbnail is null) return;
-                ImageSize = Helper.GetScaledSize(Thumbnail, 100);
+                ImageSize = ImageSizeHelper.GetScaledSize(Thumbnail, 100);
             });
     }
 
@@ -223,14 +223,14 @@ public sealed class FileViewModel : ViewModelBase
             return;
         }
 
-        if (Helper.ThumbnailExists(fileInfo, out var thumbnailPath))
+        if (ThumbnailHelper.Exists(fileInfo, out var thumbnailPath))
         {
             Thumbnail = new Bitmap(thumbnailPath);
             return;
         }
 
         var outputFileInfo = new FileInfo(Path.Combine(thumbnailPath, fileInfo.Name));
-        Thumbnail = await Task.Run(() => Helper.GenerateBitmapThumbAsync(fileInfo, outputFileInfo));
+        Thumbnail = await Task.Run(() => ThumbnailHelper.GenerateAsync(fileInfo, outputFileInfo));
     }
 
     #endregion
@@ -254,7 +254,7 @@ public sealed class FileViewModel : ViewModelBase
         {
             if (SizeInBytes is 0)
             {
-                SizeInBytes = Helper.GetDirectorySizeInByte(_fileSystemInfo);
+                SizeInBytes = DirectoryHelper.GetSizeInByte(_fileSystemInfo);
             }
         });
 
