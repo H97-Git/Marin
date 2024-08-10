@@ -29,9 +29,9 @@ public partial class TabsControl : UserControl
         if (!e.KeyModifiers.HasFlag(KeyModifiers.Shift))
         {
             if (e.Delta.Y < 0)
-                launcherTabsScroller.LineRight();
+                LauncherTabsScroller.LineRight();
             else if (e.Delta.Y > 0)
-                launcherTabsScroller.LineLeft();
+                LauncherTabsScroller.LineLeft();
             e.Handled = true;
         }
     }

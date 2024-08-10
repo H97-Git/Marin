@@ -12,13 +12,12 @@
     <Grid RowDefinitions="Auto,*">
         <!-- Tab Headers -->
         <ScrollViewer Grid.Row="0"
-                      Name="launcherTabsScroller"
+                      Name="LauncherTabsScroller"
                       VerticalScrollBarVisibility="Disabled"
                       HorizontalScrollBarVisibility="Hidden"
                       PointerWheelChanged="ScrollTabs">
-
             <ListBox Name="ImagesTabControl"
-                     ItemsSource="{Binding  OpenTabs}"
+                     ItemsSource="{Binding OpenTabs}"
                      MaxHeight="35"
                      SelectedItem="{Binding SelectedTab}"
                      SelectedIndex="{Binding SelectedTabIndex}"
@@ -30,7 +29,7 @@
                                 <ContextMenu>
                                     <MenuItem Header="Close Tab" Command="{Binding CloseTabCommand}">
                                         <MenuItem.Icon>
-                                            <ui:SymbolIcon Symbol="Cancel" FontSize="120" />
+                                            <ui:SymbolIcon Symbol="Cancel" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                 </ContextMenu>
@@ -50,7 +49,6 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-
         </ScrollViewer>
         <!-- Image Tab -->
         <Grid Grid.Row="1" IsVisible="{Binding IsImageTabVisible}">

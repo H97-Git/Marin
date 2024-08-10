@@ -12,6 +12,7 @@
         <FluentTheme />
         <fluent:FluentAvaloniaTheme />
         <StyleInclude Source="Resources/Styles.axaml"/>
+        <StyleInclude Source="/Controls/Tabs/Preferences/Category.axaml"/>
     </Application.Styles>
 
     <Application.Resources>

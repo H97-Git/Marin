@@ -1,0 +1,59 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:preferences="clr-namespace:WaifuGallery.ViewModels.Tabs.Preferences"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="WaifuGallery.Controls.Tabs.Preferences.FileManager"
+             x:DataType="preferences:FileManagerPreferencesViewModel"
+             IsVisible="{Binding IsVisible}">
+    <!-- <ui:SettingsExpander Header="File Manager" -->
+    <!--                      Description="Configure Tabs behaviours." -->
+    <!--                      IconSource="{DynamicResource FoldersSvg}"> -->
+    <StackPanel>
+        <StackPanel.Styles>
+            
+        </StackPanel.Styles>
+        <ui:SettingsExpander Header="Keep last path stored ?"
+                             Description="At launch the file manager will start in the last path visited."
+                             IconSource="{DynamicResource ClockCounterClockWiseSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldSaveLastPathOnExit}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Divulge each folder size ?"
+                                 Description="Instead of using the context menu to get a folder size individually set this to true to get all folders sizes. (Only cached in memory so I don't recommend turning this on.)">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldCalculateFolderSize}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Ask where to extract archive"
+                                 Description="When set to true a dialog will pop asking you to input the name of the new folder where an archive will be extracted. When false extract to 'Extracted'. "
+                                 IconSource="{DynamicResource FileArchiveSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldAskExtractionFolderName}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Position"
+                             IconSource="{DynamicResource AlignCenterHorizontalSvg}">
+            <ui:SettingsExpander.Footer>
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto">
+                    <Button Grid.Row="0" Grid.Column="0" Content="TL" CommandParameter="TL"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Grid.Row="0" Grid.Column="1" Content="TC" CommandParameter="TC"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Grid.Row="0" Grid.Column="2" Content="TR" CommandParameter="TR"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Grid.Row="1" Grid.Column="0" Content="BL" CommandParameter="BL"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Grid.Row="1" Grid.Column="1" Content="BC" CommandParameter="BC"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Grid.Row="1" Grid.Column="2" Content="BR" CommandParameter="BR"
+                            Command="{Binding SetFileManagerPosition}" />
+                </Grid>
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+    </StackPanel>
+    <!-- </ui:SettingsExpander> -->
+</UserControl>

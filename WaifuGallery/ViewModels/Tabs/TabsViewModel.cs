@@ -21,15 +21,14 @@ public class TabsViewModel : ViewModelBase
 {
     #region Private Fields
 
-    private ObservableCollection<TabViewModelBase> _openTabs = [];
-    private TabViewModelBase? _selectedTab;
     private ImageTabViewModel? _currentImageTabViewModel;
+    private ObservableCollection<TabViewModelBase> _openTabs = [];
     private PreferencesTabViewModel? _tabSettingsViewModel;
-    private int _selectedTabIndex;
-    private bool _isSettingsTabVisible = true;
-    private bool _isImageTabVisible;
+    private TabViewModelBase? _selectedTab;
     private bool _isTabHeadersVisible = true;
-    private bool IsSettingsTabOpen => OpenTabs.Any(x => x is PreferencesTabViewModel);
+    private bool _isImageTabVisible;
+    private bool _isSettingsTabVisible = true;
+    private int _selectedTabIndex;
 
     #endregion
 
@@ -53,19 +52,6 @@ public class TabsViewModel : ViewModelBase
     {
         Log.Debug("Add new tab {Tab}", tab.Id);
         OpenTabs.Add(tab);
-        SelectedTab = OpenTabs.First(x => x.Id == tab.Id);
-        if (SelectedTab is ImageTabViewModel)
-        {
-            IsSettingsTabVisible = false;
-            IsImageTabVisible = true;
-            ImageTabViewModel = SelectedTab as ImageTabViewModel;
-        }
-        else
-        {
-            IsSettingsTabVisible = true;
-            IsImageTabVisible = false;
-            TabSettingsViewModel = SelectedTab as PreferencesTabViewModel;
-        }
     }
 
     private void LoadSession(string sessionName = "Last")
@@ -102,27 +88,16 @@ public class TabsViewModel : ViewModelBase
         {
             if (OpenTabs.Count is 0)
             {
-                SelectedTab = null;
                 TabSettingsViewModel = null;
                 ImageTabViewModel = null;
                 IsSettingsTabVisible = false;
                 IsImageTabVisible = false;
+                SelectedTab = null;
                 return;
             }
 
+            // TODO: SelectedTab is sometimes null when it's not supposed to. Need fix
             SelectedTab = OpenTabs.Count is 1 ? OpenTabs.First() : OpenTabs.Last();
-            if (SelectedTab is PreferencesTabViewModel)
-            {
-                IsSettingsTabVisible = true;
-                IsImageTabVisible = false;
-                TabSettingsViewModel = SelectedTab as PreferencesTabViewModel;
-            }
-            else if (SelectedTab is ImageTabViewModel)
-            {
-                IsSettingsTabVisible = false;
-                IsImageTabVisible = true;
-                ImageTabViewModel = SelectedTab as ImageTabViewModel;
-            }
         });
 
         if (Settings.Instance.TabsPreference.OpenPreferencesOnStartup)
@@ -227,9 +202,10 @@ public class TabsViewModel : ViewModelBase
 
     public void SelectionChanged(SelectionChangedEventArgs e)
     {
+        if (SelectedTab is null)
+            return;
         if (SelectedTab is ImageTabViewModel imageTabViewModel)
         {
-            IsImageTabVisible = true;
             IsSettingsTabVisible = false;
             ImageTabViewModel = imageTabViewModel;
             if (ImageTabViewModel.IsDefaultZoom)
@@ -243,10 +219,13 @@ public class TabsViewModel : ViewModelBase
             {
                 MessageBus.Current.SendMessage(new SetZoomCommand(ImageTabViewModel.Matrix));
             }
+
+            IsImageTabVisible = true;
         }
         else
         {
             IsImageTabVisible = false;
+            TabSettingsViewModel = SelectedTab as PreferencesTabViewModel;
             IsSettingsTabVisible = true;
         }
     }
@@ -287,7 +266,7 @@ public class TabsViewModel : ViewModelBase
 
     public void OpenSettingsTab()
     {
-        if (IsSettingsTabOpen) return;
+        if (OpenTabs.Any(x => x is PreferencesTabViewModel)) return;
         AddTab(new PreferencesTabViewModel());
     }
 

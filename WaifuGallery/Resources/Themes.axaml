@@ -15,6 +15,18 @@
             <ui:ImageIconSource x:Key="KeyboardSvg" Source="{SvgImage SVGs/keyboard.svg}" />
             <ui:ImageIconSource x:Key="PictureInPictureSvg" Source="{SvgImage SVGs/picture-in-picture.svg}" />
             <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/tabs.svg}" />
+            <ui:ImageIconSource x:Key="GearSvg" Source="{SvgImage SVGs/gear.svg}" />
+            <ui:ImageIconSource x:Key="EyeSvg" Source="{SvgImage SVGs/eye.svg}" />
+            <ui:ImageIconSource x:Key="TimerSvg" Source="{SvgImage SVGs/timer.svg}" />
+            <ui:ImageIconSource x:Key="CopySimpleSvg" Source="{SvgImage SVGs/copy-simple.svg}" />
+            <ui:ImageIconSource x:Key="SubsetOfSvg" Source="{SvgImage SVGs/subset-of.svg}" />
+            <ui:ImageIconSource x:Key="ArrowsOutCardinalSvg" Source="{SvgImage SVGs/arrows-out-cardinal.svg}" />
+            <ui:ImageIconSource x:Key="CursorSvg" Source="{SvgImage SVGs/cursor.svg}" />
+            <ui:ImageIconSource x:Key="XSquareSvg" Source="{SvgImage SVGs/x-square.svg}" />
+            <ui:ImageIconSource x:Key="AlignCenterHorizontalSvg" Source="{SvgImage SVGs/align-center-horizontal.svg}" />
+            <ui:ImageIconSource x:Key="FileArchiveSvg" Source="{SvgImage SVGs/file-archive.svg}" />
+            <ui:ImageIconSource x:Key="ClockCounterClockWiseSvg" Source="{SvgImage SVGs/clock-counter-clockwise.svg}" />
+            <ui:ImageIconSource x:Key="ArrowsCounterClockWiseSvg" Source="{SvgImage SVGs/arrows-counter-clockwise.svg}" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Dark">
@@ -29,6 +41,18 @@
             <ui:ImageIconSource x:Key="KeyboardSvg" Source="{SvgImage SVGs/variants/keyboard.svg}" />
             <ui:ImageIconSource x:Key="PictureInPictureSvg" Source="{SvgImage SVGs/variants/picture-in-picture.svg}" />
             <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/variants/tabs.svg}" />
+            <ui:ImageIconSource x:Key="GearSvg" Source="{SvgImage SVGs/gear.svg}" />
+            <ui:ImageIconSource x:Key="EyeSvg" Source="{SvgImage SVGs/eye.svg}" />
+            <ui:ImageIconSource x:Key="TimerSvg" Source="{SvgImage SVGs/timer.svg}" />
+            <ui:ImageIconSource x:Key="CopySimpleSvg" Source="{SvgImage SVGs/copy-simple.svg}" />
+            <ui:ImageIconSource x:Key="SubsetOfSvg" Source="{SvgImage SVGs/subset-of.svg}" />
+            <ui:ImageIconSource x:Key="ArrowsOutCardinalSvg" Source="{SvgImage SVGs/arrows-out-cardinal.svg}" />
+            <ui:ImageIconSource x:Key="CursorSvg" Source="{SvgImage SVGs/cursor.svg}" />
+            <ui:ImageIconSource x:Key="XSquareSvg" Source="{SvgImage SVGs/x-square.svg}" />
+            <ui:ImageIconSource x:Key="AlignCenterHorizontalSvg" Source="{SvgImage SVGs/align-center-horizontal.svg}" />
+            <ui:ImageIconSource x:Key="FileArchiveSvg" Source="{SvgImage SVGs/file-archive.svg}" />
+            <ui:ImageIconSource x:Key="ClockCounterClockWiseSvg" Source="{SvgImage SVGs/clock-counter-clockwise.svg}" />
+            <ui:ImageIconSource x:Key="ArrowsCounterClockWiseSvg" Source="{SvgImage SVGs/arrows-counter-clockwise.svg}" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
     <ui:ImageIconSource x:Key="FrameCornersSvg" Source="{SvgImage SVGs/frame-corners.svg}" />

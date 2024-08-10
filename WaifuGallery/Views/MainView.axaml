@@ -10,6 +10,7 @@
              xmlns:vm="clr-namespace:WaifuGallery.ViewModels"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns="https://github.com/avaloniaui"
+             xmlns:preferences="clr-namespace:WaifuGallery.Controls.Tabs.Preferences"
              Name="MainViewControl"
              KeyDown="MainView_OnKeyDown">
     <Design.DataContext>
@@ -19,11 +20,11 @@
     </Design.DataContext>
 
     <!-- Main Grid -->
-    <Grid RowDefinitions="Auto,*,Auto" Name="MainGrid">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Name="MainGrid">
         <!-- Menu Bar-->
-        <controls:MenuBar Grid.Row="0" 
-                          DataContext="{Binding MenuBarViewModel}" 
-                          IsVisible="{Binding IsMenuBarVisible}"/>
+        <controls:MenuBar Grid.Row="0"
+                          DataContext="{Binding MenuBarViewModel}"
+                          IsVisible="{Binding IsMenuBarVisible}" />
         <!-- Main Area -->
         <Grid Grid.Row="1" Name="MainArea">
             <!-- Tabs -->
@@ -43,6 +44,6 @@
                     Message="{Binding StatusBarViewModel.Message}"
                     Name="InfoBar"
                     Severity="{Binding StatusBarViewModel.Severity}"
-                    Title="{Binding StatusBarViewModel.Title}"/>
+                    Title="{Binding StatusBarViewModel.Title}" />
     </Grid>
 </UserControl>

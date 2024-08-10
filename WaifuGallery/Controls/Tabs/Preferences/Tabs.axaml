@@ -1,0 +1,60 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:preferences="clr-namespace:WaifuGallery.ViewModels.Tabs.Preferences"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="WaifuGallery.Controls.Tabs.Preferences.Tabs"
+             x:DataType="preferences:TabsPreferencesViewModel"
+             IsVisible="{Binding IsVisible}">
+    <!-- <ui:SettingsExpander Header="Tabs" -->
+    <!--                      IconSource="{DynamicResource TabsSvg}" -->
+    <!--                      Description="Configure Tabs behaviours"> -->
+    <StackPanel>
+        <ui:SettingsExpander Header="Include settings tab when cycling"
+                             Description="Settings tab is always included when Ctrl is pressed.">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding IsSettingsTabCycled}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Allow Tab settings to close"
+                             IconSource="{DynamicResource XSquareSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox Content="" IsChecked="{Binding IsTabSettingsClosable}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Allow duplicate tabs"
+                             IconSource="{DynamicResource CopySimpleSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox Content="" IsChecked="{Binding IsDuplicateTabsAllowed}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Loop back"
+                             Description="Loop back when first/last image is reached."
+                             IconSource="{DynamicResource ArrowsCounterClockWiseSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldImageLoop}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Open preferences at start">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldOpenPreferencesOnStartUp}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Save session on exit"
+                             IconSource="{DynamicResource TimerSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldSaveLastSessionOnExit}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Load last session on start"
+                             IconSource="{DynamicResource TimerSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldLoadLastSessionOnStartUp}"
+                          IsEnabled="{Binding ShouldSaveLastSessionOnExit}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+    </StackPanel>
+    <!-- </ui:SettingsExpander> -->
+</UserControl>

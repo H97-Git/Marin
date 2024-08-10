@@ -1,0 +1,59 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:converters="clr-namespace:WaifuGallery.Converters"
+             xmlns:preferences="clr-namespace:WaifuGallery.ViewModels.Tabs.Preferences"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="WaifuGallery.Controls.Tabs.Preferences.ImagePreview"
+             x:DataType="preferences:ImagePreviewPreferencesViewModel"
+             IsVisible="{Binding IsVisible}">
+    <UserControl.Resources>
+        <converters:DepthToBooleanConverter x:Key="DepthToBooleanConverter" />
+    </UserControl.Resources>
+    <!-- <ui:SettingsExpander Header="Image Preview" -->
+    <!--                      Description="Configure Image Preview behaviours" -->
+    <!--                      IconSource="{DynamicResource PictureInPictureSvg}"> -->
+    <StackPanel>
+        <ui:SettingsExpander Header="Image Preview depth"
+                             Description="How many levels of subfolders the image preview will scan for images. Default: 0"
+                             IconSource="{DynamicResource SubsetOfSvg}">
+            <ui:SettingsExpander.Footer>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="0"
+                                 IsChecked="{Binding PreviewDepth, Converter={StaticResource DepthToBooleanConverter}, ConverterParameter=0}" />
+                    <RadioButton Content="1"
+                                 IsChecked="{Binding PreviewDepth, Converter={StaticResource DepthToBooleanConverter}, ConverterParameter=1}" />
+                    <RadioButton Content="2"
+                                 IsChecked="{Binding PreviewDepth, Converter={StaticResource DepthToBooleanConverter}, ConverterParameter=2}" />
+                    <RadioButton Content="3"
+                                 IsChecked="{Binding PreviewDepth, Converter={StaticResource DepthToBooleanConverter}, ConverterParameter=3}" />
+                </StackPanel>
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Default Size"
+                             Description="Simply the size of the image preview when opening. Min: 150 Max: 600 Default: 300"
+                             IconSource="{DynamicResource ArrowsOutCardinalSvg}">
+            <ui:SettingsExpander.Footer>
+                <NumericUpDown Value="{Binding PreviewDefaultZoom}" Minimum="150" Maximum="600"
+                               Increment="1" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Follow Mouse"
+                             Description="Whether the image preview should follow the pointer mouse."
+                             IconSource="{DynamicResource CursorSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding PreviewFollowMouse}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Loop back"
+                             Description="Loop back when first/last image is reached."
+                             IconSource="{DynamicResource ArrowsCounterClockWiseSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldImagePreviewLoop}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+    </StackPanel>
+    <!-- </ui:SettingsExpander> -->
+</UserControl>
