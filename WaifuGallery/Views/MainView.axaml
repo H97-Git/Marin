@@ -1,13 +1,16 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:WaifuGallery.ViewModels"
-             xmlns:controls="clr-namespace:WaifuGallery.Controls"
-             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+<UserControl mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
              x:Class="WaifuGallery.Views.MainView"
              x:DataType="vm:MainViewViewModel"
+             xmlns:controls="clr-namespace:WaifuGallery.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fileManager="clr-namespace:WaifuGallery.Controls.FileManager"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabs="clr-namespace:WaifuGallery.Controls.Tabs"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:vm="clr-namespace:WaifuGallery.ViewModels"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:preferences="clr-namespace:WaifuGallery.Controls.Tabs.Preferences"
              Name="MainViewControl"
              KeyDown="MainView_OnKeyDown">
     <Design.DataContext>
@@ -17,31 +20,30 @@
     </Design.DataContext>
 
     <!-- Main Grid -->
-    <Grid RowDefinitions="Auto,*,Auto" Name="MainGrid">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Name="MainGrid">
         <!-- Menu Bar-->
-        <controls:MenuBar Grid.Row="0" DataContext="{Binding MenuBarViewModel}" IsVisible="{Binding IsMenuVisible}" />
+        <controls:MenuBar Grid.Row="0"
+                          DataContext="{Binding MenuBarViewModel}"
+                          IsVisible="{Binding IsMenuBarVisible}" />
         <!-- Main Area -->
         <Grid Grid.Row="1" Name="MainArea">
             <!-- Tabs -->
-            <controls:TabsControl DataContext="{Binding TabsViewModel}" />
+            <tabs:TabsControl DataContext="{Binding TabsViewModel}" />
             <!-- File Manager -->
-            <Panel Name="FileManagerPanel"
-                   Background="{Binding FileManagerViewModel.FileManagerBackground}">
-                <controls:FileManager DataContext="{Binding FileManagerViewModel}" />
+            <Panel Name="FileManagerPanel" Background="{Binding FileManagerViewModel.FileManagerBackground}">
+                <fileManager:FileManager DataContext="{Binding FileManagerViewModel}" />
             </Panel>
         </Grid>
         <ui:InfoBar Grid.Row="2"
-                    Name="InfoBar"
-                    Foreground="{DynamicResource Brush.Foreground}"
                     Background="{Binding StatusBarViewModel.BackgroundColor}"
-                    IsClosable="False"
-                    IsOpen="True"
-                    IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}"
-                    Message="{Binding StatusBarViewModel.Message}"
-                    Severity="{Binding StatusBarViewModel.Severity}"
-                    Title="{Binding StatusBarViewModel.Title}"
+                    Foreground="{DynamicResource Brush.Foreground}"
                     Height="32"
-                    Margin="1">
-        </ui:InfoBar>
+                    IsClosable="False"
+                    IsOpen="{Binding StatusBarViewModel.IsStatusBarVisible}"
+                    Margin="1"
+                    Message="{Binding StatusBarViewModel.Message}"
+                    Name="InfoBar"
+                    Severity="{Binding StatusBarViewModel.Severity}"
+                    Title="{Binding StatusBarViewModel.Title}" />
     </Grid>
 </UserControl>

@@ -17,3 +17,15 @@ public class SendMessageToStatusBarCommand(InfoBarSeverity severity, string mess
 public class ToggleFullScreenCommand : ICommandMessage;
 
 public class ClearCacheCommand : ICommandMessage;
+
+public class GoToOxfordPet : ICommandMessage;
+
+public class LoadSessionCommand(string sessionName) : ICommandMessage
+{
+    public string SessionName { get; } = sessionName;
+}
+
+public class SaveSessionCommand(string sessionName) : ICommandMessage
+{
+    public string SessionName { get; } = sessionName;
+}

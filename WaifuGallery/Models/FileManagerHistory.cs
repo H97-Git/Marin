@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Serilog;
 
 namespace WaifuGallery.Models;
 
@@ -32,6 +33,7 @@ public class FileManagerHistory
 
     public void AddPath(string path)
     {
+        Log.Debug("FileManagerHistory: AddPath({Path})", path);
         lock (_history)
         {
             if (_currentIndex < _history.Count - 1)

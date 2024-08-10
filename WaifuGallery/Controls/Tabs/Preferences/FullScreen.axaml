@@ -1,0 +1,38 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:preferences="clr-namespace:WaifuGallery.ViewModels.Tabs.Preferences"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="WaifuGallery.Controls.Tabs.Preferences.FullScreen"
+             x:DataType="preferences:FullScreenPreferencesViewModel"
+             IsVisible="{Binding IsVisible}">
+    <!-- <ui:SettingsExpander Header="FullScreen" -->
+    <!--                      Description="Hide UI elements when fullscreen" -->
+    <!--                      IconSource="{DynamicResource ArrowsOutSvg}"> -->
+    <StackPanel>
+        <ui:SettingsExpander Header="Menu">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldHideMenuBar}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Tabs header"
+                             IconSource="{DynamicResource TabsSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldHideTabsHeader}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="File Manager" IconSource="{DynamicResource FoldersSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldHideFileManager}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Info" IconSource="{DynamicResource BarricadeSvg}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldHideStatusBar}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+    </StackPanel>
+    <!-- </ui:SettingsExpander> -->
+</UserControl>

@@ -30,11 +30,19 @@
             <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}"
                       Icon="{DynamicResource ArrowsOutVertical}" />
             <Separator />
-            <MenuItem Header="Rotate Clock Wise" Command="{Binding RotateClockwiseCommand}" />
-            <MenuItem Header="Rotate Anti Clock Wise" Command="{Binding RotateAntiClockwiseCommand}" />
+            <MenuItem Header="Rotate Clock Wise" Icon="{DynamicResource ArrowClockWise}"
+                      Command="{Binding RotateClockwiseCommand}" />
+            <MenuItem Header="Rotate Anti Clock Wise" Icon="{DynamicResource ArrowAntiClockWise}"
+                      Command="{Binding RotateAntiClockwiseCommand}" />
+        </MenuItem>
+        <MenuItem Header="_Session">
+            <MenuItem Header="Load Last Session" Command="{Binding LoadSessionCommand}" />
+            <MenuItem Header="Load Sessions:" Command="{Binding LoadSessionCommand}" />
+            <MenuItem Header="Save current session" Command="{Binding SaveSessionCommand}" />
         </MenuItem>
         <MenuItem Header="_Debug" IsVisible="{Binding IsDebugMenuVisible}">
             <MenuItem Header="_Clear Thumbnails cache" Command="{Binding ClearCache}" Icon="{DynamicResource Trash}" />
+            <MenuItem Header="_Go To Oxford pets" Command="{Binding GoToOxfordPet}" />
         </MenuItem>
     </Menu>
 </UserControl>

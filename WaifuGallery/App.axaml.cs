@@ -5,6 +5,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using WaifuGallery.Models;
+using WaifuGallery.ViewModels;
+using WaifuGallery.Views;
 
 namespace WaifuGallery;
 
@@ -33,21 +35,13 @@ public class App : Application
 
     #region Public Methods
 
-    public static TopLevel? GetTopLevel()
-    {
-        if (Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            return desktop.MainWindow;
-        }
+    public static TopLevel? GetTopLevel() =>
+        Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null;
 
-        return null;
-    }
-
-    public static void CloseOnExitCommand()
-    {
-        Settings.Instance.Save();
-        Environment.Exit(0);
-    }
+    public static MainViewViewModel? GetMainViewViewModel() =>
+        ((GetTopLevel() as MainWindow)?.Content as MainView)?.DataContext as MainViewViewModel;
 
     public override void Initialize()
     {
@@ -69,7 +63,7 @@ public class App : Application
             var main = new MainWindow();
             desktop.MainWindow = main;
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            desktop.ShutdownRequested += (_, _) => { Settings.Instance.Save(); };
+            desktop.ShutdownRequested += (_, _) => { SaveSettings(); };
             main.Show();
 
             // splash.Close();
@@ -77,6 +71,15 @@ public class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    public static void SaveSettings(bool shouldExit = false)
+    {
+        Settings.Instance.Save();
+        if (shouldExit)
+            Environment.Exit(0);
+    }
+
+   
 
     #endregion
 }

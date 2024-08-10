@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls.Primitives;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -15,6 +15,7 @@ using DynamicData;
 using FluentAvalonia.UI.Controls;
 using NaturalSort.Extension;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
@@ -36,10 +37,45 @@ public class FileManagerViewModel : ViewModelBase
     private int _selectedIndexInFileManager;
     private readonly FileManagerHistory _pathHistory = new();
     private string _currentPath = string.Empty;
+    private VerticalAlignment _fileManagerVerticalAlignment = VerticalAlignment.Bottom;
+    private HorizontalAlignment _fileManagerHorizontalAlignment = HorizontalAlignment.Left;
 
     #endregion
 
     #region Private Methods
+
+    private void SetFileManagerPosition(SetFileManagerPositionCommand command)
+    {
+        Log.Debug("SetFileManagerPosition: {Position}", command.Position);
+        var position = command.Position;
+        switch (position)
+        {
+            case "TL":
+                FileManagerVerticalAlignment = VerticalAlignment.Top;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Left;
+                break;
+            case "TC":
+                FileManagerVerticalAlignment = VerticalAlignment.Top;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Center;
+                break;
+            case "TR":
+                FileManagerVerticalAlignment = VerticalAlignment.Top;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Right;
+                break;
+            case "BL":
+                FileManagerVerticalAlignment = VerticalAlignment.Bottom;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Left;
+                break;
+            case "BC":
+                FileManagerVerticalAlignment = VerticalAlignment.Bottom;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Center;
+                break;
+            case "BR":
+                FileManagerVerticalAlignment = VerticalAlignment.Bottom;
+                FileManagerHorizontalAlignment = HorizontalAlignment.Right;
+                break;
+        }
+    }
 
     private void SortFileInDir()
     {
@@ -49,6 +85,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private void RefreshFileManager(IFileCommand fileCommand)
     {
+        Log.Debug("Refreshing FileManager...");
         switch (fileCommand)
         {
             case NewFolderCommand newFolderCommand:
@@ -82,6 +119,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private void GetFilesFromPath(string? path)
     {
+        Log.Debug("GetFilesFromPath: {Path}", path);
         if (string.IsNullOrWhiteSpace(path)) return;
         //Remove last backslash if it exists
         if (path.Last() is '\\')
@@ -106,11 +144,12 @@ public class FileManagerViewModel : ViewModelBase
 
     private async void SetDirsAndFiles(DirectoryInfo currentDir, CancellationToken token)
     {
+        Log.Debug("SetDirsAndFiles: {CurrentDir}", currentDir.FullName);
         var dirs = currentDir.GetDirectories().Where(f => f.Name.First() is not '.' && f.Name.First() is not '$')
             .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
         var imagesFileInfo = currentDir.GetFiles()
-            .Where(file => Helper.AllFileExtensions.Contains(file.Extension.ToLower()))
+            .Where(file => Extensions.All.Contains(file.Extension.ToLower()))
             .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
         if (dirs is not {Length: 0})
@@ -121,6 +160,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private async Task SetDirs(IEnumerable<DirectoryInfo> dirs, CancellationToken token)
     {
+        Log.Debug("SetDirs");
         var dirInfos = dirs.ToList();
         for (var i = 0; i < dirInfos.Count; i += BatchSize)
         {
@@ -139,6 +179,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private async Task SetFiles(IEnumerable<FileInfo> files, CancellationToken token)
     {
+        Log.Debug("SetFiles");
         var fileInfos = files.ToList();
         for (var i = 0; i < fileInfos.Count; i += BatchSize)
         {
@@ -157,6 +198,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private async void OpenPathInFileManager()
     {
+        Log.Debug("OpenPathInFileManager");
         var storageProvider = App.GetTopLevel()?.StorageProvider;
         if (storageProvider is null) return;
         var result = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
@@ -186,6 +228,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private void AddToCollectionAndSort(FileViewModel fileViewModel)
     {
+        Log.Debug("AddToCollectionAndSort");
         var buffer = FilesInDir.ToList();
         buffer.Add(fileViewModel);
         buffer = buffer.OrderBy(x => x.FileName, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
@@ -201,7 +244,6 @@ public class FileManagerViewModel : ViewModelBase
     {
         FileManagerBackground = new SolidColorBrush(Colors.Transparent);
         this.WhenAnyValue(x => x.CurrentPath)
-            .Throttle(TimeSpan.FromMilliseconds(500))
             .Subscribe(GetFilesFromPath);
         this.WhenAnyValue(x => x.IsFileManagerExpanded)
             .Subscribe(_ =>
@@ -212,6 +254,7 @@ public class FileManagerViewModel : ViewModelBase
         if (Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit &&
             Settings.Instance.FileManagerPreference.FileManagerLastPath is not null)
         {
+            Log.Debug("FileManager: Restoring last path");
             var path = Settings.Instance.FileManagerPreference.FileManagerLastPath;
             if (Directory.Exists(path))
             {
@@ -228,11 +271,18 @@ public class FileManagerViewModel : ViewModelBase
             ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
         }
 
+        if (Settings.Instance.FileManagerPreference.Position is not null)
+        {
+            SetFileManagerPosition(new SetFileManagerPositionCommand(Settings.Instance.FileManagerPreference.Position));
+        }
+
         MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
         MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => PreviewImageViewModel.ShowPreview(x.Path));
         MessageBus.Current.Listen<ToggleFileManagerCommand>().Subscribe(_ => ToggleFileManager());
         MessageBus.Current.Listen<ToggleFileManagerVisibilityCommand>().Subscribe(_ => ToggleFileManagerVisibility());
         MessageBus.Current.Listen<RefreshFileManagerCommand>().Subscribe(x => RefreshFileManager(x.FileCommand));
+        MessageBus.Current.Listen<SetFileManagerPositionCommand>().Subscribe(SetFileManagerPosition);
+        MessageBus.Current.Listen<GoToOxfordPet>().Subscribe(_ => ChangePath(@"C:\oxford-iiit-pet\images"));
     }
 
     private void ToggleScrollbarVisibility(bool isPreviewImageVisible)
@@ -319,12 +369,25 @@ public class FileManagerViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _currentPath, value);
     }
 
+    public VerticalAlignment FileManagerVerticalAlignment
+    {
+        get => _fileManagerVerticalAlignment;
+        set => this.RaiseAndSetIfChanged(ref _fileManagerVerticalAlignment, value);
+    }
+
+    public HorizontalAlignment FileManagerHorizontalAlignment
+    {
+        get => _fileManagerHorizontalAlignment;
+        set => this.RaiseAndSetIfChanged(ref _fileManagerHorizontalAlignment, value);
+    }
+
     #endregion
 
     #region Public Methods
 
     public void GoToParentFolder()
     {
+        Log.Debug("GoToParentFolder");
         var parent = Directory.GetParent(CurrentPath)?.FullName;
         if (parent is null) return;
         ChangePath(parent);
@@ -332,6 +395,7 @@ public class FileManagerViewModel : ViewModelBase
 
     public void ChangePath(string path)
     {
+        Log.Debug("ChangePath: {Path}", path);
         _pathHistory.AddPath(path);
         UpdatePath(path);
     }
@@ -362,7 +426,8 @@ public class FileManagerViewModel : ViewModelBase
 
     public void OpenImageTabFromKeyboardEvent()
     {
-        var imagesInPath = Helper.GetAllImagesInPath(SelectedFile);
+        Log.Debug("OpenImageTabFromKeyboardEvent");
+        var imagesInPath = PathHelper.GetAllImages(SelectedFile);
         var command = SelectedFile.IsImage
             ? new OpenInNewTabCommand(SelectedIndex, imagesInPath)
             : new OpenInNewTabCommand(0, imagesInPath);

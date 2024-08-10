@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Serilog;
 using WaifuGallery.ViewModels;
 using WaifuGallery.Views;
 
@@ -25,11 +24,5 @@ public partial class MainWindow : Window
     /// </summary>
     /// <param name="sender">MainWindow</param>
     /// <param name="e">KeyEventArgs</param>
-    private void OnKeyDown(object? sender, KeyEventArgs e)
-    {
-        Log.Debug(e.KeyModifiers is KeyModifiers.None
-            ? $"{e.Key} MainWindow"
-            : $"{e.Key} {e.KeyModifiers} MainWindow");
-        MainViewViewModel?.HandleKeyBoardEvent(e);
-    }
+    private void OnKeyDown(object? sender, KeyEventArgs e) => MainViewViewModel?.HandleKeyBoardEvent(e);
 }

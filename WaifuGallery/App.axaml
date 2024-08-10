@@ -4,8 +4,6 @@
              xmlns:fluent="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
              x:Class="WaifuGallery.App"
              RequestedThemeVariant="Dark">
-    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
@@ -14,10 +12,10 @@
         <FluentTheme />
         <fluent:FluentAvaloniaTheme />
         <StyleInclude Source="Resources/Styles.axaml"/>
+        <StyleInclude Source="/Controls/Tabs/Preferences/Category.axaml"/>
     </Application.Styles>
 
     <Application.Resources>
-
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Resources/Themes.axaml" />

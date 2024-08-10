@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using FluentAvalonia.UI.Controls;
+using Avalonia.Threading;
+using DynamicData;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
+using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels.Tabs;
@@ -16,57 +21,60 @@ public class TabsViewModel : ViewModelBase
 {
     #region Private Fields
 
-    private ObservableCollection<TabViewModelBase> _openTabs = [];
-    private TabViewModelBase? _selectedTab;
     private ImageTabViewModel? _currentImageTabViewModel;
+    private ObservableCollection<TabViewModelBase> _openTabs = [];
     private PreferencesTabViewModel? _tabSettingsViewModel;
-    private int _selectedTabIndex;
-    private bool _isSettingsTabVisible = true;
-    private bool _isImageTabVisible;
+    private TabViewModelBase? _selectedTab;
     private bool _isTabHeadersVisible = true;
-    private bool IsSettingsTabOpen => OpenTabs.Any(x => x is PreferencesTabViewModel);
+    private bool _isImageTabVisible;
+    private bool _isSettingsTabVisible = true;
+    private int _selectedTabIndex;
 
     #endregion
 
     #region Private Methods
 
-    private void SendMessageToStatusBar(string message)
-    {
-        SendMessageToStatusBar(InfoBarSeverity.Informational, message);
-    }
-
     private void CloseTab()
     {
-        if (SelectedTab is null) return;
-        if (SelectedTab is PreferencesTabViewModel && !Settings.Instance.TabsPreference.IsTabSettingsClosable) return;
-        OpenTabs.Remove(SelectedTab);
-        if (OpenTabs.Count is 0)
+        Log.Debug("Close selected tab");
+        switch (SelectedTab)
         {
-            TabSettingsViewModel = null;
-            ImageTabViewModel = null;
-            IsSettingsTabVisible = false;
-            IsImageTabVisible = false;
-            return;
+            case null:
+            case PreferencesTabViewModel when !Settings.Instance.TabsPreference.IsTabSettingsClosable:
+                return;
+            default:
+                OpenTabs.Remove(SelectedTab);
+                break;
         }
-
-        SelectedTab = OpenTabs.First();
     }
 
     private void AddTab(TabViewModelBase tab)
     {
+        Log.Debug("Add new tab {Tab}", tab.Id);
         OpenTabs.Add(tab);
-        SelectedTab = OpenTabs.First(x => x.Id == tab.Id);
-        if (SelectedTab is ImageTabViewModel)
+    }
+
+    private void LoadSession(string sessionName = "Last")
+    {
+        Log.Debug("Load session {SessionName}", sessionName);
+        var sessionPath = Path.Combine(Settings.SessionsPath, $"{sessionName}.json");
+        if (!File.Exists(sessionPath)) return;
+        var session = JsonSerializer.Deserialize<string[]>(File.ReadAllText(sessionPath));
+        if (session is null) return;
+        OpenTabs.Clear();
+        foreach (var path in session)
         {
-            IsSettingsTabVisible = false;
-            IsImageTabVisible = true;
-            ImageTabViewModel = SelectedTab as ImageTabViewModel;
+            var imagesInPath = PathHelper.GetAllImages(path);
+            if (imagesInPath is {Length: 0}) continue;
+            var index = imagesInPath.IndexOf(path);
+            AddImageTab(new OpenInNewTabCommand(index, imagesInPath));
         }
-        else
+
+        // TODO: Fix this ugly hack.
+        if (SelectedTab is ImageTabViewModel imageTabViewModel)
         {
-            IsSettingsTabVisible = true;
-            IsImageTabVisible = false;
-            TabSettingsViewModel = SelectedTab as PreferencesTabViewModel;
+            imageTabViewModel.LoadNextImage();
+            imageTabViewModel.LoadPreviousImage();
         }
     }
 
@@ -76,15 +84,42 @@ public class TabsViewModel : ViewModelBase
 
     public TabsViewModel()
     {
-        OpenSettingsTab();
-        SelectedTab = OpenTabs.First();
-        MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFile);
+        this.WhenAnyValue(x => x.OpenTabs.Count).Subscribe(_ =>
+        {
+            if (OpenTabs.Count is 0)
+            {
+                TabSettingsViewModel = null;
+                ImageTabViewModel = null;
+                IsSettingsTabVisible = false;
+                IsImageTabVisible = false;
+                SelectedTab = null;
+                return;
+            }
+
+            // TODO: SelectedTab is sometimes null when it's not supposed to. Need fix
+            SelectedTab = OpenTabs.Count is 1 ? OpenTabs.First() : OpenTabs.Last();
+        });
+
+        if (Settings.Instance.TabsPreference.OpenPreferencesOnStartup)
+        {
+            OpenSettingsTab();
+        }
+
+        if (Settings.Instance.TabsPreference.LoadLastSessionOnStartUp)
+        {
+            Dispatcher.UIThread.Post(() => LoadSession());
+        }
+
+        MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFileInNewTab);
         MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
         MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
         MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidthAndResetZoom());
         MessageBus.Current.Listen<OpenSettingsTabCommand>().Subscribe(_ => OpenSettingsTab());
         MessageBus.Current.Listen<RotateClockwiseCommand>().Subscribe(_ => RotateAndResetZoom());
         MessageBus.Current.Listen<RotateAntiClockwiseCommand>().Subscribe(_ => RotateAndResetZoom(false));
+
+        MessageBus.Current.Listen<LoadSessionCommand>().Subscribe(_ => LoadSession());
+        MessageBus.Current.Listen<SaveSessionCommand>().Subscribe(_ => Settings.SaveSession());
     }
 
     #endregion
@@ -148,7 +183,7 @@ public class TabsViewModel : ViewModelBase
 
     #region Public Methods
 
-    private async void OpenFile(OpenFileCommand command)
+    private async void OpenFileInNewTab(OpenFileCommand command)
     {
         var storageProvider = App.GetTopLevel()?.StorageProvider;
         if (storageProvider is null) return;
@@ -160,15 +195,17 @@ public class TabsViewModel : ViewModelBase
         });
 
         if (result.Count is 0) return;
+        Log.Debug("Opening file in a new tab {Path}", command.Path);
         command.Path = result[0].Path.LocalPath;
         AddImageTab(command);
     }
 
     public void SelectionChanged(SelectionChangedEventArgs e)
     {
+        if (SelectedTab is null)
+            return;
         if (SelectedTab is ImageTabViewModel imageTabViewModel)
         {
-            IsImageTabVisible = true;
             IsSettingsTabVisible = false;
             ImageTabViewModel = imageTabViewModel;
             if (ImageTabViewModel.IsDefaultZoom)
@@ -182,16 +219,20 @@ public class TabsViewModel : ViewModelBase
             {
                 MessageBus.Current.SendMessage(new SetZoomCommand(ImageTabViewModel.Matrix));
             }
+
+            IsImageTabVisible = true;
         }
         else
         {
             IsImageTabVisible = false;
+            TabSettingsViewModel = SelectedTab as PreferencesTabViewModel;
             IsSettingsTabVisible = true;
         }
     }
 
     public void FitToWidthAndResetZoom()
     {
+        Log.Debug("FitToWidthAndResetZoom");
         if (ImageTabViewModel is null) return;
         ImageTabViewModel.ResizeImageByWidth(ControlSize.Width);
         MessageBus.Current.SendMessage(new ResetZoomCommand());
@@ -199,6 +240,7 @@ public class TabsViewModel : ViewModelBase
 
     public void FitToHeightAndResetZoom()
     {
+        Log.Debug("FitToHeightAndResetZoom");
         if (ImageTabViewModel is null) return;
         ImageTabViewModel.ResizeImageByHeight(ControlSize.Height);
         MessageBus.Current.SendMessage(new ResetZoomCommand());
@@ -206,6 +248,7 @@ public class TabsViewModel : ViewModelBase
 
     private void RotateAndResetZoom(bool clockwise = true)
     {
+        Log.Debug("RotateAndResetZoom");
         if (ImageTabViewModel is null) return;
         ImageTabViewModel.RotateImage(clockwise);
         MessageBus.Current.SendMessage(new ResetZoomCommand());
@@ -215,14 +258,15 @@ public class TabsViewModel : ViewModelBase
     {
         var imageTabViewModel = ImageTabViewModel.CreateImageTabFromCommand(command);
         if (imageTabViewModel is null) return;
-        if (!Settings.Instance.TabsPreference.IsDuplicateTabsAllowed && OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
+        if (!Settings.Instance.TabsPreference.IsDuplicateTabsAllowed &&
+            OpenTabs.Any(x => x.Id == imageTabViewModel.Id)) return;
 
         AddTab(imageTabViewModel);
     }
 
     public void OpenSettingsTab()
     {
-        if (IsSettingsTabOpen) return;
+        if (OpenTabs.Any(x => x is PreferencesTabViewModel)) return;
         AddTab(new PreferencesTabViewModel());
     }
 
@@ -266,6 +310,7 @@ public class TabsViewModel : ViewModelBase
 
     public void MoveTab(TabViewModelBase from, TabViewModelBase to)
     {
+        Log.Debug("Move tab {From} to {To}", from.Id, to.Id);
         var fromIdx = OpenTabs.IndexOf(from);
         var toIdx = OpenTabs.IndexOf(to);
         OpenTabs.Move(fromIdx, toIdx);

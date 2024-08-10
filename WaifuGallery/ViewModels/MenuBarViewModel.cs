@@ -15,7 +15,7 @@ public class MenuBarViewModel : ViewModelBase
     #region Private Members
 
     private bool _isMenuOpen;
-    private bool _isMenuVisible = true;
+    private bool _isMenuBarVisible = true;
     private double _toggleFileManagerIconAngle = 0;
     private bool _isDebugMenuVisible = false;
 
@@ -40,10 +40,10 @@ public class MenuBarViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isMenuOpen, value);
     }
 
-    public bool IsMenuVisible
+    public bool IsMenuBarVisible
     {
-        get => _isMenuVisible;
-        set => this.RaiseAndSetIfChanged(ref _isMenuVisible, value);
+        get => _isMenuBarVisible;
+        set => this.RaiseAndSetIfChanged(ref _isMenuBarVisible, value);
     }
 
     public bool IsDebugMenuVisible
@@ -76,7 +76,7 @@ public class MenuBarViewModel : ViewModelBase
 
     public ICommand RotateAntiClockwiseCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new RotateAntiClockwiseCommand()); });
-    
+
     public ICommand OpenFileCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new OpenFileCommand()); });
 
@@ -90,6 +90,11 @@ public class MenuBarViewModel : ViewModelBase
             MessageBus.Current.SendMessage(new ToggleFileManagerCommand());
         });
 
+    public ICommand LoadSessionCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new LoadSessionCommand("Last")); });
+
+    public ICommand SaveSessionCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new SaveSessionCommand("Last")); });
 
     public ICommand ToggleFileManagerVisibilityCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileManagerVisibilityCommand()); });
@@ -99,6 +104,9 @@ public class MenuBarViewModel : ViewModelBase
 
     public ICommand ClearCache =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ClearCacheCommand()); });
+
+    public ICommand GoToOxfordPet =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new GoToOxfordPet()); });
 
     #endregion
 }

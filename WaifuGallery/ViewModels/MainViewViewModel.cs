@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
+using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Controls.Dialogs;
 using WaifuGallery.ViewModels.Dialogs;
@@ -85,12 +86,6 @@ public class MainViewViewModel : ViewModelBase
         var keyCommand = Settings.Instance.HotKeyManager.GetBinding(keyGesture);
         switch (keyCommand)
         {
-            case KeyCommand.NextImage:
-                PreviewImageViewModel.NextPreview();
-                break;
-            case KeyCommand.PreviousImage:
-                PreviewImageViewModel.NextPreview();
-                break;
             case KeyCommand.GoUp:
                 FileManagerViewModel.GoUp();
                 break;
@@ -98,10 +93,34 @@ public class MainViewViewModel : ViewModelBase
                 FileManagerViewModel.GoDown();
                 break;
             case KeyCommand.GoLeft:
-                FileManagerViewModel.SelectedIndex -= 1;
+                if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
+                {
+                    PreviewImageViewModel.PreviousPreview();
+                    break;
+                }
+
+                if (FileManagerViewModel.IsFileManagerExpandedAndVisible)
+                {
+                    FileManagerViewModel.SelectedIndex -= 1;
+                    break;
+                }
+
+                TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
                 break;
             case KeyCommand.GoRight:
-                FileManagerViewModel.SelectedIndex += 1;
+                if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
+                {
+                    PreviewImageViewModel.NextPreview();
+                    break;
+                }
+
+                if (FileManagerViewModel.IsFileManagerExpandedAndVisible)
+                {
+                    FileManagerViewModel.SelectedIndex += 1;
+                    break;
+                }
+
+                TabsViewModel.ImageTabViewModel?.LoadNextImage();
                 break;
             case KeyCommand.GoToParentFolder:
                 FileManagerViewModel.GoToParentFolder();
@@ -117,6 +136,9 @@ public class MainViewViewModel : ViewModelBase
                 break;
             case KeyCommand.HidePreview:
                 PreviewImageViewModel.HidePreview();
+                break;
+            case KeyCommand.ToggleGrid:
+                TabsViewModel.ImageTabViewModel?.Grid();
                 break;
             case KeyCommand.None:
             case KeyCommand.FirstImage:
@@ -139,34 +161,36 @@ public class MainViewViewModel : ViewModelBase
 
     private void ToggleFullScreen()
     {
+        Log.Debug("Toggling FullScreen...");
         if (App.GetTopLevel() is not Window mainWindow) return;
         if (mainWindow.WindowState is WindowState.Normal)
         {
             mainWindow.WindowState = WindowState.FullScreen;
             if (Settings.Instance.ShouldHideMenuBar)
-                MenuBarViewModel.IsMenuVisible = false;
-            if (Settings.Instance.ShouldHideTabsHeader)
+                MenuBarViewModel.IsMenuBarVisible = false;
+            if (Settings.Instance.TabsPreference.ShouldHideTabsHeader)
                 TabsViewModel.IsTabHeadersVisible = false;
             if (Settings.Instance.FileManagerPreference.ShouldHideFileManager)
                 FileManagerViewModel.IsFileManagerVisible = false;
-            if (Settings.Instance.ShouldHideStatusBar)
+            if (Settings.Instance.StatusBarPreference.ShouldHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = false;
         }
         else
         {
             mainWindow.WindowState = WindowState.Normal;
-            MenuBarViewModel.IsMenuVisible = true;
+            MenuBarViewModel.IsMenuBarVisible = true;
             TabsViewModel.IsTabHeadersVisible = true;
             FileManagerViewModel.IsFileManagerVisible = true;
-            if (!Settings.Instance.AutoHideStatusBar)
+            if (!Settings.Instance.StatusBarPreference.AutoHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = true;
         }
     }
 
-    private void RenameFile(RenameCommand command)
+    private static void RenameFile(RenameCommand command)
     {
         var source = command.Path;
         var destination = source.Replace(Path.GetFileName(source), command.NewName);
+        Log.Debug("Renaming file: Source {Source}, Destination {Destination}", command.Path, destination);
         if (!File.Exists(source) && !Directory.Exists(source))
         {
             SendMessageToStatusBar(InfoBarSeverity.Error, "File or Directory does not exist!");
@@ -188,6 +212,7 @@ public class MainViewViewModel : ViewModelBase
 
     private void CopyFile(CopyCommand command)
     {
+        Log.Debug("Copying file: {Path}", command.Path);
         if (App.GetTopLevel()?.Clipboard is not { } clipboard) return;
         _clipBoardDataObject.Set(DataFormats.FileNames, command);
         clipboard.SetTextAsync(command.Path);
@@ -195,6 +220,7 @@ public class MainViewViewModel : ViewModelBase
 
     private void CutFile(CutCommand command)
     {
+        Log.Debug("Cutting file: {Path}", command.Path);
         if (App.GetTopLevel()?.Clipboard is not { } clipboard) return;
         _clipBoardDataObject.Set(DataFormats.FileNames, command);
         clipboard.SetTextAsync(command.Path);
@@ -202,6 +228,7 @@ public class MainViewViewModel : ViewModelBase
 
     private async void DeleteFile(DeleteCommand command)
     {
+        Log.Debug("Deleting file: {Path}", command.Path);
         var path = command.Path;
         if (!File.Exists(path) && !Directory.Exists(path))
         {
@@ -238,6 +265,7 @@ public class MainViewViewModel : ViewModelBase
 
     private void PasteFile(PasteCommand command)
     {
+        Log.Debug("Pasting file: {Path}", command.Path);
         var sourceFileCommand = _clipBoardDataObject.Get(DataFormats.FileNames) as FileCommand;
         var destination = command.Path;
         switch (sourceFileCommand)
@@ -255,7 +283,7 @@ public class MainViewViewModel : ViewModelBase
                 }
                 else
                 {
-                    var newDir = Helper.CopyDirectory(sourceFileCommand.Path, destination, true);
+                    var newDir = DirectoryHelper.Copy(sourceFileCommand.Path, destination, true);
                     command.Path = newDir.FullName;
                 }
 
@@ -285,6 +313,7 @@ public class MainViewViewModel : ViewModelBase
 
     private async void NewFolder(NewFolderCommand command)
     {
+        Log.Debug("Creating new folder: {Path}", command.Path);
         var isCanceled = false;
         try
         {
@@ -317,6 +346,7 @@ public class MainViewViewModel : ViewModelBase
 
     private async Task<string?> ShowNewFolderDialogAsync()
     {
+        Log.Debug("Showing new folder dialog...");
         var dialog = new ContentDialog()
         {
             Title = "New folder name:",
@@ -338,6 +368,7 @@ public class MainViewViewModel : ViewModelBase
 
     private async Task<string?> ShowExtractDialogAsync(string archiveName)
     {
+        Log.Debug("Showing extraction dialog...");
         var dialog = new ContentDialog()
         {
             Title = "New folder name:",
@@ -362,6 +393,7 @@ public class MainViewViewModel : ViewModelBase
 
     private async Task<bool> ShowDeleteDialogAsync(string fileName)
     {
+        Log.Debug("Showing delete dialog...");
         var dialog = new ContentDialog
         {
             Title = "Delete",
@@ -375,11 +407,13 @@ public class MainViewViewModel : ViewModelBase
 
     private void OpenInFileExplorer(OpenInFileExplorerCommand command)
     {
+        Log.Debug("Opening file explorer: {Path}", command.Path);
         Process.Start("explorer.exe", command.Path);
     }
 
     private void OpenInBrowser(OpenInBrowserCommand command)
     {
+        Log.Debug("Opening browser(vivaldi): {Path}", command.Path);
         var vivaldiPath = Process.GetProcessesByName("vivaldi").FirstOrDefault()?.MainModule?.FileName;
         if (vivaldiPath == null) return;
         var fileUri = new Uri(command.Path);
@@ -388,49 +422,16 @@ public class MainViewViewModel : ViewModelBase
 
     private async void ExtractFile(ExtractCommand command)
     {
+        Log.Debug("Extracting file: {Path}", command.Path);
         if (!Settings.Instance.FileManagerPreference.ShouldAskExtractionFolderName)
         {
-            Helper.ExtractDirectory(command.Path);
+            DirectoryHelper.Extract(command.Path);
         }
         else
         {
             var result = await ShowExtractDialogAsync(Path.GetFileNameWithoutExtension(command.Path));
             if (result == null) return;
-            Helper.ExtractDirectory(command.Path, result);
-        }
-    }
-
-    private void ShowPreview()
-    {
-        FileManagerViewModel.PreviewImageViewModel.ShowPreview(FileManagerViewModel.SelectedFile.FullPath);
-    }
-
-    private void ChangePath()
-    {
-        FileManagerViewModel.ChangePath(FileManagerViewModel.SelectedFile.FullPath);
-    }
-
-    private void GoLeft()
-    {
-        if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
-        {
-            FileManagerViewModel.PreviewImageViewModel.PreviousPreview();
-        }
-        else
-        {
-            FileManagerViewModel.SelectedIndex -= 1;
-        }
-    }
-
-    private void GoRight()
-    {
-        if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
-        {
-            FileManagerViewModel.PreviewImageViewModel.NextPreview();
-        }
-        else
-        {
-            FileManagerViewModel.SelectedIndex += 1;
+            DirectoryHelper.Extract(command.Path, result);
         }
     }
 
@@ -444,18 +445,17 @@ public class MainViewViewModel : ViewModelBase
         TabsViewModel = new TabsViewModel();
         FileManagerViewModel = new FileManagerViewModel();
         StatusBarViewModel = new StatusBarViewModel();
-        MessageBus.Current.Listen<ClearCacheCommand>().Subscribe(_ => Helper.ClearThumbnailsCache());
+        MessageBus.Current.Listen<ClearCacheCommand>().Subscribe(_ => DirectoryHelper.ClearThumbnailsCache());
         MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
         MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
         MessageBus.Current.Listen<DeleteCommand>().Subscribe(DeleteFile);
-        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.CloseOnExitCommand());
+        MessageBus.Current.Listen<ExitCommand>().Subscribe(_ => App.SaveSettings(true));
         MessageBus.Current.Listen<ExtractCommand>().Subscribe(ExtractFile);
         MessageBus.Current.Listen<NewFolderCommand>().Subscribe(NewFolder);
         MessageBus.Current.Listen<OpenInBrowserCommand>().Subscribe(OpenInBrowser);
         MessageBus.Current.Listen<OpenInFileExplorerCommand>().Subscribe(OpenInFileExplorer);
         MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
         MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
-        MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
     }
 
     #endregion

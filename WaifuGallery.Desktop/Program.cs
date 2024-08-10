@@ -1,42 +1,62 @@
 ﻿using System;
+using System.IO;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using Avalonia.Svg.Skia;
 using Serilog;
-using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
+using WaifuGallery.Models;
 
 namespace WaifuGallery.Desktop;
 
-sealed class Program
+internal static class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        Directory.CreateDirectory(Settings.LogsPath);
+        var today = DateTime.Today.ToString("dd-MM-yyyy");
+        const string outputTemplate = "[{Timestamp:HH:mm:ss.fff} {Level}]: {Message:lj}{NewLine}{Exception}";
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .Enrich.FromLogContext()
+            .WriteTo.Console(
+                outputTemplate: outputTemplate,
+                theme: AnsiConsoleTheme.Literate)
+            .WriteTo.File(
+                outputTemplate: outputTemplate,
+                path: Path.Combine(Settings.LogsPath, $"{today}.log"))
+            .CreateLogger();
+        try
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception e)
+        {
+            Log.Fatal(e, "Something went wrong during lifetime!");
+            throw;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+    }
 
     // Avalonia configuration, don't remove; also used by visual designer.
     // ReSharper disable once MemberCanBePrivate.Global
     public static AppBuilder BuildAvaloniaApp() //
     {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Debug)
-            .MinimumLevel.Override("System", LogEventLevel.Debug)
-            .Enrich.FromLogContext()
-            .WriteTo.Console(
-                outputTemplate:
-                "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
-                theme: AnsiConsoleTheme.Literate)
-            .CreateLogger();
+#if DEBUG
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
+#endif
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace()
+            // .LogToTrace()
             .UseReactiveUI();
     }
 }

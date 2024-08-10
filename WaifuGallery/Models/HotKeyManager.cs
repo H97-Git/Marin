@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text.Json;
 using Avalonia.Input;
+using Serilog;
+using WaifuGallery.Converters;
 using WaifuGallery.Helpers;
 
 namespace WaifuGallery.Models;
@@ -11,23 +13,22 @@ public enum KeyCommand
     None,
     FirstImage,
     LastImage,
-    NextImage,
-    PreviousImage,
-    GoUp,
+    FitToHeightAndResetZoom,
+    FitToWidthAndResetZoom,
+    FullScreen,
     GoDown,
     GoLeft,
     GoRight,
     GoToParentFolder,
+    GoUp,
+    HidePreview,
     OpenFolder,
     OpenImageInNewTab,
+    OpenPreferences,
+    ShowPreview,
     ToggleFileManager,
     ToggleFileManagerVisibility,
-    ShowPreview,
-    HidePreview,
-    FullScreen,
-    FitToWidthAndResetZoom,
-    FitToHeightAndResetZoom,
-    OpenPreferences,
+    ToggleGrid,
     ZAutoFit,
     ZFill,
     ZResetMatrix,
@@ -37,19 +38,22 @@ public enum KeyCommand
 
 public class HotKeyManager
 {
+    #region Private Fields
+
     private readonly Dictionary<KeyGesture, KeyCommand> _defaultKeymap = new()
     {
         //App
         {new KeyGesture(Key.F11), KeyCommand.FullScreen},
         {new KeyGesture(Key.H), KeyCommand.GoLeft},
         {new KeyGesture(Key.Left), KeyCommand.GoLeft},
-        {new KeyGesture(Key.PageUp), KeyCommand.PreviousImage},
+        {new KeyGesture(Key.PageUp), KeyCommand.GoLeft},
         {new KeyGesture(Key.L), KeyCommand.GoRight},
         {new KeyGesture(Key.Right), KeyCommand.GoRight},
-        {new KeyGesture(Key.PageDown), KeyCommand.NextImage},
+        {new KeyGesture(Key.PageDown), KeyCommand.GoRight},
         //Tabs
         {new KeyGesture(Key.A), KeyCommand.ZAutoFit},
-        // {new KeyGesture(Key.F), Hk.ZFill},
+        // {new KeyGesture(Key.F), KeyCommand.ZFill},
+        {new KeyGesture(Key.G), KeyCommand.ToggleGrid},
         {new KeyGesture(Key.H, KeyModifiers.Control), KeyCommand.FitToHeightAndResetZoom},
         {new KeyGesture(Key.H, KeyModifiers.Shift), KeyCommand.FitToHeightAndResetZoom},
         {new KeyGesture(Key.OemComma, KeyModifiers.Control), KeyCommand.OpenPreferences},
@@ -77,8 +81,6 @@ public class HotKeyManager
         {new KeyGesture(Key.P), KeyCommand.ShowPreview},
     };
 
-    public readonly Dictionary<KeyGesture, KeyCommand> UserKeymap;
-
     private static string HotKeyPath => Path.Combine(Settings.SettingsPath, "Hotkeys.json");
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
@@ -90,46 +92,24 @@ public class HotKeyManager
             {new KeyGestureConverter(), new KeyCommandConverter(), new DictionaryKeyGestureKeyCommandConverter(),}
     };
 
-    public HotKeyManager()
-    {
-        UserKeymap = LoadUserKeymap() ?? new Dictionary<KeyGesture, KeyCommand>(_defaultKeymap);
-    }
+    #endregion
 
-    public KeyCommand GetBinding(KeyGesture action)
-    {
-        return UserKeymap.GetValueOrDefault(action, KeyCommand.None);
-        // : _defaultKeymap.TryGetValue(action, out binding)
-        //     ? binding
-    }
+    #region Private Methods
 
-    public bool TrySetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture oldBindingG,
-        out KeyCommand oldBindingC, bool overwrite = false)
+    private void SetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture? oldBinding = null)
     {
-        oldBindingC = KeyCommand.None;
-        if (overwrite)
+        Log.Debug("HotKeyManager: SetBinding, {Action}, {NewBinding}, {OldBinding}", action, newBinding, oldBinding);
+        if (oldBinding is not null)
         {
-            SetBinding(action, newBinding, oldBindingG);
-            return true;
+            UserKeymap.Remove(oldBinding);
         }
 
-        if (UserKeymap.TryGetValue(newBinding, out var value))
-        {
-            oldBindingC = value;
-            return false;
-        }
-
-        SetBinding(action, newBinding, oldBindingG);
-        return true;
-    }
-
-    private void SetBinding(KeyCommand action, KeyGesture newBinding, KeyGesture oldBinding)
-    {
-        UserKeymap.Remove(oldBinding);
         UserKeymap[newBinding] = action;
     }
 
     private Dictionary<KeyGesture, KeyCommand>? LoadUserKeymap()
     {
+        Log.Debug("HotKeyManager: LoadUserKeymap, Loading user keymap from {HotKeyPath}", HotKeyPath);
         if (!File.Exists(HotKeyPath))
             return null;
 
@@ -138,10 +118,65 @@ public class HotKeyManager
         return dictionary is {Count: 0} ? _defaultKeymap : dictionary;
     }
 
+    #endregion
+
+    #region CTOR
+
+    public HotKeyManager()
+    {
+        Log.Debug("Loading user keymap...");
+        UserKeymap = LoadUserKeymap() ?? new Dictionary<KeyGesture, KeyCommand>(_defaultKeymap);
+    }
+
+    #endregion
+
+    #region Public Properties
+
+    public readonly Dictionary<KeyGesture, KeyCommand> UserKeymap;
+
+    #endregion
+
+    #region Public Methods
+
+    public KeyCommand GetBinding(KeyGesture action)
+    {
+        return UserKeymap.GetValueOrDefault(action, KeyCommand.None);
+    }
+
+
+    public bool TrySetBinding(KeyCommand action, KeyGesture keyGesture, out KeyCommand oldCommand,
+        KeyGesture? oldKeyGesture = null, bool overwrite = false)
+    {
+        Log.Debug("HotKeyManager: TrySetBinding, {Action}, {KeyGesture}, {OldBinding}", action, keyGesture,
+            oldKeyGesture);
+        oldCommand = KeyCommand.None;
+        // Overwrite path
+        if (overwrite)
+        {
+            SetBinding(action, keyGesture, oldKeyGesture);
+            return true;
+        }
+
+        // Bad path
+        if (UserKeymap.TryGetValue(keyGesture, out var value))
+        {
+            oldCommand = value;
+            Log.Debug("HotKeyManager: TrySetBinding, {KeyGesture} already bound to {OldCommand}", keyGesture,
+                oldCommand);
+            return false;
+        }
+
+        // Good path
+        SetBinding(action, keyGesture, oldKeyGesture);
+        return true;
+    }
+
     public void SaveUserKeymap()
     {
-        // Implement saving logic (e.g., to a JSON file)
+        Log.Debug("HotKeyManager: SaveUserKeymap, Saving user keymap to {HotKeyPath}", HotKeyPath);
         var jsonKeymap = JsonSerializer.Serialize(UserKeymap, JsonSerializerOptions);
         File.WriteAllText(HotKeyPath, jsonKeymap);
     }
+
+    #endregion
 }

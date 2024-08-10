@@ -17,11 +17,11 @@ public partial class MainView : UserControl
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (e.InitialPressMouseButton is MouseButton.Middle) return;
-        switch (MainViewModel)
+        switch (MainViewModel?.FileManagerViewModel)
         {
-            case {FileManagerViewModel.IsFileManagerExpanded: false}:
-            case {FileManagerViewModel.IsFileManagerVisible: false}:
-            case {FileManagerViewModel.IsPointerOver: true}:
+            case {IsFileManagerExpanded: false}:
+            case {IsFileManagerVisible: false}:
+            case {IsPointerOver: true}:
                 return;
             default:
                 MainViewModel?.FileManagerViewModel.ToggleFileManager();

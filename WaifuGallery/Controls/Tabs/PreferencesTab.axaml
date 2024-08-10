@@ -1,0 +1,86 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="WaifuGallery.Controls.Tabs.PreferencesTab"
+             xmlns:local="clr-namespace:WaifuGallery.ViewModels.Tabs"
+             xmlns:preferences="clr-namespace:WaifuGallery.Controls.Tabs.Preferences"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             x:DataType="local:PreferencesTabViewModel">
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Spacing="8" Margin="10">
+                <DockPanel HorizontalAlignment="Left" Margin="10">
+                    <Image Source="/Resources/avalonia-logo.ico"
+                           DockPanel.Dock="Left"
+                           Height="80"
+                           RenderOptions.BitmapInterpolationMode="HighQuality" />
+                    <StackPanel Spacing="0" Margin="15 0">
+                        <TextBlock Text="Waifu Gallery Preferences" />
+                        <TextBlock Text="{Binding CurrentVersion}" />
+                        <TextBlock Text="{Binding CurrentAvaloniaVersion}" />
+                        <ToggleButton>
+                            <Panel>
+                                <PathIcon Classes="audio-on"
+                                          Data="{StaticResource SpeakerRegular}" />
+                                <PathIcon Classes="audio-mute"
+                                          Data="{StaticResource SpeakerOffRegular}" />
+                            </Panel>
+                            <ToggleButton.Styles>
+                                <Style Selector="ToggleButton PathIcon.audio-on">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </Style>
+                                <Style Selector="ToggleButton:checked PathIcon.audio-on">
+                                    <Setter Property="IsVisible" Value="True" />
+                                </Style>
+                                <Style Selector="ToggleButton PathIcon.audio-mute">
+                                    <Setter Property="IsVisible" Value="True" />
+                                </Style>
+                                <Style Selector="ToggleButton:checked PathIcon.audio-mute">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </Style>
+                            </ToggleButton.Styles>
+                        </ToggleButton>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Preferences" PointerPressed="InputElement_OnPointerPressed" Cursor="Hand" />
+                            <TextBlock Text="{Binding SelectedCategory}" />
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+                <StackPanel IsVisible="{Binding IsMainVisible}">
+                    <preferences:Category Content="General" Description="Choose your app preferences."
+                                          IconSource="{DynamicResource GearSvg}"
+                                          Command="{Binding SwitchCategory}" CommandParameter="General" />
+                    <preferences:Category Content="HotKeys" Description="Change default keybindings here."
+                                          IconSource="{DynamicResource KeyboardSvg}"
+                                          Command="{Binding SwitchCategory}" CommandParameter="HotKeys" />
+                    <preferences:Category Content="FullScreen"
+                                          Description="Hide some UI elements when the app is fullscreen."
+                                          IconSource="{DynamicResource ArrowsOutSvg}"
+                                          Command="{Binding SwitchCategory}" CommandParameter="FullScreen" />
+                    <preferences:Category Content="Tabs" Description="Choose tab preferences."
+                                          IconSource="{DynamicResource TabsSvg}"
+                                          Command="{Binding SwitchCategory}" CommandParameter="Tabs" />
+                    <preferences:Category Content="Image Preview"
+                                          Description="Change image preview default behaviours."
+                                          IconSource="{DynamicResource PictureInPictureSvg}"
+                                          Command="{Binding SwitchCategory}" CommandParameter="ImagePreview" />
+                    <preferences:Category Content="File Manager" Description="Set file manager options."
+                                          IconSource="{DynamicResource FoldersSvg}"
+                                          Command="{Binding SwitchCategory}" CommandParameter="FileManager" />
+                    <preferences:Category Content="Status Bar" Description="(Auto-Hide,Delay)"
+                                          IconSource="{DynamicResource BarricadeSvg}"
+                                          Command="{Binding SwitchCategory}" CommandParameter="StatusBar" />
+                </StackPanel>
+                <preferences:FileManager DataContext="{Binding FileManagerPreferencesViewModel}" />
+                <preferences:FullScreen DataContext="{Binding FullScreenPreferencesViewModel}" />
+                <preferences:General DataContext="{Binding GeneralPreferencesViewModel}" />
+                <preferences:HotKeys DataContext="{Binding HotKeysPreferencesViewModel}" />
+                <preferences:ImagePreview DataContext="{Binding ImagePreviewPreferencesViewModel}" />
+                <preferences:StatusBar DataContext="{Binding StatusBarPreferencesViewModel}" />
+                <preferences:Tabs DataContext="{Binding TabsPreferencesViewModel}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
