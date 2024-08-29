@@ -24,7 +24,8 @@
                      IsVisible="{Binding IsTabHeadersVisible}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal"
+                                    PointerPressed="OnPointerPressedCloseTab">
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Close Tab" Command="{Binding CloseTabCommand}">
@@ -40,7 +41,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border
-                            PointerPressed="OnPointerPressedTab"
+                            PointerPressed="OnPointerPressedStartMoveTab"
                             PointerMoved="OnPointerMovedOverTab"
                             PointerReleased="OnPointerReleasedTab"
                             Loaded="OnLoaded_SetupDragAndDrop">

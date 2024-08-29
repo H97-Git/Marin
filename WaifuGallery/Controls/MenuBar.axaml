@@ -25,6 +25,9 @@
                       Icon="{DynamicResource Eye}" />
         </MenuItem>
         <MenuItem Header="_Tabs">
+            <MenuItem Header="Close All Tabs" Command="{Binding CloseAllTabsCommand }"
+                      Icon="{DynamicResource ArrowRight}" />
+            <Separator />
             <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}"
                       Icon="{DynamicResource ArrowsOutHorizontal}" />
             <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}"

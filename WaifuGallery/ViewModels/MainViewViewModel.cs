@@ -65,7 +65,7 @@ public class MainViewViewModel : ViewModelBase
                 break;
             case KeyCommand.OpenPreferences:
                 if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
-                    TabsViewModel.OpenSettingsTab();
+                    TabsViewModel.OpenPreferencesTab();
                 break;
             case KeyCommand.ToggleFileManager:
                 FileManagerViewModel.ToggleFileManager();

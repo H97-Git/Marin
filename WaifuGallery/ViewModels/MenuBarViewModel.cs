@@ -65,6 +65,9 @@ public class MenuBarViewModel : ViewModelBase
     public ICommand Exit =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ExitCommand()); });
 
+    public ICommand CloseAllTabsCommand =>
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new CloseAllTabsCommand()); });
+    
     public ICommand FitToHeightCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new FitToHeightCommand()); });
 

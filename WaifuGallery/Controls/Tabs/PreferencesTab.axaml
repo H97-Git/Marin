@@ -49,29 +49,39 @@
                     </StackPanel>
                 </DockPanel>
                 <StackPanel IsVisible="{Binding IsMainVisible}">
-                    <preferences:Category Content="General" Description="Choose your app preferences."
-                                          IconSource="{DynamicResource GearSvg}"
-                                          Command="{Binding SwitchCategory}" CommandParameter="General" />
-                    <preferences:Category Content="HotKeys" Description="Change default keybindings here."
-                                          IconSource="{DynamicResource KeyboardSvg}"
-                                          Command="{Binding SwitchCategory}" CommandParameter="HotKeys" />
-                    <preferences:Category Content="FullScreen"
-                                          Description="Hide some UI elements when the app is fullscreen."
-                                          IconSource="{DynamicResource ArrowsOutSvg}"
-                                          Command="{Binding SwitchCategory}" CommandParameter="FullScreen" />
-                    <preferences:Category Content="Tabs" Description="Choose tab preferences."
-                                          IconSource="{DynamicResource TabsSvg}"
-                                          Command="{Binding SwitchCategory}" CommandParameter="Tabs" />
-                    <preferences:Category Content="Image Preview"
-                                          Description="Change image preview default behaviours."
-                                          IconSource="{DynamicResource PictureInPictureSvg}"
-                                          Command="{Binding SwitchCategory}" CommandParameter="ImagePreview" />
-                    <preferences:Category Content="File Manager" Description="Set file manager options."
+                    <preferences:Category Content="File Manager" Description="Change File Manager options."
                                           IconSource="{DynamicResource FoldersSvg}"
-                                          Command="{Binding SwitchCategory}" CommandParameter="FileManager" />
-                    <preferences:Category Content="Status Bar" Description="(Auto-Hide,Delay)"
+                                          Command="{Binding SwitchCategory}"
+                                          CommandParameter="FileManager" />
+                    <preferences:Category Content="FullScreen"
+                                          Description="Hide some UI elements when the app is in fullscreen."
+                                          IconSource="{DynamicResource ArrowsOutSvg}"
+                                          Command="{Binding SwitchCategory}" 
+                                          CommandParameter="FullScreen" />
+                    <preferences:Category Content="General" 
+                                          Description="Change your app preferences."
+                                          IconSource="{DynamicResource GearSvg}" 
+                                          Command="{Binding SwitchCategory}"
+                                          CommandParameter="General" />
+                    <preferences:Category Content="HotKeys/Keybindings" 
+                                          Description="Change default keybindings."
+                                          IconSource="{DynamicResource KeyboardSvg}" 
+                                          Command="{Binding SwitchCategory}"
+                                          CommandParameter="HotKeys" />
+                    <preferences:Category Content="Image Preview"
+                                          Description="Change the Image Preview default behaviours."
+                                          IconSource="{DynamicResource PictureInPictureSvg}"
+                                          Command="{Binding SwitchCategory}" 
+                                          CommandParameter="ImagePreview" />
+                    <preferences:Category Content="Status Bar" 
+                                          Description="Change the Status Bar preferences. (Auto-Hide,Delay)"
                                           IconSource="{DynamicResource BarricadeSvg}"
-                                          Command="{Binding SwitchCategory}" CommandParameter="StatusBar" />
+                                          Command="{Binding SwitchCategory}" 
+                                          CommandParameter="StatusBar" />
+                    <preferences:Category Content="Tabs" Description="Change Tabs preferences."
+                                          IconSource="{DynamicResource TabsSvg}" 
+                                          Command="{Binding SwitchCategory}"
+                                          CommandParameter="Tabs" />
                 </StackPanel>
                 <preferences:FileManager DataContext="{Binding FileManagerPreferencesViewModel}" />
                 <preferences:FullScreen DataContext="{Binding FullScreenPreferencesViewModel}" />

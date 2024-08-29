@@ -12,23 +12,26 @@
     <!--                      Description="Hide UI elements when fullscreen" -->
     <!--                      IconSource="{DynamicResource ArrowsOutSvg}"> -->
     <StackPanel>
-        <ui:SettingsExpander Header="Menu">
+        <ui:SettingsExpander Header="Hide the Menu" IconSource="{DynamicResource ListBulletsSvg}" 
+        Description="When set to true the Menu will be hided until fullscreen is exited.">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldHideMenuBar}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
-        <ui:SettingsExpander Header="Tabs header"
-                             IconSource="{DynamicResource TabsSvg}">
+        <ui:SettingsExpander Header="Hide the Tabs header" IconSource="{DynamicResource TabsSvg}" 
+        Description="When set to true the Tabs headers will be hided until fullscreen is exited.">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldHideTabsHeader}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
-        <ui:SettingsExpander Header="File Manager" IconSource="{DynamicResource FoldersSvg}">
+        <ui:SettingsExpander Header="Hide the File manager" IconSource="{DynamicResource FoldersSvg}" 
+        Description="When set to true the File Manager will be hided until fullscreen is exited. (Hotkeys still work the same.)">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldHideFileManager}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
-        <ui:SettingsExpander Header="Info" IconSource="{DynamicResource BarricadeSvg}">
+        <ui:SettingsExpander Header="Hide the Info bar" IconSource="{DynamicResource BarricadeSvg}" 
+        Description="When set to true the Info Bar will be hided until fullscreen is exited.">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldHideStatusBar}" />
             </ui:SettingsExpander.Footer>

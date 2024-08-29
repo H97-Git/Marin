@@ -4,6 +4,7 @@ namespace WaifuGallery.Commands;
 
 public interface ITabCommand : ICommandMessage;
 
+public class CloseAllTabsCommand : ITabCommand;
 public class FitToHeightCommand : ITabCommand;
 
 public class FitToWidthCommand : ITabCommand;

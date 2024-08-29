@@ -34,7 +34,7 @@ public class TabsViewModel : ViewModelBase
 
     #region Private Methods
 
-    private void CloseTab()
+    private void CloseSelectedTab()
     {
         Log.Debug("Close selected tab");
         switch (SelectedTab)
@@ -50,8 +50,8 @@ public class TabsViewModel : ViewModelBase
 
     private void AddTab(TabViewModelBase tab)
     {
-        Log.Debug("Add new tab {Tab}", tab.Id);
         OpenTabs.Add(tab);
+        Log.Debug("Add new tab {Tab}", tab.Id);
     }
 
     private void LoadSession(string sessionName = "Last")
@@ -100,21 +100,22 @@ public class TabsViewModel : ViewModelBase
             SelectedTab = OpenTabs.Count is 1 ? OpenTabs.First() : OpenTabs.Last();
         });
 
-        if (Settings.Instance.TabsPreference.OpenPreferencesOnStartup)
-        {
-            OpenSettingsTab();
-        }
-
         if (Settings.Instance.TabsPreference.LoadLastSessionOnStartUp)
         {
             Dispatcher.UIThread.Post(() => LoadSession());
         }
 
+        if (Settings.Instance.TabsPreference.OpenPreferencesOnStartup)
+        {
+            Dispatcher.UIThread.Post(OpenPreferencesTab);
+        }
+
+        MessageBus.Current.Listen<CloseAllTabsCommand>().Subscribe(_ => OpenTabs.Clear());
         MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFileInNewTab);
         MessageBus.Current.Listen<OpenInNewTabCommand>().Subscribe(AddImageTab);
         MessageBus.Current.Listen<FitToHeightCommand>().Subscribe(_ => FitToHeightAndResetZoom());
         MessageBus.Current.Listen<FitToWidthCommand>().Subscribe(_ => FitToWidthAndResetZoom());
-        MessageBus.Current.Listen<OpenSettingsTabCommand>().Subscribe(_ => OpenSettingsTab());
+        MessageBus.Current.Listen<OpenSettingsTabCommand>().Subscribe(_ => OpenPreferencesTab());
         MessageBus.Current.Listen<RotateClockwiseCommand>().Subscribe(_ => RotateAndResetZoom());
         MessageBus.Current.Listen<RotateAntiClockwiseCommand>().Subscribe(_ => RotateAndResetZoom(false));
 
@@ -177,7 +178,7 @@ public class TabsViewModel : ViewModelBase
     public Size ControlSize { get; set; }
 
     public ICommand CloseTabCommand =>
-        ReactiveCommand.Create(CloseTab);
+        ReactiveCommand.Create(CloseSelectedTab);
 
     #endregion
 
@@ -264,7 +265,7 @@ public class TabsViewModel : ViewModelBase
         AddTab(imageTabViewModel);
     }
 
-    public void OpenSettingsTab()
+    public void OpenPreferencesTab()
     {
         if (OpenTabs.Any(x => x is PreferencesTabViewModel)) return;
         AddTab(new PreferencesTabViewModel());
@@ -307,6 +308,8 @@ public class TabsViewModel : ViewModelBase
 
         SelectedTabIndex = newIndex;
     }
+
+    public void CloseTab(string id) => OpenTabs.Remove(OpenTabs.First(x => x.Id == id));
 
     public void MoveTab(TabViewModelBase from, TabViewModelBase to)
     {
