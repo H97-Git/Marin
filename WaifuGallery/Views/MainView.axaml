@@ -30,7 +30,7 @@
             <!-- Tabs -->
             <tabs:TabsControl DataContext="{Binding TabsViewModel}" />
             <!-- File Manager -->
-            <Panel Name="FileManagerPanel" Background="{Binding FileManagerViewModel.FileManagerBackground}">
+            <Panel Name="FileManagerPanel" Background="{Binding FileManagerViewModel.FileManagerBackground}" IsVisible="{Binding FileManagerViewModel.IsFileManagerVisible}">
                 <fileManager:FileManager DataContext="{Binding FileManagerViewModel}" />
             </Panel>
         </Grid>

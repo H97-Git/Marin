@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
-using Avalonia;
+using Avalonia.Media;
 using ReactiveUI;
 using Serilog;
 using WaifuGallery.ViewModels.Tabs.Preferences;
@@ -11,6 +11,7 @@ public class PreferencesTabViewModel : TabViewModelBase
 {
     private bool _isMainVisible = true;
     private string _selectedCategory;
+    private IBrush _foreground = new SolidColorBrush {Color = Colors.White};
 
     private void HideAll()
     {
@@ -22,18 +23,6 @@ public class PreferencesTabViewModel : TabViewModelBase
         ImagePreviewPreferencesViewModel.IsVisible = false;
         StatusBarPreferencesViewModel.IsVisible = false;
         TabsPreferencesViewModel.IsVisible = false;
-    }
-
-    private void ShowAll()
-    {
-        IsMainVisible = true;
-        FileManagerPreferencesViewModel.IsVisible = true;
-        FullScreenPreferencesViewModel.IsVisible = true;
-        GeneralPreferencesViewModel.IsVisible = true;
-        HotKeysPreferencesViewModel.IsVisible = true;
-        ImagePreviewPreferencesViewModel.IsVisible = true;
-        StatusBarPreferencesViewModel.IsVisible = true;
-        TabsPreferencesViewModel.IsVisible = true;
     }
 
     #region CTOR
@@ -74,21 +63,25 @@ public class PreferencesTabViewModel : TabViewModelBase
         get => _isMainVisible;
         set => this.RaiseAndSetIfChanged(ref _isMainVisible, value);
     }
-
-    public string CurrentVersion => "0.0.1";
-
-    public string? CurrentAvaloniaVersion =>
-        typeof(Application).Assembly.GetName().Version?.ToString();
+    
+    public IBrush Foreground
+    {
+        get => _foreground;
+        set => this.RaiseAndSetIfChanged(ref _foreground, value);
+    }
 
     public void GoToMainMenu()
     {
         HideAll();
+        SelectedCategory = "";
+        Foreground = new SolidColorBrush() {Color = Colors.White};
         IsMainVisible = true;
     }
 
     public ICommand SwitchCategory => ReactiveCommand.Create<string>(x =>
     {
         Log.Debug("SwitchCategory: {X}", x);
+        Foreground = new SolidColorBrush() {Color = Colors.Thistle};
         switch (x)
         {
             case "General":

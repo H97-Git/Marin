@@ -25,7 +25,4 @@ public class LoadSessionCommand(string sessionName) : ICommandMessage
     public string SessionName { get; } = sessionName;
 }
 
-public class SaveSessionCommand(string sessionName) : ICommandMessage
-{
-    public string SessionName { get; } = sessionName;
-}
+public class SaveSessionCommand : ICommandMessage;

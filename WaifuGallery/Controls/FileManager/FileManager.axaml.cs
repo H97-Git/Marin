@@ -55,7 +55,7 @@ public partial class FileManager : UserControl
 
     #endregion
 
-    #region Ctor
+    #region CTOR
 
     public FileManager()
     {
@@ -79,10 +79,16 @@ public partial class FileManager : UserControl
 
     private void FileManagerListBox_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
-        if(FileManagerViewModel is null) return;
-        if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
-        {
-            e.Handled = true;
-        }
+        // if(FileManagerViewModel is null) return;
+        // if (FileManagerViewModel.PreviewImageViewModel.IsPreviewImageVisible)
+        // {
+        //     e.Handled = true;
+        // }
+    }
+
+    private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (FileManagerViewModel != null)
+            FileManagerViewModel.SortBy = ((sender as ComboBox)?.SelectedItem as ComboBoxItem)?.Content?.ToString();
     }
 }

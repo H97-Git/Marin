@@ -12,7 +12,7 @@
     <StackPanel>
         <controls:SettingsExpander Header="Theme Variant"
                                    IconSource="DarkTheme"
-                                   Description="Change the current theme variant">
+                                   Description="Select the current theme variant.">
             <controls:SettingsExpander.Footer>
                 <ComboBox SelectedItem="{Binding CurrentThemeVariant}"
                           ItemsSource="{Binding ThemesVariants}"

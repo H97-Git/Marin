@@ -58,7 +58,6 @@
         <Setter Property="BorderBrush" Value="Red" />
         <Setter Property="BorderThickness" Value="0,0,0,0" />
     </Style>
-
     <Style Selector="Grid.fileManagerToolBar TextBox">
         <Setter Property="Margin" Value="0,0,5,0" />
     </Style>
@@ -67,6 +66,12 @@
     </Style>
     <Style Selector="ListBox#FileManagerListBox ListBoxItem:selected /template/ Rectangle#SelectionIndicator">
         <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="Menu">
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
+    <Style Selector="MenuItem">
+        <Setter Property="Focusable" Value="False"/>
     </Style>
     <Style Selector="Control.rotating">
         <Style.Animations>

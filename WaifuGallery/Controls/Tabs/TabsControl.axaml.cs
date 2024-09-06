@@ -1,7 +1,9 @@
-﻿using Avalonia;
+﻿using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using Serilog;
 using WaifuGallery.ViewModels.Tabs;
 
@@ -36,7 +38,31 @@ public partial class TabsControl : UserControl
         }
     }
 
-    private void OnPointerPressedTab(object? sender, PointerPressedEventArgs e)
+    private void OnPointerPressedCloseTab(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not Control control) return;
+        if (!e.GetCurrentPoint(control).Properties.IsMiddleButtonPressed) return;
+        Log.Debug("CloseTab on middle click");
+        var id = "";
+        foreach (var listBoxItem in control.GetVisualChildren().OfType<ListBoxItem>())
+        {
+            if (listBoxItem is {IsPointerOver: true, DataContext: ImageTabViewModel imageTabViewModel})
+            {
+                id = imageTabViewModel.Id;
+            }
+
+            if (listBoxItem is {IsPointerOver: true, DataContext: PreferencesTabViewModel preferencesTabViewModel})
+            {
+                id = preferencesTabViewModel.Id;
+            }
+        }
+
+        if (id == "") return;
+
+        TabsViewModel?.CloseTab(id);
+    }
+
+    private void OnPointerPressedStartMoveTab(object? sender, PointerPressedEventArgs e)
     {
         _pressedTab = true;
         _startDrag = false;
@@ -70,7 +96,8 @@ public partial class TabsControl : UserControl
 
     private void OnLoaded_SetupDragAndDrop(object? sender, RoutedEventArgs e)
     {
-        Log.Debug("SetupDragAndDrop");
+        var id = ((sender as Control)?.DataContext as TabViewModelBase)?.Id;
+        Log.Debug("SetupDragAndDrop : {I}", id);
         if (sender is Border border)
         {
             DragDrop.SetAllowDrop(border, true);
@@ -106,6 +133,7 @@ public partial class TabsControl : UserControl
     {
         InitializeComponent();
         ImagesTabControl.SelectionChanged += ImagesTabControl_OnSelectionChanged;
+        ImagesTabControl.AddHandler(KeyDownEvent, ImagesTabControl_OnKeyDown, RoutingStrategies.Tunnel);
     }
 
     protected override void OnSizeChanged(SizeChangedEventArgs e)
@@ -115,4 +143,12 @@ public partial class TabsControl : UserControl
     }
 
     #endregion
+
+    private void ImagesTabControl_OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key is Key.Left or Key.Right)
+        {
+            e.Handled = true;
+        }
+    }
 }

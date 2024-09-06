@@ -77,7 +77,7 @@ public class PreviewImageViewModel : ViewModelBase
     public PreviewImageViewModel()
     {
         if (!Design.IsDesignMode) return;
-        ShowPreview("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
+        // ShowPreview("C:/oxford-iiit-pet/images/Abyssinian/Abyssinian_1.jpg");
     }
 
     #endregion

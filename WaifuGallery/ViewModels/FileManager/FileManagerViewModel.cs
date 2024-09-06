@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -35,10 +36,12 @@ public class FileManagerViewModel : ViewModelBase
     private const int BatchSize = 5;
     private int _columnsCount;
     private int _selectedIndexInFileManager;
+    private int _selectedSortIndex;
     private readonly FileManagerHistory _pathHistory = new();
     private string _currentPath = string.Empty;
     private VerticalAlignment _fileManagerVerticalAlignment = VerticalAlignment.Bottom;
     private HorizontalAlignment _fileManagerHorizontalAlignment = HorizontalAlignment.Left;
+    private string? _sortBy = "Name";
 
     #endregion
 
@@ -77,10 +80,46 @@ public class FileManagerViewModel : ViewModelBase
         }
     }
 
-    private void SortFileInDir()
+    private void SortFileInDir(string? sortOrder)
     {
-        FilesInDir = new ObservableCollection<FileViewModel>(FilesInDir.OrderBy(f => f.FileName,
-            StringComparison.OrdinalIgnoreCase.WithNaturalSort()));
+        Log.Debug("SortFileInDir: {Index}", sortOrder);
+        List<FileViewModel>? sortedList = null;
+        switch (sortOrder)
+        {
+            case "Date Accessed": // Date Accessed
+                sortedList = FilesInDir
+                    .OrderBy(f => f.LastAccessTime, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
+                break;
+            case "Date Created": // Date Created
+                sortedList = FilesInDir
+                    .OrderBy(f => f.CreatedTime, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
+                break;
+            case "Date Modified": // Date Modified
+                sortedList = FilesInDir
+                    .OrderBy(f => f.ModifiedTime, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
+                break;
+            case "Extension": // Extension
+                sortedList = FilesInDir.OrderBy(f => f.Extension, StringComparer.OrdinalIgnoreCase.WithNaturalSort())
+                    .ToList();
+                break;
+            case "Name": // Name
+                sortedList = FilesInDir.OrderBy(f => f.FileName, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
+                    .ToList();
+                break;
+            case "Random": // Random
+                var rnd = new Random();
+                sortedList = FilesInDir.OrderBy(_ => rnd.Next()).ToList();
+                break;
+            case "Size": // Size
+                sortedList = FilesInDir.OrderBy(f => f.SizeInHumanReadable,
+                    StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
+                break;
+        }
+
+
+        // FilesInDir = new ObservableCollection<FileViewModel>(FilesInDir.OrderBy(f => f.FileName, StringComparison.OrdinalIgnoreCase.WithNaturalSort()));
+        FilesInDir.Clear();
+        FilesInDir.AddRange(sortedList ?? []);
     }
 
     private void RefreshFileManager(IFileCommand fileCommand)
@@ -119,7 +158,7 @@ public class FileManagerViewModel : ViewModelBase
 
     private void GetFilesFromPath(string? path)
     {
-        Log.Debug("GetFilesFromPath: {Path}", path);
+        Log.Debug("GetFilesFromPath: {P}", path);
         if (string.IsNullOrWhiteSpace(path)) return;
         //Remove last backslash if it exists
         if (path.Last() is '\\')
@@ -139,18 +178,52 @@ public class FileManagerViewModel : ViewModelBase
 
         Settings.Instance.FileManagerPreference.FileManagerLastPath = path;
         FilesInDir.Clear();
-        SetDirsAndFiles(currentPathDirectoryInfo, _searchCancellationTokenSource.Token);
+        var rnd = new Random();
+        SetDirsAndFiles(currentPathDirectoryInfo, SortByDirectory, SortByFile,
+            _searchCancellationTokenSource.Token);
+        return;
+
+
+        string SortByFile(FileInfo info)
+        {
+            return Settings.Instance.FileManagerPreference.DefaultSortOrder switch
+            {
+                "Extension" => info.Extension,
+                "Random" => rnd.Next().ToString(),
+                "Size" => info.Length.ToString(),
+                "Date Created" => info.CreationTime.ToString(CultureInfo.InvariantCulture),
+                "Date Modified" => info.LastWriteTime.ToString(CultureInfo.InvariantCulture),
+                "Date Accessed" => info.LastAccessTime.ToString(CultureInfo.InvariantCulture),
+                _ => info.Name
+            };
+        }
+
+        string SortByDirectory(DirectoryInfo info)
+        {
+            return Settings.Instance.FileManagerPreference.DefaultSortOrder switch
+            {
+                "Extension" => info.Extension,
+                "Random" => rnd.Next().ToString(),
+                "Size" => info.EnumerateFiles().Sum(f => f.Length).ToString(),
+                "Date Created" => info.CreationTime.ToString(CultureInfo.InvariantCulture),
+                "Date Modified" => info.LastWriteTime.ToString(CultureInfo.InvariantCulture),
+                "Date Accessed" => info.LastAccessTime.ToString(CultureInfo.InvariantCulture),
+                _ => info.Name
+            };
+        }
     }
 
-    private async void SetDirsAndFiles(DirectoryInfo currentDir, CancellationToken token)
+    private async void SetDirsAndFiles(DirectoryInfo currentDir, Func<DirectoryInfo, string> sortByDirectory,
+        Func<FileInfo, string> sortByFile,
+        CancellationToken token)
     {
         Log.Debug("SetDirsAndFiles: {CurrentDir}", currentDir.FullName);
         var dirs = currentDir.GetDirectories().Where(f => f.Name.First() is not '.' && f.Name.First() is not '$')
-            .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
+            .OrderBy(sortByDirectory, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
         var imagesFileInfo = currentDir.GetFiles()
             .Where(file => Extensions.All.Contains(file.Extension.ToLower()))
-            .OrderBy(f => f.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
+            .OrderBy(sortByFile, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
             .ToArray();
         if (dirs is not {Length: 0})
             await SetDirs(dirs, token);
@@ -251,6 +324,15 @@ public class FileManagerViewModel : ViewModelBase
         this.WhenAnyValue(x => x.PreviewImageViewModel.IsPreviewImageVisible)
             .Subscribe(_ => this.RaisePropertyChanged(nameof(ScrollBarVisibility)));
 
+        this.WhenAnyValue(x => x.SortBy)
+            .Subscribe(SortFileInDir);
+
+        HandlePreferences();
+        MessageBusSubscriptions();
+    }
+
+    private void HandlePreferences()
+    {
         if (Settings.Instance.FileManagerPreference.ShouldSaveLastPathOnExit &&
             Settings.Instance.FileManagerPreference.FileManagerLastPath is not null)
         {
@@ -262,7 +344,8 @@ public class FileManagerViewModel : ViewModelBase
             }
             else
             {
-                SendMessageToStatusBar(InfoBarSeverity.Error, "The saved path does not exist anymore");
+                SendMessageToStatusBar(InfoBarSeverity.Error,
+                    "The saved path does not exist anymore, going to desktop.");
                 ChangePath(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
             }
         }
@@ -276,6 +359,28 @@ public class FileManagerViewModel : ViewModelBase
             SetFileManagerPosition(new SetFileManagerPositionCommand(Settings.Instance.FileManagerPreference.Position));
         }
 
+        if (Settings.Instance.FileManagerPreference.DefaultSortOrder is not null)
+        {
+            SelectedSortIndex = Settings.Instance.FileManagerPreference.DefaultSortOrder switch
+            {
+                "Date Accessed" => 0,
+                "Date Created" => 1,
+                "Date Modified" => 2,
+                "Extension" => 3,
+                "Random" => 5,
+                "Size" => 6,
+                _ => 4
+            };
+        }
+        else
+        {
+            // Todo : use strongly typed objects.
+            SelectedSortIndex = 4;
+        }
+    }
+
+    private void MessageBusSubscriptions()
+    {
         MessageBus.Current.Listen<ChangePathCommand>().Subscribe(x => ChangePath(x.Path));
         MessageBus.Current.Listen<StartPreviewCommand>().Subscribe(x => PreviewImageViewModel.ShowPreview(x.Path));
         MessageBus.Current.Listen<ToggleFileManagerCommand>().Subscribe(_ => ToggleFileManager());
@@ -348,6 +453,12 @@ public class FileManagerViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _columnsCount, value);
     }
 
+    public int SelectedSortIndex
+    {
+        get => _selectedSortIndex;
+        set => this.RaiseAndSetIfChanged(ref _selectedSortIndex, value);
+    }
+
     public int SelectedIndex
     {
         get => _selectedIndexInFileManager;
@@ -379,6 +490,12 @@ public class FileManagerViewModel : ViewModelBase
     {
         get => _fileManagerHorizontalAlignment;
         set => this.RaiseAndSetIfChanged(ref _fileManagerHorizontalAlignment, value);
+    }
+
+    public string? SortBy
+    {
+        get => _sortBy;
+        set => this.RaiseAndSetIfChanged(ref _sortBy, value);
     }
 
     #endregion
