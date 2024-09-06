@@ -6,7 +6,7 @@
              xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns="https://github.com/avaloniaui">
-    <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}">
+    <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}" >
         <MenuItem Header="_File">
             <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}"
                       Icon="{DynamicResource FolderOpen}" />
@@ -39,8 +39,8 @@
                       Command="{Binding RotateAntiClockwiseCommand}" />
         </MenuItem>
         <MenuItem Header="_Session">
-            <MenuItem Header="Load Last Session" Command="{Binding LoadSessionCommand}" />
-            <MenuItem Header="Load Sessions:" Command="{Binding LoadSessionCommand}" />
+            <MenuItem Header="Load Last Session" Command="{Binding LoadSessionCommand}" CommandParameter="Last" />
+            <MenuItem Header="Load Sessions" ItemsSource="{Binding Sessions}" />
             <MenuItem Header="Save current session" Command="{Binding SaveSessionCommand}" />
         </MenuItem>
         <MenuItem Header="_Debug" IsVisible="{Binding IsDebugMenuVisible}">

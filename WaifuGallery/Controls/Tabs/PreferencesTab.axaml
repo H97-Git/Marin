@@ -12,39 +12,36 @@
         <ScrollViewer>
             <StackPanel Spacing="8" Margin="10">
                 <DockPanel HorizontalAlignment="Left" Margin="10">
-                    <Image Source="/Resources/avalonia-logo.ico"
+                    <Image Source="/Resources/Logo.png"
                            DockPanel.Dock="Left"
                            Height="80"
                            RenderOptions.BitmapInterpolationMode="HighQuality" />
                     <StackPanel Spacing="0" Margin="15 0">
-                        <TextBlock Text="Waifu Gallery Preferences" />
-                        <TextBlock Text="{Binding CurrentVersion}" />
-                        <TextBlock Text="{Binding CurrentAvaloniaVersion}" />
-                        <ToggleButton>
-                            <Panel>
-                                <PathIcon Classes="audio-on"
-                                          Data="{StaticResource SpeakerRegular}" />
-                                <PathIcon Classes="audio-mute"
-                                          Data="{StaticResource SpeakerOffRegular}" />
-                            </Panel>
-                            <ToggleButton.Styles>
-                                <Style Selector="ToggleButton PathIcon.audio-on">
-                                    <Setter Property="IsVisible" Value="False" />
-                                </Style>
-                                <Style Selector="ToggleButton:checked PathIcon.audio-on">
-                                    <Setter Property="IsVisible" Value="True" />
-                                </Style>
-                                <Style Selector="ToggleButton PathIcon.audio-mute">
-                                    <Setter Property="IsVisible" Value="True" />
-                                </Style>
-                                <Style Selector="ToggleButton:checked PathIcon.audio-mute">
-                                    <Setter Property="IsVisible" Value="False" />
-                                </Style>
-                            </ToggleButton.Styles>
-                        </ToggleButton>
+                        <!-- <ToggleButton> -->
+                        <!--     <Panel> -->
+                        <!--         <PathIcon Classes="audio-on" -->
+                        <!--                   Data="{StaticResource SpeakerRegular}" /> -->
+                        <!--         <PathIcon Classes="audio-mute" -->
+                        <!--                   Data="{StaticResource SpeakerOffRegular}" /> -->
+                        <!--     </Panel> -->
+                        <!--     <ToggleButton.Styles> -->
+                        <!--         <Style Selector="ToggleButton PathIcon.audio-on"> -->
+                        <!--             <Setter Property="IsVisible" Value="False" /> -->
+                        <!--         </Style> -->
+                        <!--         <Style Selector="ToggleButton:checked PathIcon.audio-on"> -->
+                        <!--             <Setter Property="IsVisible" Value="True" /> -->
+                        <!--         </Style> -->
+                        <!--         <Style Selector="ToggleButton PathIcon.audio-mute"> -->
+                        <!--             <Setter Property="IsVisible" Value="True" /> -->
+                        <!--         </Style> -->
+                        <!--         <Style Selector="ToggleButton:checked PathIcon.audio-mute"> -->
+                        <!--             <Setter Property="IsVisible" Value="False" /> -->
+                        <!--         </Style> -->
+                        <!--     </ToggleButton.Styles> -->
+                        <!-- </ToggleButton> -->
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Preferences" PointerPressed="InputElement_OnPointerPressed" Cursor="Hand" />
-                            <TextBlock Text="{Binding SelectedCategory}" />
+                            <TextBlock Text="Preferences" PointerPressed="InputElement_OnPointerPressed" Cursor="Hand" FontSize="20" Foreground="{Binding Foreground}" />
+                            <TextBlock Text="{Binding SelectedCategory}" FontSize="20" />
                         </StackPanel>
                     </StackPanel>
                 </DockPanel>

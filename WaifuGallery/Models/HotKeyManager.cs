@@ -4,7 +4,6 @@ using System.Text.Json;
 using Avalonia.Input;
 using Serilog;
 using WaifuGallery.Converters;
-using WaifuGallery.Helpers;
 
 namespace WaifuGallery.Models;
 

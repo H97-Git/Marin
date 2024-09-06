@@ -58,21 +58,21 @@ public partial class ImageTab : UserControl
     {
         switch (e.Key)
         {
-            case Key.F:
-                ZoomBorder.Fill();
-                break;
-            case Key.U:
-                ZoomBorder.Uniform();
-                break;
             case Key.R:
                 ZoomBorder.ResetMatrix();
                 break;
-            case Key.T:
-                ZoomBorder.ToggleStretchMode();
-                break;
-            case Key.A:
-                ZoomBorder.AutoFit();
-                break;
+            // case Key.F:
+            //     ZoomBorder.Fill();
+            //     break;
+            // case Key.U:
+            //     ZoomBorder.Uniform();
+            //     break;
+            // case Key.T:
+            //     ZoomBorder.ToggleStretchMode();
+            //     break;
+            // case Key.A:
+            //     ZoomBorder.AutoFit();
+            //     break;
         }
     }
 

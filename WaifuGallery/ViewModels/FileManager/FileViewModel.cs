@@ -29,8 +29,10 @@ public sealed class FileViewModel : ViewModelBase
     private bool _isRenaming;
     private long _sizeInBytes;
     private string _createdTime = string.Empty;
+    private string _modifiedTime = string.Empty;
     private string _fileName = string.Empty;
     private string _lastAccessTime = string.Empty;
+    private string _extension = string.Empty;
 
     #endregion
 
@@ -104,7 +106,9 @@ public sealed class FileViewModel : ViewModelBase
         FullPath = _fileSystemInfo.FullName;
         FileName = _fileSystemInfo.Name;
         CreatedTime = _fileSystemInfo.CreationTime.ToString(CultureInfo.InvariantCulture);
+        ModifiedTime = _fileSystemInfo.LastWriteTime.ToString(CultureInfo.InvariantCulture);
         LastAccessTime = _fileSystemInfo.LastAccessTime.ToString(CultureInfo.InvariantCulture);
+        Extension = _fileSystemInfo.Extension;
 
         this.WhenAnyValue(x => x.Thumbnail)
             .Subscribe(_ =>
@@ -183,6 +187,12 @@ public sealed class FileViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _fileName, value);
     }
 
+    public string Extension
+    {
+        get => _extension;
+        set => this.RaiseAndSetIfChanged(ref _extension, value);
+    }
+
     public string LastAccessTime
     {
         get => _lastAccessTime;
@@ -193,6 +203,12 @@ public sealed class FileViewModel : ViewModelBase
     {
         get => _createdTime;
         set => this.RaiseAndSetIfChanged(ref _createdTime, value);
+    }
+
+    public string ModifiedTime
+    {
+        get => _modifiedTime;
+        set => this.RaiseAndSetIfChanged(ref _modifiedTime, value);
     }
 
     public string SizeInHumanReadable

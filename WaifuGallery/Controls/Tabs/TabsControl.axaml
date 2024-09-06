@@ -21,7 +21,8 @@
                      MaxHeight="35"
                      SelectedItem="{Binding SelectedTab}"
                      SelectedIndex="{Binding SelectedTabIndex}"
-                     IsVisible="{Binding IsTabHeadersVisible}">
+                     IsVisible="{Binding IsTabHeadersVisible}"
+                     KeyDown="ImagesTabControl_OnKeyDown">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"

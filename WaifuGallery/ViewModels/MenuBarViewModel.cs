@@ -1,6 +1,11 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows.Input;
+using Avalonia.Controls;
 using ReactiveUI;
 using WaifuGallery.Commands;
+using WaifuGallery.Models;
 
 namespace WaifuGallery.ViewModels;
 
@@ -18,6 +23,7 @@ public class MenuBarViewModel : ViewModelBase
     private bool _isMenuBarVisible = true;
     private double _toggleFileManagerIconAngle = 0;
     private bool _isDebugMenuVisible = false;
+    private List<MenuItem> _sessions = [];
 
     #endregion
 
@@ -28,6 +34,20 @@ public class MenuBarViewModel : ViewModelBase
 #if DEBUG
         IsDebugMenuVisible = true;
 #endif
+
+        var dir = new DirectoryInfo(Settings.SessionsPath);
+        var files = dir.GetFiles().Where(x => x.Extension == ".json");
+        foreach (var file in files)
+        {
+            if (file.Name == "Last.json") continue;
+            var name = file.Name.Split('.')[0];
+            Sessions.Add(new MenuItem()
+            {
+                Header = name,
+                Command = LoadSessionCommand,
+                CommandParameter = name
+            });
+        }
     }
 
     #endregion
@@ -58,6 +78,12 @@ public class MenuBarViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _toggleFileManagerIconAngle, value);
     }
 
+    public List<MenuItem> Sessions
+    {
+        get => _sessions;
+        set => this.RaiseAndSetIfChanged(ref _sessions, value);
+    }
+
     #endregion
 
     #region Public Commands
@@ -67,7 +93,7 @@ public class MenuBarViewModel : ViewModelBase
 
     public ICommand CloseAllTabsCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new CloseAllTabsCommand()); });
-    
+
     public ICommand FitToHeightCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new FitToHeightCommand()); });
 
@@ -94,10 +120,10 @@ public class MenuBarViewModel : ViewModelBase
         });
 
     public ICommand LoadSessionCommand =>
-        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new LoadSessionCommand("Last")); });
+        ReactiveCommand.Create<string>(x => { MessageBus.Current.SendMessage(new LoadSessionCommand(x)); });
 
     public ICommand SaveSessionCommand =>
-        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new SaveSessionCommand("Last")); });
+        ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new SaveSessionCommand()); });
 
     public ICommand ToggleFileManagerVisibilityCommand =>
         ReactiveCommand.Create(() => { MessageBus.Current.SendMessage(new ToggleFileManagerVisibilityCommand()); });

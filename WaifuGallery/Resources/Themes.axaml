@@ -31,6 +31,7 @@
             <ui:ImageIconSource x:Key="WindowsLogoSvg" Source="{SvgImage SVGs/windows-logo.svg}" />
             <ui:ImageIconSource x:Key="XSquareSvg" Source="{SvgImage SVGs/x-square.svg}" />
             <!-- <ui:ImageIconSource x:Key="" Source="{SvgImage SVGs/.svg}" /> -->
+            <ui:ImageIconSource x:Key="SortAscendingSvg" Source="{SvgImage SVGs/sort-ascending.svg}" />
             <ui:ImageIconSource x:Key="FolderDashedSvg" Source="{SvgImage SVGs/folder-dashed.svg}" />
             <ui:ImageIconSource x:Key="FileArrowUp" Source="{SvgImage SVGs/file-arrow-up.svg}" />
             <ui:ImageIconSource x:Key="FileArrowDown" Source="{SvgImage SVGs/file-arrow-down.svg}" />
@@ -43,6 +44,7 @@
             <Color x:Key="Color.Red">#FFFF5E56</Color>
             <x:String x:Key="SvgCss">.svg {stroke: #FFFFFF;}</x:String>
             <!-- Variants is for the dark theme so the icons are inverted (white) -->
+            <ui:ImageIconSource x:Key="SortAscendingSvg" Source="{SvgImage SVGs/variants/sort-ascending.svg}" />
             <ui:ImageIconSource x:Key="FolderDashedSvg" Source="{SvgImage SVGs/variants/folder-dashed.svg}" />
             <ui:ImageIconSource x:Key="FileArrowUp" Source="{SvgImage SVGs/variants/file-arrow-up.svg}" />
             <ui:ImageIconSource x:Key="FileArrowDown" Source="{SvgImage SVGs/variants/file-arrow-down.svg}" />

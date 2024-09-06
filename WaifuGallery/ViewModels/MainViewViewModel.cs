@@ -23,6 +23,7 @@ public class MainViewViewModel : ViewModelBase
 {
     #region Private Fields
 
+    private WindowState _previousWindowState = WindowState.Normal;
     private bool _isDialogOpen;
     private readonly DataObject _clipBoardDataObject = new();
     private ImageTabViewModel? ImageTabViewModel => TabsViewModel.ImageTabViewModel;
@@ -36,36 +37,11 @@ public class MainViewViewModel : ViewModelBase
     {
         var keyGesture = new KeyGesture(e.Key, e.KeyModifiers);
         var hk = Settings.Instance.HotKeyManager.GetBinding(keyGesture);
+        // Can be reached whether FileManager is expanded/visible or not
         switch (hk)
         {
-            case KeyCommand.FirstImage:
-                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
-                    TabsViewModel.ImageTabViewModel?.LoadFirstImage();
-                break;
-            case KeyCommand.LastImage:
-                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
-                    TabsViewModel.ImageTabViewModel?.LoadLastImage();
-                break;
-            case KeyCommand.GoRight:
-                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
-                    TabsViewModel.ImageTabViewModel?.LoadNextImage();
-                break;
-            case KeyCommand.GoLeft:
-                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
-                    TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
-                break;
             case KeyCommand.FullScreen:
                 ToggleFullScreen();
-                break;
-            case KeyCommand.FitToWidthAndResetZoom:
-                TabsViewModel.FitToWidthAndResetZoom();
-                break;
-            case KeyCommand.FitToHeightAndResetZoom:
-                TabsViewModel.FitToHeightAndResetZoom();
-                break;
-            case KeyCommand.OpenPreferences:
-                if (!FileManagerViewModel.IsFileManagerExpandedAndVisible)
-                    TabsViewModel.OpenPreferencesTab();
                 break;
             case KeyCommand.ToggleFileManager:
                 FileManagerViewModel.ToggleFileManager();
@@ -74,7 +50,34 @@ public class MainViewViewModel : ViewModelBase
                 FileManagerViewModel.ToggleFileManagerVisibility();
                 break;
             case KeyCommand.None:
-                return;
+                break;
+        }
+
+        // Can ONLY be reached if FileManager is not expanded or not visible
+        if (FileManagerViewModel.IsFileManagerExpandedAndVisible) return;
+        switch (hk)
+        {
+            case KeyCommand.FirstImage:
+                TabsViewModel.ImageTabViewModel?.LoadFirstImage();
+                break;
+            case KeyCommand.LastImage:
+                TabsViewModel.ImageTabViewModel?.LoadLastImage();
+                break;
+            case KeyCommand.GoRight:
+                TabsViewModel.ImageTabViewModel?.LoadNextImage();
+                break;
+            case KeyCommand.GoLeft:
+                TabsViewModel.ImageTabViewModel?.LoadPreviousImage();
+                break;
+            case KeyCommand.FitToWidthAndResetZoom:
+                TabsViewModel.FitToWidthAndResetZoom();
+                break;
+            case KeyCommand.FitToHeightAndResetZoom:
+                TabsViewModel.FitToHeightAndResetZoom();
+                break;
+            case KeyCommand.OpenPreferences:
+                TabsViewModel.OpenPreferencesTab();
+                break;
             default:
                 return;
         }
@@ -163,8 +166,9 @@ public class MainViewViewModel : ViewModelBase
     {
         Log.Debug("Toggling FullScreen...");
         if (App.GetTopLevel() is not Window mainWindow) return;
-        if (mainWindow.WindowState is WindowState.Normal)
+        if (mainWindow.WindowState is not WindowState.FullScreen)
         {
+            _previousWindowState = mainWindow.WindowState;
             mainWindow.WindowState = WindowState.FullScreen;
             if (Settings.Instance.ShouldHideMenuBar)
                 MenuBarViewModel.IsMenuBarVisible = false;
@@ -177,7 +181,7 @@ public class MainViewViewModel : ViewModelBase
         }
         else
         {
-            mainWindow.WindowState = WindowState.Normal;
+            mainWindow.WindowState = _previousWindowState;
             MenuBarViewModel.IsMenuBarVisible = true;
             TabsViewModel.IsTabHeadersVisible = true;
             FileManagerViewModel.IsFileManagerVisible = true;
@@ -344,6 +348,45 @@ public class MainViewViewModel : ViewModelBase
         SendMessageToStatusBar(InfoBarSeverity.Success, "Folder created successfully!");
     }
 
+    private async void NewSession(SaveSessionCommand command)
+    {
+        switch (TabsViewModel.OpenTabs)
+        {
+            case {Count: 0}:
+            case {Count: 1} when TabsViewModel.OpenTabs.First() is PreferencesTabViewModel:
+                return;
+        }
+
+        Log.Debug("Saving session");
+        _isDialogOpen = true;
+        var sessionName = await ShowNewSessionDialogAsync();
+        if (sessionName is not null)
+            Settings.SaveSession(sessionName);
+        _isDialogOpen = false;
+    }
+
+    private async Task<string?> ShowNewSessionDialogAsync()
+    {
+        Log.Debug("Showing new session dialog...");
+        var dialog = new ContentDialog()
+        {
+            Title = "New session name:",
+            PrimaryButtonText = "Ok",
+            SecondaryButtonText = "Cancel",
+        };
+
+        var viewModel = new UserInputDialog();
+        dialog.Content = new UserInput()
+        {
+            DataContext = viewModel,
+            OnEnterPressed = (_, _) => { dialog.Hide(); },
+            OnEscapePressed = (_, _) => { dialog.Hide(); }
+        };
+
+        var dialogResult = await dialog.ShowAsync();
+        return dialogResult is ContentDialogResult.Secondary ? null : viewModel.UserInput;
+    }
+
     private async Task<string?> ShowNewFolderDialogAsync()
     {
         Log.Debug("Showing new folder dialog...");
@@ -445,6 +488,7 @@ public class MainViewViewModel : ViewModelBase
         TabsViewModel = new TabsViewModel();
         FileManagerViewModel = new FileManagerViewModel();
         StatusBarViewModel = new StatusBarViewModel();
+
         MessageBus.Current.Listen<ClearCacheCommand>().Subscribe(_ => DirectoryHelper.ClearThumbnailsCache());
         MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
         MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
@@ -456,6 +500,8 @@ public class MainViewViewModel : ViewModelBase
         MessageBus.Current.Listen<OpenInFileExplorerCommand>().Subscribe(OpenInFileExplorer);
         MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
         MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
+        MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
+        MessageBus.Current.Listen<SaveSessionCommand>().Subscribe(NewSession);
     }
 
     #endregion

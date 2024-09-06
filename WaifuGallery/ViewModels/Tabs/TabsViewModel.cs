@@ -7,7 +7,6 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using Avalonia.Threading;
 using DynamicData;
 using ReactiveUI;
 using Serilog;
@@ -54,10 +53,10 @@ public class TabsViewModel : ViewModelBase
         Log.Debug("Add new tab {Tab}", tab.Id);
     }
 
-    private void LoadSession(string sessionName = "Last")
+    private void LoadSession(LoadSessionCommand command)
     {
-        Log.Debug("Load session {SessionName}", sessionName);
-        var sessionPath = Path.Combine(Settings.SessionsPath, $"{sessionName}.json");
+        Log.Debug("Load session {SessionName}", command.SessionName);
+        var sessionPath = Path.Combine(Settings.SessionsPath, $"{command.SessionName}.json");
         if (!File.Exists(sessionPath)) return;
         var session = JsonSerializer.Deserialize<string[]>(File.ReadAllText(sessionPath));
         if (session is null) return;
@@ -71,8 +70,10 @@ public class TabsViewModel : ViewModelBase
         }
 
         // TODO: Fix this ugly hack.
-        if (SelectedTab is ImageTabViewModel imageTabViewModel)
+        // if (SelectedTab is ImageTabViewModel imageTabViewModel)
+        foreach (var tab in OpenTabs)
         {
+            if (tab is not ImageTabViewModel imageTabViewModel) continue;
             imageTabViewModel.LoadNextImage();
             imageTabViewModel.LoadPreviousImage();
         }
@@ -102,12 +103,12 @@ public class TabsViewModel : ViewModelBase
 
         if (Settings.Instance.TabsPreference.LoadLastSessionOnStartUp)
         {
-            Dispatcher.UIThread.Post(() => LoadSession());
+            LoadSession(new LoadSessionCommand("Last"));
         }
 
         if (Settings.Instance.TabsPreference.OpenPreferencesOnStartup)
         {
-            Dispatcher.UIThread.Post(OpenPreferencesTab);
+           OpenPreferencesTab();
         }
 
         MessageBus.Current.Listen<CloseAllTabsCommand>().Subscribe(_ => OpenTabs.Clear());
@@ -119,8 +120,7 @@ public class TabsViewModel : ViewModelBase
         MessageBus.Current.Listen<RotateClockwiseCommand>().Subscribe(_ => RotateAndResetZoom());
         MessageBus.Current.Listen<RotateAntiClockwiseCommand>().Subscribe(_ => RotateAndResetZoom(false));
 
-        MessageBus.Current.Listen<LoadSessionCommand>().Subscribe(_ => LoadSession());
-        MessageBus.Current.Listen<SaveSessionCommand>().Subscribe(_ => Settings.SaveSession());
+        MessageBus.Current.Listen<LoadSessionCommand>().Subscribe(LoadSession);
     }
 
     #endregion
@@ -267,7 +267,12 @@ public class TabsViewModel : ViewModelBase
 
     public void OpenPreferencesTab()
     {
-        if (OpenTabs.Any(x => x is PreferencesTabViewModel)) return;
+        if (OpenTabs.Any(x => x is PreferencesTabViewModel))
+        {
+            SelectedTab = OpenTabs.First(x => x is PreferencesTabViewModel);
+            return;
+        }
+
         AddTab(new PreferencesTabViewModel());
     }
 

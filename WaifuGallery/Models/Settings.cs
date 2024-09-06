@@ -168,6 +168,7 @@ public class FileManagerPreference
     public int FileWidth { get; set; } = 170;
     public int FileHeight { get; set; } = 170;
     public string? Position { get; set; }
+    public string? DefaultSortOrder { get; set; }
 }
 
 public class ImagePreviewPreference

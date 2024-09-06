@@ -95,7 +95,7 @@ public class ImageTabViewModel : TabViewModelBase
         }
 
         var index = _parentFolderName is {Length: > maxLength} ? maxLength : _parentFolderName.Length;
-        Header = _parentFolderName[..index] + ": " + Path.GetFileNameWithoutExtension(CurrentImagePath);
+        Header = _parentFolderName[..index] + " > " + Path.GetFileNameWithoutExtension(CurrentImagePath);
     }
 
     private static string GenerateUniqueId(string path)
