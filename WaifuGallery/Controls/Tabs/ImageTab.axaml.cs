@@ -97,7 +97,10 @@ public partial class ImageTab : UserControl
         switch (e.Key)
         {
             case Key.G:
-                ImageTabViewModel?.Grid();
+                ImageTabViewModel?.ToggleGrid();
+                break;
+            case Key.Escape:
+                ImageTabViewModel?.CloseGrid();
                 break;
         }
     }

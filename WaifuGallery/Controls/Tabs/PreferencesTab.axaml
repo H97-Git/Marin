@@ -12,7 +12,7 @@
         <ScrollViewer>
             <StackPanel Spacing="8" Margin="10">
                 <DockPanel HorizontalAlignment="Left" Margin="10">
-                    <Image Source="/Resources/Logo.png"
+                    <Image Source="/Resources/logo.webp"
                            DockPanel.Dock="Left"
                            Height="80"
                            RenderOptions.BitmapInterpolationMode="HighQuality" />

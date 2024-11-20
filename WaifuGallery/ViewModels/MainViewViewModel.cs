@@ -141,7 +141,7 @@ public class MainViewViewModel : ViewModelBase
                 PreviewImageViewModel.HidePreview();
                 break;
             case KeyCommand.ToggleGrid:
-                TabsViewModel.ImageTabViewModel?.Grid();
+                TabsViewModel.ImageTabViewModel?.ToggleGrid();
                 break;
             case KeyCommand.None:
             case KeyCommand.FirstImage:

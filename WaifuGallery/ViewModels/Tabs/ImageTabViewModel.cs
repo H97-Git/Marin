@@ -242,10 +242,15 @@ public class ImageTabViewModel : TabViewModelBase
         }
     }
 
-    public void Grid()
+    public void ToggleGrid()
     {
         Log.Debug("Open grid mode");
         IsGridOpen = !IsGridOpen;
+    }
+    public void CloseGrid()
+    {
+        Log.Debug("Close grid mode");
+        IsGridOpen = false;
     }
 
     public void GridSelected(int? selectedIndex)

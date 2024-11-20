@@ -67,8 +67,8 @@
             </MenuItem>
         </ContextMenu>
     </UserControl.ContextMenu>
-    <Grid RowDefinitions="Auto,Auto,Auto" Name="FileControlGrid" Margin="0,10,0,0">
-        <ToolTip.Tip>
+    <Grid RowDefinitions="Auto,Auto,Auto" Name="FileControlGrid" Margin="0,10,0,0" ToolTip.ShowDelay="700">
+        <ToolTip.Tip >
             <StackPanel>
                 <TextBlock FontSize="16" Text="{Binding FileName}" />
                 <!-- FontFamily="{Binding Source={x:Static models:Settings.Instance}, Path=.DefaultFont}" -->

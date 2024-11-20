@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Avalonia.Svg.Skia;
 using Serilog;
@@ -11,6 +13,8 @@ namespace WaifuGallery.Desktop;
 
 internal static class Program
 {
+    private const int TimeoutSeconds = 3;
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
@@ -30,9 +34,14 @@ internal static class Program
                 outputTemplate: outputTemplate,
                 path: Path.Combine(Settings.LogsPath, $"{today}.log"))
             .CreateLogger();
+        var mutex = new Mutex(false, typeof(Program).FullName);
         try
         {
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            if (!mutex.WaitOne(TimeSpan.FromSeconds(TimeoutSeconds), true)) return;
+
+            SubscribeToDomainUnhandledException();
+
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
         }
         catch (Exception e)
         {
@@ -42,8 +51,15 @@ internal static class Program
         finally
         {
             Log.CloseAndFlush();
+            mutex.ReleaseMutex();
         }
     }
+
+    private static void SubscribeToDomainUnhandledException() =>
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
+            Log.Fatal(e.ExceptionObject as Exception, "Unhandled exception in domain!");
+        };
 
     // Avalonia configuration, don't remove; also used by visual designer.
     // ReSharper disable once MemberCanBePrivate.Global
@@ -56,7 +72,7 @@ internal static class Program
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            // .LogToTrace()
+            .LogToTrace()
             .UseReactiveUI();
     }
 }

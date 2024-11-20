@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using DynamicData;
 using ReactiveUI;
 using Serilog;
@@ -69,14 +70,7 @@ public class TabsViewModel : ViewModelBase
             AddImageTab(new OpenInNewTabCommand(index, imagesInPath));
         }
 
-        // TODO: Fix this ugly hack.
-        // if (SelectedTab is ImageTabViewModel imageTabViewModel)
-        foreach (var tab in OpenTabs)
-        {
-            if (tab is not ImageTabViewModel imageTabViewModel) continue;
-            imageTabViewModel.LoadNextImage();
-            imageTabViewModel.LoadPreviousImage();
-        }
+        MessageBus.Current.SendMessage(new FitToHeightCommand());
     }
 
     #endregion
@@ -103,12 +97,12 @@ public class TabsViewModel : ViewModelBase
 
         if (Settings.Instance.TabsPreference.LoadLastSessionOnStartUp)
         {
-            LoadSession(new LoadSessionCommand("Last"));
+            Dispatcher.UIThread.Post(() => LoadSession(new LoadSessionCommand("Last")));
         }
 
         if (Settings.Instance.TabsPreference.OpenPreferencesOnStartup)
         {
-           OpenPreferencesTab();
+            OpenPreferencesTab();
         }
 
         MessageBus.Current.Listen<CloseAllTabsCommand>().Subscribe(_ => OpenTabs.Clear());
@@ -120,7 +114,7 @@ public class TabsViewModel : ViewModelBase
         MessageBus.Current.Listen<RotateClockwiseCommand>().Subscribe(_ => RotateAndResetZoom());
         MessageBus.Current.Listen<RotateAntiClockwiseCommand>().Subscribe(_ => RotateAndResetZoom(false));
 
-        MessageBus.Current.Listen<LoadSessionCommand>().Subscribe(LoadSession);
+        MessageBus.Current.Listen<LoadSessionCommand>().Subscribe(command => Dispatcher.UIThread.Post(() => LoadSession(command)));
     }
 
     #endregion

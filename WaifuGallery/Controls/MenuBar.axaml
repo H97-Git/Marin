@@ -26,7 +26,7 @@
         </MenuItem>
         <MenuItem Header="_Tabs">
             <MenuItem Header="Close All Tabs" Command="{Binding CloseAllTabsCommand }"
-                      Icon="{DynamicResource ArrowRight}" />
+                      Icon="{DynamicResource Trash}" />
             <Separator />
             <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}"
                       Icon="{DynamicResource ArrowsOutHorizontal}" />
@@ -41,7 +41,7 @@
         <MenuItem Header="_Session">
             <MenuItem Header="Load Last Session" Command="{Binding LoadSessionCommand}" CommandParameter="Last" />
             <MenuItem Header="Load Sessions" ItemsSource="{Binding Sessions}" />
-            <MenuItem Header="Save current session" Command="{Binding SaveSessionCommand}" />
+            <MenuItem Header="Save current session as ..." Command="{Binding SaveSessionCommand}" />
         </MenuItem>
         <MenuItem Header="_Debug" IsVisible="{Binding IsDebugMenuVisible}">
             <MenuItem Header="_Clear Thumbnails cache" Command="{Binding ClearCache}" Icon="{DynamicResource Trash}" />
