@@ -34,55 +34,159 @@
             </Grid>
         </ThemeVariantScope>
     </Design.PreviewWith>
-    <Style Selector="ui|SettingsExpander">
-        <Setter Property="Margin" Value="5"></Setter>
-    </Style>
+    <!-- <Style Selector="ui|SettingsExpander"> -->
+    <!--     <Setter Property="Margin" Value="5"></Setter> -->
+    <!-- </Style> -->
     <Style Selector="Svg">
         <Setter Property="Css" Value="{DynamicResource SvgCss}" />
     </Style>
-    <Style Selector="Window">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
-    </Style>
-    <!-- <Style Selector="ContentPresenter"> -->
-    <!--     <Setter Property="FontFamily" -->
-    <!--             Value="{Binding Source={x:Static models:Settings.Instance}, Path=DefaultFont}" /> -->
+    <!-- <Style Selector="Window"> -->
+    <!--     <Setter Property="Background" Value="{DynamicResource Brush.Background}" /> -->
     <!-- </Style> -->
-    <Style Selector="ListBox#FileManagerListBox">
-        <Setter Property="Background" Value="Transparent" />
+    <!-- ~1~ <Style Selector="ContentPresenter"> @1@ -->
+    <!-- ~1~     <Setter Property="FontFamily" @1@ -->
+    <!-- ~1~             Value="{Binding Source={x:Static models:Settings.Instance}, Path=DefaultFont}" /> @1@ -->
+    <!-- ~1~ </Style> @1@ -->
+    <!-- ~1~ <Style Selector="ListBox#FileManagerListBox"> @1@ -->
+    <!-- ~1~     <Setter Property="Background" Value="{DynamicResource Brush.Background}" /> @1@ -->
+    <!-- ~1~ </Style> @1@ -->
+    <!-- <Style Selector="TextBox /template/ Border#PART_BorderElement"> -->
+    <!--     <Setter Property="BorderBrush" Value="Red" /> -->
+    <!--     <Setter Property="BorderThickness" Value="0,0,0,0" /> -->
+    <!-- </Style> -->
+    <Style Selector="Menu">
+        <Setter Property="Focusable" Value="False" />
     </Style>
-    <Style Selector="Expander /template/ Border">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
+    <Style Selector="MenuItem">
+        <Setter Property="Focusable" Value="False" />
+    </Style>
+    <Style Selector="Grid.fileControl">
+        <!-- <Setter Property="" Value=""/> -->
+        <Setter Property="Margin" Value="0,10,0,0" />
+        <Setter Property="ToolTip.ShowDelay" Value="700" />
+    </Style>
+    <Style Selector="Grid.fileControl ToolTip StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+    </Style>
+    <Style Selector="Grid.fileControl Border.imageThumbnail">
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Grid.fileControl Border.imageThumbnail Image">
+        <Setter Property="Stretch" Value="UniformToFill" />
+    </Style>
+    <Style Selector="Grid.fileControl Border.symbolIcon">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Height" Value="100" />
+    </Style>
+    <Style Selector="Grid.fileControl Border.symbolIcon ui|SymbolIcon">
+        <Setter Property="FontSize" Value="120" />
+    </Style>
+    <Style Selector="Grid.fileControl TextBox.fileName">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="MaxWidth" Value="170" />
+        <Setter Property="Margin" Value="0,15" />
+    </Style>
+    <Style Selector="Grid.fileControl TextBlock.fileName">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="MaxWidth" Value="170" />
+        <Setter Property="Margin" Value="0,10" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+    <Style Selector="Canvas.imagePreviewControl Grid">
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Canvas.imagePreviewControl Border.previewCounter">
+        <Setter Property="Background" Value="Black" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Margin" Value="5" />
+        <Setter Property="MinWidth" Value="60" />
+        <Setter Property="Opacity" Value="0.8" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="ZIndex" Value="1" />
+    </Style>
+    <Style Selector="Canvas.imagePreviewControl TextBlock.previewCounter">
+        <Setter Property="Foreground" Value="Lime" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Canvas.imagePreviewControl Border.imagePreview">
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Canvas.imagePreviewControl Image.previewImage">
+        <Setter Property="Stretch" Value="UniformToFill" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Expander.fileManagerExpander">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="Expander.fileManagerExpander /template/ Border#ExpanderContent">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FileManagerColor}" />
+    </Style>
+    <Style Selector="Expander.fileManagerControl /template/ Border">
+        <Setter Property="Background" Value="IndianRed" />
+        <!-- <Setter Property="Background" Value="{DynamicResource Brush.Background}" /> -->
         <Setter Property="CornerRadius" Value="4" />
     </Style>
-    <Style Selector="TextBox /template/ Border#PART_BorderElement">
-        <Setter Property="BorderBrush" Value="Red" />
-        <Setter Property="BorderThickness" Value="0,0,0,0" />
+    <Style Selector="StackPanel.fileManagerExpanderHeader">
+        <Setter Property="Orientation" Value="Horizontal" />
     </Style>
-    <Style Selector="Grid.fileManagerToolBar TextBox">
+    <Style Selector="Expander.fileManagerExpander ToggleButton">
+        <Setter Property="Background" Value="{DynamicResource FileManagerColor}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="10,0,10,0" />
+    </Style>
+    <Style Selector="StackPanel.fileManagerExpanderHeader Svg">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Margin" Value="0,0,5,0" />
+    </Style>
+    <Style Selector="StackPanel.fileManagerExpanderHeader TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Grid.fileManagerMainGrid">
+        <Setter Property="MinWidth" Value="500" />
+        <Setter Property="MinHeight" Value="500" />
+        <Setter Property="Background" Value="{DynamicResource FileManagerColor}" />
+    </Style>
+    <Style Selector="Grid.fileManagerToolBar">
+        <Setter Property="Margin" Value="5" />
+    </Style>
+    <Style Selector="Grid.fileManagerToolBar Svg">
+        <Setter Property="Width" Value="18" />
     </Style>
     <Style Selector="Grid.fileManagerToolBar Button">
         <Setter Property="Margin" Value="0,0,5,0" />
     </Style>
-    <Style Selector="ListBox#FileManagerListBox ListBoxItem:selected /template/ Rectangle#SelectionIndicator">
+    <Style Selector="Grid.fileManagerToolBar TextBox">
+        <Setter Property="Margin" Value="0,0,5,0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="MinWidth" Value="110" />
+    </Style>
+    <Style
+        Selector="ListBox#FileManagerListBox ListBoxItem:selected /template/ Rectangle#SelectionIndicator">
         <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="Menu">
-        <Setter Property="Focusable" Value="False"/>
+    <Style Selector="Panel.fileManagerContent ListBox">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="SelectionMode" Value="Multiple" />
     </Style>
-    <Style Selector="MenuItem">
-        <Setter Property="Focusable" Value="False"/>
+    <Style Selector="Panel.fileManagerContent ListBox ScrollViewer">
+
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
     </Style>
-    <Style Selector="Control.rotating">
-        <Style.Animations>
-            <Animation Duration="0:0:1" IterationCount="Infinite">
-                <KeyFrame Cue="0%">
-                    <Setter Property="RotateTransform.Angle" Value="0.0" />
-                </KeyFrame>
-                <KeyFrame Cue="100%">
-                    <Setter Property="RotateTransform.Angle" Value="360.0" />
-                </KeyFrame>
-            </Animation>
-        </Style.Animations>
+    <Style Selector="Panel.fileManagerContent TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 </Styles>

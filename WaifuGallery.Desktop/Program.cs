@@ -21,27 +21,19 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        Directory.CreateDirectory(Settings.LogsPath);
-        var today = DateTime.Today.ToString("dd-MM-yyyy");
-        const string outputTemplate = "[{Timestamp:HH:mm:ss.fff} {Level}]: {Message:lj}{NewLine}{Exception}";
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .Enrich.FromLogContext()
-            .WriteTo.Console(
-                outputTemplate: outputTemplate,
-                theme: AnsiConsoleTheme.Literate)
-            .WriteTo.File(
-                outputTemplate: outputTemplate,
-                path: Path.Combine(Settings.LogsPath, $"{today}.log"))
-            .CreateLogger();
+        CreateLogger();
         var mutex = new Mutex(false, typeof(Program).FullName);
         try
         {
-            if (!mutex.WaitOne(TimeSpan.FromSeconds(TimeoutSeconds), true)) return;
+            if (!mutex.WaitOne(TimeSpan.FromSeconds(TimeoutSeconds), true))
+            {
+                return;
+            }
 
             SubscribeToDomainUnhandledException();
 
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
         }
         catch (Exception e)
         {
@@ -60,6 +52,23 @@ internal static class Program
         {
             Log.Fatal(e.ExceptionObject as Exception, "Unhandled exception in domain!");
         };
+
+    private static void CreateLogger()
+    {
+        Directory.CreateDirectory(Settings.LogsPath);
+        var today = DateTime.Today.ToString("dd-MM-yyyy");
+        const string outputTemplate = "[{Timestamp:HH:mm:ss.fff} {Level}]: {Message:lj}{NewLine}{Exception}";
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .Enrich.FromLogContext()
+            .WriteTo.Console(
+                outputTemplate: outputTemplate,
+                theme: AnsiConsoleTheme.Literate)
+            .WriteTo.File(
+                outputTemplate: outputTemplate,
+                path: Path.Combine(Settings.LogsPath, $"{today}.log"))
+            .CreateLogger();
+    }
 
     // Avalonia configuration, don't remove; also used by visual designer.
     // ReSharper disable once MemberCanBePrivate.Global

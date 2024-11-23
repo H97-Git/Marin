@@ -6,7 +6,8 @@
              xmlns:tabs="clr-namespace:WaifuGallery.ViewModels.Tabs"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns="https://github.com/avaloniaui"
-             KeyDown="InputElement_OnKeyDown">
+             KeyDown="InputElement_OnKeyDown"
+             PointerPressed="InputElement_OnPointerPressed">
     <Grid>
         <ZoomBorder Name="ZoomBorder">
             <Image

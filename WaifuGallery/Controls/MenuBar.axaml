@@ -6,7 +6,7 @@
              xmlns:viewModels="clr-namespace:WaifuGallery.ViewModels"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns="https://github.com/avaloniaui">
-    <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}" >
+    <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}">
         <MenuItem Header="_File">
             <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}"
                       Icon="{DynamicResource FolderOpen}" />
@@ -26,7 +26,7 @@
         </MenuItem>
         <MenuItem Header="_Tabs">
             <MenuItem Header="Close All Tabs" Command="{Binding CloseAllTabsCommand }"
-                      Icon="{DynamicResource Trash}" />
+                      Icon="{DynamicResource Backspace}" />
             <Separator />
             <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}"
                       Icon="{DynamicResource ArrowsOutHorizontal}" />

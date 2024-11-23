@@ -8,60 +8,66 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:fileManager="clr-namespace:WaifuGallery.ViewModels.FileManager"
     xmlns:controls="clr-namespace:WaifuGallery.Controls.FileManager"
-    Name="FileManagerControl"
+    x:Name="FileManagerControl"
     Margin="10,40,10,10">
     <Design.DataContext>
         <fileManager:FileManagerViewModel />
     </Design.DataContext>
     <Expander
+        Classes="fileManagerExpander"
         HorizontalAlignment="{Binding FileManagerHorizontalAlignment }"
         IsExpanded="{Binding IsFileManagerExpanded}"
         IsPointerOver="{Binding IsPointerOver, Mode=OneWayToSource}"
         IsVisible="{Binding IsFileManagerVisible}"
-        Margin="0"
-        Padding="0"
         VerticalAlignment="{Binding FileManagerVerticalAlignment}">
         <Expander.Header>
-            <StackPanel Orientation="Horizontal">
-                <Svg Path="{DynamicResource FoldersPath}" Width="24" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <TextBlock Text="File Manager" VerticalAlignment="Center" />
+            <StackPanel Classes="fileManagerExpanderHeader">
+                <Svg Path="{DynamicResource FoldersPath}" />
+                <TextBlock Text="File Manager" />
             </StackPanel>
         </Expander.Header>
-        <Grid
-            RowDefinitions="Auto,Auto,*"
-            MinHeight="500"
-            MinWidth="500">
+        <Grid Classes="fileManagerMainGrid"
+              RowDefinitions="Auto,*">
             <!-- Tool Bar -->
-            <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto" Margin="5"
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto"
                   Classes="fileManagerToolBar">
                 <Button Grid.Column="0"
-                        Command="{Binding GotoPreviousDirCommand}" ToolTip.Tip="Go Backward">
+                        Command="{Binding GotoPreviousDirCommand}"
+                        ToolTip.Tip="Go Backward">
                     <!-- <ui:SymbolIcon Symbol="Back" FontSize="16" /> -->
-                    <Svg Path="{StaticResource CaretLeftPath}" Width="18" />
+                    <Svg Path="{StaticResource CaretLeftPath}" />
                 </Button>
                 <Button Grid.Column="1"
-                        Command="{Binding GotoParentFolderCommand}" ToolTip.Tip="Go Up">
+                        Command="{Binding GotoParentFolderCommand}"
+                        ToolTip.Tip="Go Up">
                     <!-- <ui:SymbolIcon Symbol="Up" FontSize="16" /> -->
-                    <Svg Path="{StaticResource ArrowBendRightUp}" Width="18" />
+                    <Svg Path="{StaticResource ArrowBendRightUp}" />
                 </Button>
                 <Button Grid.Column="2"
-                        Command="{Binding GotoNextDirCommand}" ToolTip.Tip="Go Forward">
+                        Command="{Binding GotoNextDirCommand}"
+                        ToolTip.Tip="Go Forward">
                     <!-- <ui:SymbolIcon Symbol="Forward" FontSize="16" /> -->
-                    <Svg Path="{StaticResource CaretRightPath}" Width="18" />
+                    <Svg Path="{StaticResource CaretRightPath}" />
                 </Button>
-                <TextBox Grid.Column="3" Text="{Binding CurrentPath}"
-                         HorizontalAlignment="Stretch"
-                         VerticalAlignment="Center"
+                <TextBox Grid.Column="3"
+                         Text="{Binding CurrentPath}"
                          IsFocused="{Binding IsSearchFocused, Mode=OneWayToSource}" />
-                <Button Grid.Column="4" Command="{Binding OpenFileCommand}" ToolTip.Tip="Open folder">
+                <Button Grid.Column="4"
+                        Command="{Binding OpenFileCommand}"
+                        ToolTip.Tip="Open folder">
                     <!-- <ui:SymbolIcon Symbol="OpenFolder" FontSize="16" /> -->
-                    <Svg Path="{StaticResource FolderOpenPath}" Width="18" />
+                    <Svg Path="{StaticResource FolderOpenPath}" />
                 </Button>
-                <Button Grid.Column="5" Command="{Binding CreateNewFolder}" ToolTip.Tip="Create new folder">
-                    <Svg Path="{StaticResource FolderPlusPath}" Width="18" />
+                <Button Grid.Column="5"
+                        Command="{Binding CreateNewFolder}"
+                        ToolTip.Tip="Create new folder">
+                    <Svg Path="{StaticResource FolderPlusPath}" />
                     <!-- <ui:SymbolIcon Symbol="NewFolder" FontSize="16" /> -->
                 </Button>
-                <ComboBox Grid.Column="6" SelectedIndex="{Binding SelectedSortIndex}" SelectionChanged="SelectingItemsControl_OnSelectionChanged" MinWidth="110">
+                <ComboBox Grid.Column="6"
+                          SelectedIndex="{Binding SelectedSortIndex}"
+                          SelectionChanged="SelectingItemsControl_OnSelectionChanged">
                     <ComboBoxItem>Date Accessed</ComboBoxItem>
                     <ComboBoxItem>Date Created</ComboBoxItem>
                     <ComboBoxItem>Date Modified</ComboBoxItem>
@@ -71,31 +77,19 @@
                     <ComboBoxItem>Size</ComboBoxItem>
                 </ComboBox>
             </Grid>
-            <Panel Grid.Row="1" Margin="10,0" HorizontalAlignment="Right">
-                <!-- <ComboBox SelectionChanged="SelectingItemsControl_OnSelectionChanged" MinWidth="110"> -->
-                <!--     <ComboBoxItem>Date Accessed</ComboBoxItem> -->
-                <!--     <ComboBoxItem>Date Created</ComboBoxItem> -->
-                <!--     <ComboBoxItem>Date Modified</ComboBoxItem> -->
-                <!--     <ComboBoxItem>Extension</ComboBoxItem> -->
-                <!--     <ComboBoxItem>Name</ComboBoxItem> -->
-                <!--     <ComboBoxItem>Random</ComboBoxItem> -->
-                <!--     <ComboBoxItem>Size</ComboBoxItem> -->
-                <!-- </ComboBox> -->
-            </Panel>
             <!-- ImagePreview & FileManagerListBox -->
-            <Panel Grid.Row="2" Name="FileManagerContent">
-                <controls:ImagePreview Name="ImagePreviewControl" DataContext="{Binding PreviewImageViewModel}" />
+            <Panel Grid.Row="1"
+                   x:Name="FileManagerContent"
+                   Classes="fileManagerContent">
+                <controls:ImagePreview x:Name="ImagePreviewControl" DataContext="{Binding PreviewImageViewModel}" />
                 <!-- ListBox -->
-                <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         ScrollViewer.VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"
-                         BorderThickness="0"
-                         IsVisible="{Binding !!FilesInDir.Count}"
-                         ItemsSource="{Binding FilesInDir}"
-                         Margin="0,0,0,0"
-                         Name="FileManagerListBox"
-                         PointerWheelChanged="FileManagerListBox_OnPointerWheelChanged"
-                         SelectedIndex="{Binding SelectedIndex}"
-                         SelectionMode="Multiple">
+                <ListBox
+                    ScrollViewer.VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"
+                    IsVisible="{Binding !!FilesInDir.Count}"
+                    ItemsSource="{Binding FilesInDir}"
+                    x:Name="FileManagerListBox"
+                    PointerWheelChanged="FileManagerListBox_OnPointerWheelChanged"
+                    SelectedIndex="{Binding SelectedIndex}">
                     <ListBox.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Open in Explorer" Command="{Binding OpenInExplorer}">
@@ -130,10 +124,8 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <TextBlock
-                    HorizontalAlignment="Center"
                     IsVisible="{Binding !FilesInDir.Count}"
-                    Text="No folders or files found in the current directory."
-                    VerticalAlignment="Center" />
+                    Text="No folders or files found in the current directory." />
             </Panel>
         </Grid>
     </Expander>

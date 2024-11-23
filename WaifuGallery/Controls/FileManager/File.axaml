@@ -1,4 +1,4 @@
-﻿<UserControl Name="FileControl"
+﻿<UserControl x:Name="FileControl"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="WaifuGallery.Controls.FileManager.File"
              x:DataType="fileManager:FileViewModel"
@@ -67,32 +67,31 @@
             </MenuItem>
         </ContextMenu>
     </UserControl.ContextMenu>
-    <Grid RowDefinitions="Auto,Auto,Auto" Name="FileControlGrid" Margin="0,10,0,0" ToolTip.ShowDelay="700">
-        <ToolTip.Tip >
-            <StackPanel>
+    <Grid Classes="fileControl" RowDefinitions="Auto,Auto,Auto" x:Name="FileControlGrid">
+        <ToolTip.Tip>
+            <StackPanel Orientation="Vertical">
                 <TextBlock FontSize="16" Text="{Binding FileName}" />
-                <!-- FontFamily="{Binding Source={x:Static models:Settings.Instance}, Path=.DefaultFont}" -->
-                <StackPanel Orientation="Horizontal">
+                <StackPanel>
                     <TextBlock Text="Parent folder: " />
                     <TextBlock Text="{Binding ParentPath}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel>
                     <TextBlock Text="Created: " />
                     <TextBlock Text="{Binding CreatedTime}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel>
                     <TextBlock Text="Modified: " />
                     <TextBlock Text="{Binding ModifiedTime}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel>
                     <TextBlock Text="Last accessed: " />
                     <TextBlock Text="{Binding LastAccessTime}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel>
                     <TextBlock Text="Size: " />
                     <TextBlock Text="{Binding SizeInHumanReadable}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" IsVisible="{Binding !IsDirectory}">
+                <StackPanel IsVisible="{Binding !IsDirectory}">
                     <TextBlock Text="Read only: " />
                     <TextBlock Text="{Binding IsFileReadOnly}" />
                 </StackPanel>
@@ -100,35 +99,29 @@
         </ToolTip.Tip>
         <!-- Image Thumbnail -->
         <Border Grid.Row="0"
-                ClipToBounds="True"
-                CornerRadius="5"
+                Classes="imageThumbnail"
                 IsVisible="{Binding IsImage}">
             <Image
                 Height="{Binding ImageSize.Height}"
                 Width="{Binding ImageSize.Width}"
-                Source="{Binding Thumbnail}"
-                Stretch="UniformToFill" />
+                Source="{Binding Thumbnail}" />
         </Border>
         <!-- Symbol Icon -->
         <Border Grid.Row="0"
-                Background="{DynamicResource Brush.Accent}"
-                CornerRadius="5"
-                Height="100"
+                Classes="symbolIcon"
                 IsVisible="{Binding !IsImage}">
             <!-- <Svg Path="{DynamicResource FoldersPath}" Width="24" VerticalAlignment="Center" HorizontalAlignment="Center"/> -->
-            <ui:SymbolIcon Symbol="{Binding Symbol}" FontSize="120" />
+            <ui:SymbolIcon Symbol="{Binding Symbol}" />
         </Border>
         <!-- File Name -->
-        <TextBox Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" MaxWidth="170"
-                 Margin="0,15" Text="{Binding FileName}" IsVisible="{Binding IsRenaming}"
+        <TextBox Classes="fileName"
+                 Grid.Row="1"
+                 Text="{Binding FileName}"
+                 IsVisible="{Binding IsRenaming}"
                  KeyDown="Rename_OnKeyDown" />
         <TextBlock Grid.Row="2"
-                   HorizontalAlignment="Center"
-                   MaxWidth="170"
-                   Margin="0,15"
+                   Classes="fileName"
                    Text="{Binding FileName}"
-                   IsVisible="{Binding !IsRenaming}"
-                   TextTrimming="CharacterEllipsis"
-                   VerticalAlignment="Bottom" />
+                   IsVisible="{Binding !IsRenaming}" />
     </Grid>
 </UserControl>

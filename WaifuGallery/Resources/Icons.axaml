@@ -7,6 +7,7 @@
     <x:String x:Key="ArrowsOutPath">/Resources/SVGs/arrows-out.svg</x:String>
     <x:String x:Key="ArrowsOutVerticalPath">/Resources/SVGs/arrows-out-line-vertical.svg</x:String>
     <x:String x:Key="BarricadePath">/Resources/SVGs/barricade.svg</x:String>
+    <x:String x:Key="BackspacePath">/Resources/SVGs/backspace.svg</x:String>
     <x:String x:Key="BinaryPath">/Resources/SVGs/binary.svg</x:String>
     <x:String x:Key="BinocularsPath">/Resources/SVGs/binoculars.svg</x:String>
     <x:String x:Key="BrowserPath">/Resources/SVGs/browser.svg</x:String>
@@ -40,6 +41,7 @@
     <Svg x:Key="ArrowClockWise" Path="{StaticResource ArrowClockWisePath}" />
     <Svg x:Key="ArrowsOutHorizontal" Path="{StaticResource ArrowsOutHorizontalPath}" />
     <Svg x:Key="ArrowsOutVertical" Path="{StaticResource ArrowsOutVerticalPath}" />
+    <Svg x:Key="Backspace" Path="{StaticResource BackspacePath}" />
     <Svg x:Key="Binoculars" Path="{StaticResource BinocularsPath}" />
     <Svg x:Key="Browser" Path="{StaticResource GoogleChromeLogoPath}" />
     <Svg x:Key="Eye" Path="{StaticResource EyePath}" />

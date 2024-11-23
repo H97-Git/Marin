@@ -20,9 +20,9 @@
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.1"/>
         <PackageReference Include="ErrorOr" Version="2.0.1"/>
-        <PackageReference Include="FluentAvaloniaUI" Version="2.0.5"/>
-        <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.1.0"/>
-        <PackageReference Include="Magick.NET.Core" Version="14.1.0"/>
+        <PackageReference Include="FluentAvaloniaUI" Version="2.1.0" />
+        <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.2.0" />
+        <PackageReference Include="Magick.NET.Core" Version="14.2.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0"/>
         <PackageReference Include="NaturalSort.Extension" Version="4.3.0"/>
         <PackageReference Include="Serilog" Version="4.1.0"/>

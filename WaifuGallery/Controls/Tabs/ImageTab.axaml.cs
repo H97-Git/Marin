@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 using Serilog;
 using WaifuGallery.Commands;
@@ -91,6 +92,23 @@ public partial class ImageTab : UserControl
     }
 
     #endregion
+
+    private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        var point = e.GetCurrentPoint(sender as Control);
+       
+        if (point.Properties.IsXButton1Pressed)
+        {
+            // MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Informational,"XButton1Pressed"));
+            ImageTabViewModel?.LoadNextImage();
+        }
+
+        if (point.Properties.IsXButton2Pressed)
+        {
+            // MessageBus.Current.SendMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Informational,"XButton2Pressed"));
+            ImageTabViewModel?.LoadPreviousImage();
+        }
+    }
 
     private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
     {
