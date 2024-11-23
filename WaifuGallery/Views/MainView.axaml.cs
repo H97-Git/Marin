@@ -38,6 +38,7 @@ public partial class MainView : UserControl
     private void MainView_OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key is not Key.Tab) return;
+        e.Handled = true;
         MainViewModel?.HandleTabKeyEvent(e);
     }
 

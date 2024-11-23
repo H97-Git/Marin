@@ -65,7 +65,6 @@ public class App : Application
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
             desktop.ShutdownRequested += (_, _) => { SaveSettings(); };
             main.Show();
-
             // splash.Close();
         }
 
@@ -78,8 +77,6 @@ public class App : Application
         if (shouldExit)
             Environment.Exit(0);
     }
-
-   
 
     #endregion
 }

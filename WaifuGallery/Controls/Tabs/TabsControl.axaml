@@ -27,6 +27,12 @@
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"
                                     PointerPressed="OnPointerPressedCloseTab">
+                            <ToolTip.Tip>
+                                <StackPanel>
+                                    <TextBlock FontSize="16">Rectangle</TextBlock>
+                                    <TextBlock  Text="{Binding }"/>
+                                </StackPanel>
+                            </ToolTip.Tip>
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Close Tab" Command="{Binding CloseTabCommand}">
