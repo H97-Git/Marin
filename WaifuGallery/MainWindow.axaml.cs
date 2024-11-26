@@ -11,10 +11,6 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        Content = new MainView()
-        {
-            DataContext = new MainViewViewModel()
-        };
         KeyDown += OnKeyDown;
         InitializeComponent();
     }

@@ -12,6 +12,7 @@ using DynamicData;
 using ReactiveUI;
 using Serilog;
 using WaifuGallery.Commands;
+using WaifuGallery.Factories;
 using WaifuGallery.Helpers;
 using WaifuGallery.Models;
 
@@ -29,6 +30,7 @@ public class TabsViewModel : ViewModelBase
     private bool _isImageTabVisible;
     private bool _isSettingsTabVisible = true;
     private int _selectedTabIndex;
+    private TabFactory _tabFactory;
 
     #endregion
 
@@ -79,6 +81,17 @@ public class TabsViewModel : ViewModelBase
 
     public TabsViewModel()
     {
+        Initialize();
+    }
+
+    public TabsViewModel(TabFactory tabFactory)
+    {
+        _tabFactory = tabFactory;
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         this.WhenAnyValue(x => x.OpenTabs.Count).Subscribe(_ =>
         {
             if (OpenTabs.Count is 0)
@@ -114,7 +127,8 @@ public class TabsViewModel : ViewModelBase
         MessageBus.Current.Listen<RotateClockwiseCommand>().Subscribe(_ => RotateAndResetZoom());
         MessageBus.Current.Listen<RotateAntiClockwiseCommand>().Subscribe(_ => RotateAndResetZoom(false));
 
-        MessageBus.Current.Listen<LoadSessionCommand>().Subscribe(command => Dispatcher.UIThread.Post(() => LoadSession(command)));
+        MessageBus.Current.Listen<LoadSessionCommand>()
+            .Subscribe(command => Dispatcher.UIThread.Post(() => LoadSession(command)));
     }
 
     #endregion
@@ -267,7 +281,7 @@ public class TabsViewModel : ViewModelBase
             return;
         }
 
-        AddTab(new PreferencesTabViewModel());
+        AddTab(_tabFactory.Create(TabType.Preferences));
     }
 
     public void CycleTab(bool reverse, bool isCtrlKey)

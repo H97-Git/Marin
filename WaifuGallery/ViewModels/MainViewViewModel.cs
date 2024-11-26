@@ -10,6 +10,7 @@ using ReactiveUI;
 using Serilog;
 using WaifuGallery.Commands;
 using WaifuGallery.Controls.Dialogs;
+using WaifuGallery.Factories;
 using WaifuGallery.ViewModels.Dialogs;
 using WaifuGallery.ViewModels.Tabs;
 using WaifuGallery.Helpers;
@@ -28,6 +29,7 @@ public class MainViewViewModel : ViewModelBase
     private readonly DataObject _clipBoardDataObject = new();
     private ImageTabViewModel? ImageTabViewModel => TabsViewModel.ImageTabViewModel;
     private PreviewImageViewModel PreviewImageViewModel => FileManagerViewModel.PreviewImageViewModel;
+    private readonly TabFactory _tabFactory;
 
     #endregion
 
@@ -484,8 +486,19 @@ public class MainViewViewModel : ViewModelBase
 
     public MainViewViewModel()
     {
+        Initialize();
+    }
+
+    public MainViewViewModel(TabFactory tabFactory)
+    {
+        _tabFactory = tabFactory;
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         MenuBarViewModel = new MenuBarViewModel();
-        TabsViewModel = new TabsViewModel();
+        TabsViewModel = new TabsViewModel(_tabFactory);
         FileManagerViewModel = new FileManagerViewModel();
         StatusBarViewModel = new StatusBarViewModel();
 
@@ -512,7 +525,7 @@ public class MainViewViewModel : ViewModelBase
     public TabsViewModel TabsViewModel { get; set; }
 
     public FileManagerViewModel FileManagerViewModel { get; set; }
-    public StatusBarViewModel StatusBarViewModel { get; }
+    public StatusBarViewModel StatusBarViewModel { get; set; }
 
     #endregion
 

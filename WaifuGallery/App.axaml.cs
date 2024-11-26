@@ -4,8 +4,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using Microsoft.Extensions.DependencyInjection;
+using WaifuGallery.Factories;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels;
+using WaifuGallery.ViewModels.Tabs;
 using WaifuGallery.Views;
 
 namespace WaifuGallery;
@@ -51,6 +54,19 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        var collection = new ServiceCollection();
+        collection.AddSingleton<MainViewViewModel>();
+        collection.AddTransient<ImageTabViewModel>();
+        collection.AddTransient<PreferencesTabViewModel>();
+        collection.AddSingleton<Func<TabType, TabViewModelBase>>(x => type => type switch
+        {
+            TabType.Image => x.GetRequiredService<ImageTabViewModel>(),
+            TabType.Preferences => x.GetRequiredService<PreferencesTabViewModel>(),
+            TabType.Unknown => throw new ArgumentOutOfRangeException(nameof(type), type, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        });
+        collection.AddSingleton<TabFactory>();
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // var splash = new SplashScreenWindow();
@@ -60,7 +76,13 @@ public class App : Application
             //
             // await splash.InitApp();
 
-            var main = new MainWindow();
+            var main = new MainWindow()
+            {
+                Content = new MainView()
+                {
+                    DataContext = collection.BuildServiceProvider().GetRequiredService<MainViewViewModel>()
+                }
+            };
             desktop.MainWindow = main;
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
             desktop.ShutdownRequested += (_, _) => { SaveSettings(); };
