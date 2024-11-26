@@ -8,7 +8,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="tabs:TabsViewModel"
              x:Class="WaifuGallery.Controls.Tabs.TabsControl"
-             Name="TabsUserControl">
+             x:Name="TabsUserControl">
     <Grid RowDefinitions="Auto,*">
         <!-- Tab Headers -->
         <ScrollViewer Grid.Row="0"
@@ -30,7 +30,7 @@
                             <ToolTip.Tip>
                                 <StackPanel>
                                     <TextBlock FontSize="16">Rectangle</TextBlock>
-                                    <TextBlock  Text="{Binding }"/>
+                                    <TextBlock Text="{Binding }"/>
                                 </StackPanel>
                             </ToolTip.Tip>
                             <StackPanel.ContextMenu>

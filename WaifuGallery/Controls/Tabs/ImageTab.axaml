@@ -9,10 +9,9 @@
              KeyDown="InputElement_OnKeyDown"
              PointerPressed="InputElement_OnPointerPressed">
     <Grid>
-        <ZoomBorder Name="ZoomBorder">
+        <ZoomBorder x:Name="ZoomBorder">
             <Image
-                ClipToBounds="True"
-                Name="ImageInTab"
+                x:Name="ImageInTab"
                 Source="{Binding BitmapImage}"
                 Width="{Binding ImageSize.Width}"
                 Height="{Binding ImageSize.Height}" />
@@ -20,19 +19,19 @@
                 <RotateTransform Angle="{Binding RotationAngle}" />
             </ZoomBorder.RenderTransform>
         </ZoomBorder>
-        <ListBox Name="PreviewList" ItemsSource="{Binding Bitmaps}"
+        <ListBox x:Name="PreviewList" ItemsSource="{Binding Bitmaps}"
                  IsVisible="{Binding IsGridOpen}"
                  SelectionChanged="PreviewList_OnSelectionChanged"
-                 Background="#7E000000">
+                 Classes="previewList">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel/>
+                    <WrapPanel />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderThickness="1" Margin="1" CornerRadius="5" ClipToBounds="True">
-                        <Image Height="100" Source="{Binding}" ClipToBounds="True" />
+                    <Border Classes="imageGridPreview">
+                        <Image Source="{Binding}" />
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>

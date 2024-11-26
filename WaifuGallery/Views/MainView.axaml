@@ -10,7 +10,7 @@
              xmlns:vm="clr-namespace:WaifuGallery.ViewModels"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns="https://github.com/avaloniaui"
-             Name="MainViewControl"
+             x:Name="MainViewControl"
              KeyDown="MainView_OnKeyDown">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -19,7 +19,7 @@
     </Design.DataContext>
 
     <!-- Main Grid -->
-    <Grid RowDefinitions="Auto,*,Auto,Auto" Name="MainGrid">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" x:Name="MainGrid">
         <!-- Menu Bar-->
         <controls:MenuBar Grid.Row="0"
                           DataContext="{Binding MenuBarViewModel}"
@@ -29,19 +29,23 @@
             <!-- Tabs -->
             <tabs:TabsControl DataContext="{Binding TabsViewModel}" />
             <!-- File Manager -->
-            <Panel Name="FileManagerPanel" Background="{Binding FileManagerViewModel.FileManagerBackground}" IsVisible="{Binding FileManagerViewModel.IsFileManagerVisible}">
+            <Panel Name="FileManagerPanel" Background="{Binding FileManagerViewModel.FileManagerBackground}"
+                   IsVisible="{Binding FileManagerViewModel.IsFileManagerVisible}">
                 <fileManager:FileManager DataContext="{Binding FileManagerViewModel}" />
             </Panel>
         </Grid>
         <ui:InfoBar Grid.Row="2"
+                    Height="32"
+                    Margin="1"
+                    x:Name="InfoBar"
+                    IsClosable="False"
                     Background="{Binding StatusBarViewModel.BackgroundColor}"
                     Foreground="{DynamicResource Brush.Foreground}"
-                    Height="32"
-                    IsClosable="False"
+                    Classes.up="{Binding  StatusBarViewModel.IsStatusBarVisible}"
+                    Classes.down="{Binding  !StatusBarViewModel.IsStatusBarVisible}"
+                    IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}"
                     IsOpen="{Binding StatusBarViewModel.IsStatusBarVisible}"
-                    Margin="1"
                     Message="{Binding StatusBarViewModel.Message}"
-                    Name="InfoBar"
                     Severity="{Binding StatusBarViewModel.Severity}"
                     Title="{Binding StatusBarViewModel.Title}" />
     </Grid>

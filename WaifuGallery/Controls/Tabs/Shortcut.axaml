@@ -7,29 +7,32 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="viewModels:ShortcutViewModel"
              x:Class="WaifuGallery.Controls.Tabs.Shortcut"
-             Name="ShortcutControl"
+             x:Name="ShortcutControl"
              Margin="5">
-    <Border CornerRadius="5" ClipToBounds="True" ToolTip.Tip="{Binding KeyCommandToolTipText}">
+    <Border Classes="shortCutControl"
+            ToolTip.Tip="{Binding KeyCommandToolTipText}">
         <ui:SettingsExpanderItem Content="{Binding KeyCommandText}">
             <ui:SettingsExpanderItem.Footer>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel>
                     <ItemsControl ItemsSource="{Binding Gestures}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
+                                <StackPanel />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Content="{Binding}"
-                                        Margin="5,0"
+                                        Classes="keyCommandButton"
                                         Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).UpdateKeyCommand}"
                                         CommandParameter="{Binding}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <Button ToolTip.Tip="Add" Margin="5,0"
-                            Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).AddKeyCommand}">
+                    <Button
+                        Classes="keyCommandButton"
+                        ToolTip.Tip="Add"
+                        Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).AddKeyCommand}">
                         <Svg Path="{DynamicResource PlusPath}" Width="18" />
                     </Button>
                 </StackPanel>

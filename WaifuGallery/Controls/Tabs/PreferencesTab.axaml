@@ -6,43 +6,41 @@
              x:Class="WaifuGallery.Controls.Tabs.PreferencesTab"
              xmlns:local="clr-namespace:WaifuGallery.ViewModels.Tabs"
              xmlns:preferences="clr-namespace:WaifuGallery.Controls.Tabs.Preferences"
-             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              x:DataType="local:PreferencesTabViewModel">
     <Grid>
         <ScrollViewer>
-            <StackPanel Spacing="8" Margin="10">
-                <DockPanel HorizontalAlignment="Left" Margin="10">
-                    <Image Source="/Resources/logo.webp"
+            <StackPanel Spacing="8" Classes="margin10">
+                <DockPanel Classes="margin10" HorizontalAlignment="Left">
+                    <Image Classes="preferencesLogo"
+                           Source="/Resources/logo.webp"
                            DockPanel.Dock="Left"
-                           Height="80"
                            RenderOptions.BitmapInterpolationMode="HighQuality" />
-                    <StackPanel Spacing="0" Margin="15 0">
-                        <!-- <ToggleButton> -->
-                        <!--     <Panel> -->
-                        <!--         <PathIcon Classes="audio-on" -->
-                        <!--                   Data="{StaticResource SpeakerRegular}" /> -->
-                        <!--         <PathIcon Classes="audio-mute" -->
-                        <!--                   Data="{StaticResource SpeakerOffRegular}" /> -->
-                        <!--     </Panel> -->
-                        <!--     <ToggleButton.Styles> -->
-                        <!--         <Style Selector="ToggleButton PathIcon.audio-on"> -->
-                        <!--             <Setter Property="IsVisible" Value="False" /> -->
-                        <!--         </Style> -->
-                        <!--         <Style Selector="ToggleButton:checked PathIcon.audio-on"> -->
-                        <!--             <Setter Property="IsVisible" Value="True" /> -->
-                        <!--         </Style> -->
-                        <!--         <Style Selector="ToggleButton PathIcon.audio-mute"> -->
-                        <!--             <Setter Property="IsVisible" Value="True" /> -->
-                        <!--         </Style> -->
-                        <!--         <Style Selector="ToggleButton:checked PathIcon.audio-mute"> -->
-                        <!--             <Setter Property="IsVisible" Value="False" /> -->
-                        <!--         </Style> -->
-                        <!--     </ToggleButton.Styles> -->
-                        <!-- </ToggleButton> -->
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Preferences" PointerPressed="InputElement_OnPointerPressed" Cursor="Hand" FontSize="20" Foreground="{Binding Foreground}" />
-                            <TextBlock Text="{Binding SelectedCategory}" FontSize="20" />
-                        </StackPanel>
+                    <!-- <ToggleButton> -->
+                    <!--     <Panel> -->
+                    <!--         <PathIcon Classes="audio-on" -->
+                    <!--                   Data="{StaticResource SpeakerRegular}" /> -->
+                    <!--         <PathIcon Classes="audio-mute" -->
+                    <!--                   Data="{StaticResource SpeakerOffRegular}" /> -->
+                    <!--     </Panel> -->
+                    <!--     <ToggleButton.Styles> -->
+                    <!--         <Style Selector="ToggleButton PathIcon.audio-on"> -->
+                    <!--             <Setter Property="IsVisible" Value="False" /> -->
+                    <!--         </Style> -->
+                    <!--         <Style Selector="ToggleButton:checked PathIcon.audio-on"> -->
+                    <!--             <Setter Property="IsVisible" Value="True" /> -->
+                    <!--         </Style> -->
+                    <!--         <Style Selector="ToggleButton PathIcon.audio-mute"> -->
+                    <!--             <Setter Property="IsVisible" Value="True" /> -->
+                    <!--         </Style> -->
+                    <!--         <Style Selector="ToggleButton:checked PathIcon.audio-mute"> -->
+                    <!--             <Setter Property="IsVisible" Value="False" /> -->
+                    <!--         </Style> -->
+                    <!--     </ToggleButton.Styles> -->
+                    <!-- </ToggleButton> -->
+                    <StackPanel Classes="preferencesHeader">
+                        <TextBlock Text="Preferences" PointerPressed="InputElement_OnPointerPressed"
+                                   Foreground="{Binding Foreground}" />
+                        <TextBlock Text="{Binding SelectedCategory}" Cursor="Arrow" />
                     </StackPanel>
                 </DockPanel>
                 <StackPanel IsVisible="{Binding IsMainVisible}">
@@ -53,30 +51,30 @@
                     <preferences:Category Content="FullScreen"
                                           Description="Hide some UI elements when the app is in fullscreen."
                                           IconSource="{DynamicResource ArrowsOutSvg}"
-                                          Command="{Binding SwitchCategory}" 
+                                          Command="{Binding SwitchCategory}"
                                           CommandParameter="FullScreen" />
-                    <preferences:Category Content="General" 
+                    <preferences:Category Content="General"
                                           Description="Change your app preferences."
-                                          IconSource="{DynamicResource GearSvg}" 
+                                          IconSource="{DynamicResource GearSvg}"
                                           Command="{Binding SwitchCategory}"
                                           CommandParameter="General" />
-                    <preferences:Category Content="HotKeys/Keybindings" 
+                    <preferences:Category Content="HotKeys/Keybindings"
                                           Description="Change default keybindings."
-                                          IconSource="{DynamicResource KeyboardSvg}" 
+                                          IconSource="{DynamicResource KeyboardSvg}"
                                           Command="{Binding SwitchCategory}"
                                           CommandParameter="HotKeys" />
                     <preferences:Category Content="Image Preview"
                                           Description="Change the Image Preview default behaviours."
                                           IconSource="{DynamicResource PictureInPictureSvg}"
-                                          Command="{Binding SwitchCategory}" 
+                                          Command="{Binding SwitchCategory}"
                                           CommandParameter="ImagePreview" />
-                    <preferences:Category Content="Status Bar" 
+                    <preferences:Category Content="Status Bar"
                                           Description="Change the Status Bar preferences. (Auto-Hide,Delay)"
                                           IconSource="{DynamicResource BarricadeSvg}"
-                                          Command="{Binding SwitchCategory}" 
+                                          Command="{Binding SwitchCategory}"
                                           CommandParameter="StatusBar" />
                     <preferences:Category Content="Tabs" Description="Change Tabs preferences."
-                                          IconSource="{DynamicResource TabsSvg}" 
+                                          IconSource="{DynamicResource TabsSvg}"
                                           Command="{Binding SwitchCategory}"
                                           CommandParameter="Tabs" />
                 </StackPanel>
