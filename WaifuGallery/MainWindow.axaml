@@ -15,7 +15,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns="https://github.com/avaloniaui">
     <!-- Position="-1900,30" -->
-    <!-- The Content is set in MainWindow.axaml.cs -->
+    <!-- The Content is set in App.axaml.cs -->
     <!-- <Window.KeyBindings> -->
     <!--     <KeyBinding Gesture="Ctrl+F" Command=""></KeyBinding> -->
     <!-- </Window.KeyBindings> -->

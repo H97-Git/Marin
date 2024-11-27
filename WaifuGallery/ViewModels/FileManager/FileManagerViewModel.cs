@@ -272,7 +272,7 @@ public class FileManagerViewModel : ViewModelBase
     private async void OpenPathInFileManager()
     {
         Log.Debug("OpenPathInFileManager");
-        var storageProvider = App.GetTopLevel()?.StorageProvider;
+        var storageProvider = App.GetStorageProvider();
         if (storageProvider is null) return;
         var result = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
         {

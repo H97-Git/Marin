@@ -194,7 +194,7 @@ public class TabsViewModel : ViewModelBase
 
     private async void OpenFileInNewTab(OpenFileCommand command)
     {
-        var storageProvider = App.GetTopLevel()?.StorageProvider;
+        var storageProvider = App.GetStorageProvider();
         if (storageProvider is null) return;
         var result = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {

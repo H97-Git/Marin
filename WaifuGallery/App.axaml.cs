@@ -2,7 +2,9 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input.Platform;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using WaifuGallery.Factories;
@@ -17,14 +19,23 @@ public class App : Application
 {
     #region Private Methods
 
-    private static void SetTheme(string theme)
+    private static WindowState _bufferedWindowState = WindowState.Normal;
+
+    private static Window? GetMainWindow()
+    {
+        if (Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            return desktop.MainWindow;
+        return null;
+    }
+
+    private static void SetThemeVariant(string themeVariant)
     {
         if (Current is null) return;
-        if (theme.Equals("Light", StringComparison.OrdinalIgnoreCase))
+        if (themeVariant.Equals("Light", StringComparison.OrdinalIgnoreCase))
         {
             Current.RequestedThemeVariant = ThemeVariant.Light;
         }
-        else if (theme.Equals("Dark", StringComparison.OrdinalIgnoreCase))
+        else if (themeVariant.Equals("Dark", StringComparison.OrdinalIgnoreCase))
         {
             Current.RequestedThemeVariant = ThemeVariant.Dark;
         }
@@ -34,25 +45,7 @@ public class App : Application
         }
     }
 
-    #endregion
-
-    #region Public Methods
-
-    public static TopLevel? GetTopLevel() =>
-        Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
-            ? desktop.MainWindow
-            : null;
-
-    public static MainViewViewModel? GetMainViewViewModel() =>
-        ((GetTopLevel() as MainWindow)?.Content as MainView)?.DataContext as MainViewViewModel;
-
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-        SetTheme(Settings.Instance.Theme);
-    }
-
-    public override void OnFrameworkInitializationCompleted()
+    private static ServiceCollection CreateServiceCollection()
     {
         var collection = new ServiceCollection();
         collection.AddSingleton<MainViewViewModel>();
@@ -66,7 +59,48 @@ public class App : Application
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         });
         collection.AddSingleton<TabFactory>();
+        return collection;
+    }
 
+    #endregion
+
+    #region Public Methods
+
+    public static IClipboard? GetClipboard() =>
+        GetMainWindow()?.Clipboard;
+
+    public static IStorageProvider? GetStorageProvider() =>
+        GetMainWindow()?.StorageProvider;
+
+    public static WindowState? GetWindowState() =>
+        GetMainWindow()?.WindowState;
+
+    public static void ToggleFullScreen()
+    {
+        var mainWindow = GetMainWindow();
+        if (mainWindow is null) return;
+        if (mainWindow.WindowState is WindowState.FullScreen)
+        {
+            mainWindow.WindowState = _bufferedWindowState;
+        }
+        else
+        {
+            _bufferedWindowState = mainWindow.WindowState;
+            mainWindow.WindowState = WindowState.FullScreen;
+        }
+    }
+
+    public static MainViewViewModel? GetMainViewViewModel() =>
+        ((GetMainWindow() as MainWindow)?.Content as MainView)?.DataContext as MainViewViewModel;
+
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+        SetThemeVariant(Settings.Instance.Theme);
+    }
+
+    public override void OnFrameworkInitializationCompleted()
+    {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // var splash = new SplashScreenWindow();
@@ -76,22 +110,23 @@ public class App : Application
             //
             // await splash.InitApp();
 
-            var main = new MainWindow()
+            desktop.MainWindow = new MainWindow()
             {
                 Content = new MainView()
                 {
-                    DataContext = collection.BuildServiceProvider().GetRequiredService<MainViewViewModel>()
+                    DataContext = CreateServiceCollection().BuildServiceProvider()
+                        .GetRequiredService<MainViewViewModel>()
                 }
             };
-            desktop.MainWindow = main;
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
             desktop.ShutdownRequested += (_, _) => { SaveSettings(); };
-            main.Show();
+            desktop.MainWindow.Show();
             // splash.Close();
         }
 
         base.OnFrameworkInitializationCompleted();
     }
+
 
     public static void SaveSettings(bool shouldExit = false)
     {

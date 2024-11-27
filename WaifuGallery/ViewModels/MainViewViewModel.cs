@@ -24,7 +24,6 @@ public class MainViewViewModel : ViewModelBase
 {
     #region Private Fields
 
-    private WindowState _previousWindowState = WindowState.Normal;
     private bool _isDialogOpen;
     private readonly DataObject _clipBoardDataObject = new();
     private ImageTabViewModel? ImageTabViewModel => TabsViewModel.ImageTabViewModel;
@@ -167,11 +166,8 @@ public class MainViewViewModel : ViewModelBase
     private void ToggleFullScreen()
     {
         Log.Debug("Toggling FullScreen...");
-        if (App.GetTopLevel() is not Window mainWindow) return;
-        if (mainWindow.WindowState is not WindowState.FullScreen)
+        if (App.GetWindowState() is not WindowState.FullScreen)
         {
-            _previousWindowState = mainWindow.WindowState;
-            mainWindow.WindowState = WindowState.FullScreen;
             if (Settings.Instance.ShouldHideMenuBar)
                 MenuBarViewModel.IsMenuBarVisible = false;
             if (Settings.Instance.TabsPreference.ShouldHideTabsHeader)
@@ -180,15 +176,16 @@ public class MainViewViewModel : ViewModelBase
                 FileManagerViewModel.IsFileManagerVisible = false;
             if (Settings.Instance.StatusBarPreference.ShouldHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = false;
+            App.ToggleFullScreen();
         }
         else
         {
-            mainWindow.WindowState = _previousWindowState;
             MenuBarViewModel.IsMenuBarVisible = true;
             TabsViewModel.IsTabHeadersVisible = true;
             FileManagerViewModel.IsFileManagerVisible = true;
             if (!Settings.Instance.StatusBarPreference.AutoHideStatusBar)
                 StatusBarViewModel.IsStatusBarVisible = true;
+            App.ToggleFullScreen();
         }
     }
 
@@ -219,7 +216,7 @@ public class MainViewViewModel : ViewModelBase
     private void CopyFile(CopyCommand command)
     {
         Log.Debug("Copying file: {Path}", command.Path);
-        if (App.GetTopLevel()?.Clipboard is not { } clipboard) return;
+        if (App.GetClipboard() is not { } clipboard) return;
         _clipBoardDataObject.Set(DataFormats.FileNames, command);
         clipboard.SetTextAsync(command.Path);
     }
@@ -227,7 +224,7 @@ public class MainViewViewModel : ViewModelBase
     private void CutFile(CutCommand command)
     {
         Log.Debug("Cutting file: {Path}", command.Path);
-        if (App.GetTopLevel()?.Clipboard is not { } clipboard) return;
+        if (App.GetClipboard() is not { } clipboard) return;
         _clipBoardDataObject.Set(DataFormats.FileNames, command);
         clipboard.SetTextAsync(command.Path);
     }

@@ -13,39 +13,9 @@ namespace WaifuGallery.Desktop;
 
 internal static class Program
 {
+    #region Private Members
+
     private const int TimeoutSeconds = 3;
-
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
-    [STAThread]
-    public static void Main(string[] args)
-    {
-        CreateLogger();
-        var mutex = new Mutex(false, typeof(Program).FullName);
-        try
-        {
-            if (!mutex.WaitOne(TimeSpan.FromSeconds(TimeoutSeconds), true))
-            {
-                return;
-            }
-
-            SubscribeToDomainUnhandledException();
-
-            BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
-        }
-        catch (Exception e)
-        {
-            Log.Fatal(e, "Something went wrong during lifetime!");
-            throw;
-        }
-        finally
-        {
-            Log.CloseAndFlush();
-            mutex.ReleaseMutex();
-        }
-    }
 
     private static void SubscribeToDomainUnhandledException() =>
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
@@ -70,6 +40,8 @@ internal static class Program
             .CreateLogger();
     }
 
+    #endregion
+
     // Avalonia configuration, don't remove; also used by visual designer.
     // ReSharper disable once MemberCanBePrivate.Global
     public static AppBuilder BuildAvaloniaApp() //
@@ -83,5 +55,35 @@ internal static class Program
             .WithInterFont()
             .LogToTrace()
             .UseReactiveUI();
+    }
+
+    // Initialization code. Don't use any Avalonia, third-party APIs or any
+    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
+    // yet and stuff might break.
+    [STAThread]
+    public static void Main(string[] args)
+    {
+        var mutex = new Mutex(false, typeof(Program).FullName);
+        try
+        {
+            if (!mutex.WaitOne(TimeSpan.FromSeconds(TimeoutSeconds), true))
+            {
+                return;
+            }
+
+            CreateLogger();
+            SubscribeToDomainUnhandledException();
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
+        }
+        catch (Exception e)
+        {
+            Log.Fatal(e, "Something went wrong during lifetime!");
+            throw;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+            mutex.ReleaseMutex();
+        }
     }
 }
