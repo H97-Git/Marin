@@ -237,12 +237,22 @@
         <Setter Property="Height" Value="80" />
     </Style>
     <Style Selector="Control.margin10">
-        <Setter Property="Margin" Value="10"/>
+        <Setter Property="Margin" Value="10" />
     </Style>
-    <Style Selector="ui|InfoBar.down">
-        <Setter Property="RenderTransform" Value="translateY(-32px)"></Setter>
+    <Style Selector="Border.up">
+        <Setter Property="RenderTransform" Value="translateY(0px)" />
+        <Setter Property="Opacity" Value="1" />
     </Style>
-    <Style Selector="ui|InfoBar.up">
-            <Setter Property="RenderTransform" Value="translateY(32px)"></Setter>
-        </Style>
+    <Style Selector="Border.down">
+        <Setter Property="RenderTransform" Value="translateY(32px)" />
+        <Setter Property="Opacity" Value="0" />
+    </Style>
+
+    <Style Selector="ui|InfoBar.infoBar">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Margin" Value="1" />
+        <Setter Property="IsClosable" Value="False" />
+        <Setter Property="IsOpen" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}"/>
+    </Style>
 </Styles>

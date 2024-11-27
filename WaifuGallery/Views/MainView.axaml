@@ -34,19 +34,23 @@
                 <fileManager:FileManager DataContext="{Binding FileManagerViewModel}" />
             </Panel>
         </Grid>
-        <ui:InfoBar Grid.Row="2"
-                    Height="32"
-                    Margin="1"
-                    x:Name="InfoBar"
-                    IsClosable="False"
-                    Background="{Binding StatusBarViewModel.BackgroundColor}"
-                    Foreground="{DynamicResource Brush.Foreground}"
-                    Classes.up="{Binding  StatusBarViewModel.IsStatusBarVisible}"
-                    Classes.down="{Binding  !StatusBarViewModel.IsStatusBarVisible}"
-                    IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}"
-                    IsOpen="{Binding StatusBarViewModel.IsStatusBarVisible}"
-                    Message="{Binding StatusBarViewModel.Message}"
-                    Severity="{Binding StatusBarViewModel.Severity}"
-                    Title="{Binding StatusBarViewModel.Title}" />
+        <Border Grid.Row="2"
+                Classes.up="{Binding  !StatusBarViewModel.IsStatusBarCollapsed}"
+                Classes.down="{Binding  StatusBarViewModel.IsStatusBarCollapsed}">
+            <ui:InfoBar x:Name="InfoBar"
+                        Classes="infoBar"
+                        IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}"
+                        Background="{Binding StatusBarViewModel.BackgroundColor}"
+                        Message="{Binding StatusBarViewModel.Message}"
+                        Severity="{Binding StatusBarViewModel.Severity}"
+                        Title="{Binding StatusBarViewModel.Title}">
+            </ui:InfoBar>
+            <Border.Transitions>
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:1" Easing="SineEaseInOut" />
+                    <DoubleTransition Property="Opacity" Duration="0:0:1" Easing="SineEaseInOut" />
+                </Transitions>
+            </Border.Transitions>
+        </Border>
     </Grid>
 </UserControl>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Avalonia.Media;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
@@ -17,6 +18,7 @@ public class StatusBarViewModel : ViewModelBase
     private IBrush _backgroundColor = new SolidColorBrush(Colors.Transparent);
     private InfoBarSeverity _severity;
     private bool _isStatusBarVisible = true;
+    private bool _isStatusBarCollapsed = false;
     private int _countDuplicates;
     private string _message = "";
     private string _title = "";
@@ -42,6 +44,7 @@ public class StatusBarViewModel : ViewModelBase
         }
 
         IsStatusBarVisible = true;
+        IsStatusBarCollapsed = false;
         if (!Settings.Instance.StatusBarPreference.AutoHideStatusBar) return;
         _timer.Stop();
         _timer.Interval = Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay;
@@ -76,11 +79,15 @@ public class StatusBarViewModel : ViewModelBase
     public StatusBarViewModel()
     {
         _timer = new Timer(Settings.Instance.StatusBarPreference.AutoHideStatusBarDelay);
-        _timer.Elapsed += (_, _) => IsStatusBarVisible = false;
+        _timer.Elapsed += (_, _) =>
+        {
+            IsStatusBarCollapsed = true;
+            Task.Delay(1000).ContinueWith(_ => { IsStatusBarVisible = false; });
+        };
         _timer.AutoReset = false;
         MessageBus.Current.Listen<SendMessageToStatusBarCommand>().Subscribe(SetMessage);
         this.WhenAnyValue(x => x.Severity).Subscribe(SetTitleAndBackGroundColor);
-        
+
         SetMessage(new SendMessageToStatusBarCommand(InfoBarSeverity.Informational, "Welcome to WaifuGallery!"));
     }
 
@@ -110,6 +117,12 @@ public class StatusBarViewModel : ViewModelBase
     {
         get => _backgroundColor;
         set => this.RaiseAndSetIfChanged(ref _backgroundColor, value);
+    }
+
+    public bool IsStatusBarCollapsed
+    {
+        get => _isStatusBarCollapsed;
+        set => this.RaiseAndSetIfChanged(ref _isStatusBarCollapsed, value);
     }
 
     public bool IsStatusBarVisible
