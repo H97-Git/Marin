@@ -22,7 +22,7 @@
         VerticalAlignment="{Binding FileManagerVerticalAlignment}">
         <Expander.Header>
             <StackPanel Classes="fileManagerExpanderHeader">
-                <Svg Path="{DynamicResource FoldersPath}" />
+                <Label Content="&#xe260;" FontFamily="{DynamicResource Phosphor}" FontSize="24" Margin="0,0,10,0" />
                 <TextBlock Text="File Manager" />
             </StackPanel>
         </Expander.Header>
@@ -35,20 +35,17 @@
                 <Button Grid.Column="0"
                         Command="{Binding GotoPreviousDirCommand}"
                         ToolTip.Tip="Go Backward">
-                    <!-- <ui:SymbolIcon Symbol="Back" FontSize="16" /> -->
-                    <Svg Path="{StaticResource CaretLeftPath}" />
+                    <Label Content="&#xe138;" FontFamily="{DynamicResource Phosphor}" />
                 </Button>
                 <Button Grid.Column="1"
                         Command="{Binding GotoParentFolderCommand}"
                         ToolTip.Tip="Go Up">
-                    <!-- <ui:SymbolIcon Symbol="Up" FontSize="16" /> -->
-                    <Svg Path="{StaticResource ArrowBendRightUp}" />
+                    <Label Content="&#xe01e;" FontFamily="{DynamicResource Phosphor}" />
                 </Button>
                 <Button Grid.Column="2"
                         Command="{Binding GotoNextDirCommand}"
                         ToolTip.Tip="Go Forward">
-                    <!-- <ui:SymbolIcon Symbol="Forward" FontSize="16" /> -->
-                    <Svg Path="{StaticResource CaretRightPath}" />
+                    <Label Content="&#xe13a;" FontFamily="{DynamicResource Phosphor}" />
                 </Button>
                 <TextBox Grid.Column="3"
                          Text="{Binding CurrentPath}"
@@ -56,14 +53,12 @@
                 <Button Grid.Column="4"
                         Command="{Binding OpenFileCommand}"
                         ToolTip.Tip="Open folder">
-                    <!-- <ui:SymbolIcon Symbol="OpenFolder" FontSize="16" /> -->
-                    <Svg Path="{StaticResource FolderOpenPath}" />
+                    <Label Content="&#xe256;" FontFamily="{DynamicResource Phosphor}" />
                 </Button>
                 <Button Grid.Column="5"
                         Command="{Binding CreateNewFolder}"
                         ToolTip.Tip="Create new folder">
-                    <Svg Path="{StaticResource FolderPlusPath}" />
-                    <!-- <ui:SymbolIcon Symbol="NewFolder" FontSize="16" /> -->
+                    <Label Content="&#xe258;" FontFamily="{DynamicResource Phosphor}" />
                 </Button>
                 <ComboBox Grid.Column="6"
                           SelectedIndex="{Binding SelectedSortIndex}"
@@ -94,20 +89,20 @@
                         <ContextMenu>
                             <MenuItem Header="Open in Explorer" Command="{Binding OpenInExplorer}">
                                 <MenuItem.Icon>
-                                    <!-- <ui:SymbolIcon Symbol="NewFolder" /> -->
-                                    <Svg Path="{StaticResource BinocularsPath}" />
+                                    <!-- binoculars -->
+                                    <Label Classes="menuItemIcon" Content="&#xea64;" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Create new folder" Command="{Binding  CreateNewFolder}">
                                 <MenuItem.Icon>
-                                    <!-- <ui:SymbolIcon Symbol="NewFolder" /> -->
-                                    <Svg Path="{StaticResource FolderPlusPath}" />
+                                    <!-- folderPlus -->
+                                    <Label Classes="menuItemIcon" Content="&#xe258;" />
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Paste" Command="{Binding  Paste}">
                                 <MenuItem.Icon>
-                                    <!-- <ui:SymbolIcon Symbol="Paste" /> -->
-                                    <Svg Path="{StaticResource CopyPath}" />
+                                    <!-- copy -->
+                                    <Label Classes="menuItemIcon" Content="&#xe1ca;" />
                                 </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>

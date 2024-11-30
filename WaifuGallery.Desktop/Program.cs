@@ -4,7 +4,6 @@ using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using Avalonia.Svg.Skia;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using WaifuGallery.Models;
@@ -46,10 +45,6 @@ internal static class Program
     // ReSharper disable once MemberCanBePrivate.Global
     public static AppBuilder BuildAvaloniaApp() //
     {
-#if DEBUG
-        GC.KeepAlive(typeof(SvgImageExtension).Assembly);
-        GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
-#endif
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()

@@ -12,13 +12,10 @@
     <UserControl.Resources>
         <converters:DepthToBooleanConverter x:Key="DepthToBooleanConverter" />
     </UserControl.Resources>
-    <!-- <ui:SettingsExpander Header="Image Preview" -->
-    <!--                      Description="Configure Image Preview behaviours" -->
-    <!--                      IconSource="{DynamicResource PictureInPictureSvg}"> -->
     <StackPanel>
         <ui:SettingsExpander Header="Image Preview depth"
                              Description="How many levels of subfolders the Image Preview will scan for images. (Default: 0)"
-                             IconSource="{DynamicResource SubsetOfSvg}">
+                             IconSource="{DynamicResource SubsetOf}">
             <ui:SettingsExpander.Footer>
                 <StackPanel Orientation="Horizontal">
                     <RadioButton Content="0"
@@ -34,7 +31,7 @@
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Default Size"
                              Description="The default size of the Image Preview. (Min: 150, Max: 600, Default: 300)"
-                             IconSource="{DynamicResource ArrowsOutCardinalSvg}">
+                             IconSource="{DynamicResource ArrowsOutCardinal}">
             <ui:SettingsExpander.Footer>
                 <NumericUpDown Value="{Binding PreviewDefaultZoom}" Minimum="150" Maximum="600"
                                Increment="1" />
@@ -42,14 +39,14 @@
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Follow Mouse"
                              Description="When set to true the Image Preview will follow the mouse."
-                             IconSource="{DynamicResource CursorSvg}">
+                             IconSource="{DynamicResource Cursor}">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding PreviewFollowMouse}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Loop back"
                              Description="When set to true the Image Preview will loop back to the first/last image when it reaches a boundary."
-                             IconSource="{DynamicResource ArrowsCounterClockWiseSvg}">
+                             IconSource="{DynamicResource ArrowsCounterClockWise}">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldImagePreviewLoop}" />
             </ui:SettingsExpander.Footer>

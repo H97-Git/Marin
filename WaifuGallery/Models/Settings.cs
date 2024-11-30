@@ -84,6 +84,9 @@ public class Settings
     public TabsPreference TabsPreference { get; init; } = new();
     public bool ShouldHideMenuBar { get; set; }
     public string Theme { get; set; } = "System";
+    public bool OpenPreferencesOnStartup { get; set; }
+    public bool SaveLastSessionOnExit { get; set; }
+    public bool LoadLastSessionOnStartUp { get; set; }
 
     public static string SettingsPath
     {
@@ -109,7 +112,7 @@ public class Settings
     public void Save()
     {
         Log.Debug("Saving settings and hotkeys...");
-        if (Instance.TabsPreference.SaveLastSessionOnExit)
+        if (Instance.SaveLastSessionOnExit)
         {
             SaveSession();
         }
@@ -144,10 +147,8 @@ public class TabsPreference
     public bool IsSettingsTabCycled { get; set; }
     public bool IsTabSettingsClosable { get; set; }
     public bool Loop { get; set; }
-    public bool OpenPreferencesOnStartup { get; set; }
     public bool ShouldHideTabsHeader { get; set; }
-    public bool SaveLastSessionOnExit { get; set; }
-    public bool LoadLastSessionOnStartUp { get; set; }
+
     [JsonIgnore] public List<string> LastSession { get; set; }
 }
 

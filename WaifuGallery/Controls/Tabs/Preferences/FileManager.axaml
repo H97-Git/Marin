@@ -8,22 +8,16 @@
              x:Class="WaifuGallery.Controls.Tabs.Preferences.FileManager"
              x:DataType="preferences:FileManagerPreferencesViewModel"
              IsVisible="{Binding IsVisible}">
-    <!-- <ui:SettingsExpander Header="File Manager" -->
-    <!--                      Description="Configure Tabs behaviours." -->
-    <!--                      IconSource="{DynamicResource FoldersSvg}"> -->
     <StackPanel>
-        <StackPanel.Styles>
-
-        </StackPanel.Styles>
         <ui:SettingsExpander Header="Keep last path stored"
                              Description="When set to true the last visited path will be saved on exit."
-                             IconSource="{DynamicResource ClockCounterClockWiseSvg}">
+                             IconSource="{DynamicResource ClockCounterClockWise}">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldSaveLastPathOnExit}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Compute each folder size"
-                             IconSource="{DynamicResource FolderDashedSvg}"
+                             IconSource="{DynamicResource FolderDashed}"
                              Description="When set to true the size of each folder will be calculated. (Not recommended use each folder context menu instead.)">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldCalculateFolderSize}" />
@@ -31,14 +25,14 @@
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Choose extraction folder name"
                              Description="When set to true a dialog will ask a name for the extracted archive. (When false default is used. Default: 'Extracted') "
-                             IconSource="{DynamicResource FileArchiveSvg}">
+                             IconSource="{DynamicResource FileArchive}">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldAskExtractionFolderName}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Set default sort order"
                              Description="Set the sort order that will be used by default (at startup)."
-                             IconSource="{DynamicResource SortAscendingSvg}">
+                             IconSource="{DynamicResource SortAscending}">
             <ui:SettingsExpander.Footer>
                 <ComboBox SelectionChanged="SelectingItemsControl_OnSelectionChanged">
                     <ComboBoxItem>Date Accessed</ComboBoxItem>
@@ -53,7 +47,7 @@
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Position"
                              Description="Set the position of the file manager."
-                             IconSource="{DynamicResource AlignCenterHorizontalSvg}">
+                             IconSource="{DynamicResource AlignCenterHorizontal}">
             <ui:SettingsExpander.Footer>
                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto">
                     <Button Width="115" Margin="5" Grid.Row="0" Grid.Column="0" Content="Top Left"
@@ -78,5 +72,4 @@
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
     </StackPanel>
-    <!-- </ui:SettingsExpander> -->
 </UserControl>

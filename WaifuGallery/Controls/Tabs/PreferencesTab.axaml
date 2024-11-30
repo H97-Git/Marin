@@ -7,85 +7,67 @@
              xmlns:local="clr-namespace:WaifuGallery.ViewModels.Tabs"
              xmlns:preferences="clr-namespace:WaifuGallery.Controls.Tabs.Preferences"
              x:DataType="local:PreferencesTabViewModel">
-    <Grid>
-        <ScrollViewer>
-            <StackPanel Spacing="8" Classes="margin10">
-                <DockPanel Classes="margin10" HorizontalAlignment="Left">
-                    <Image Classes="preferencesLogo"
-                           Source="/Resources/logo.webp"
-                           DockPanel.Dock="Left"
-                           RenderOptions.BitmapInterpolationMode="HighQuality" />
-                    <!-- <ToggleButton> -->
-                    <!--     <Panel> -->
-                    <!--         <PathIcon Classes="audio-on" -->
-                    <!--                   Data="{StaticResource SpeakerRegular}" /> -->
-                    <!--         <PathIcon Classes="audio-mute" -->
-                    <!--                   Data="{StaticResource SpeakerOffRegular}" /> -->
-                    <!--     </Panel> -->
-                    <!--     <ToggleButton.Styles> -->
-                    <!--         <Style Selector="ToggleButton PathIcon.audio-on"> -->
-                    <!--             <Setter Property="IsVisible" Value="False" /> -->
-                    <!--         </Style> -->
-                    <!--         <Style Selector="ToggleButton:checked PathIcon.audio-on"> -->
-                    <!--             <Setter Property="IsVisible" Value="True" /> -->
-                    <!--         </Style> -->
-                    <!--         <Style Selector="ToggleButton PathIcon.audio-mute"> -->
-                    <!--             <Setter Property="IsVisible" Value="True" /> -->
-                    <!--         </Style> -->
-                    <!--         <Style Selector="ToggleButton:checked PathIcon.audio-mute"> -->
-                    <!--             <Setter Property="IsVisible" Value="False" /> -->
-                    <!--         </Style> -->
-                    <!--     </ToggleButton.Styles> -->
-                    <!-- </ToggleButton> -->
-                    <StackPanel Classes="preferencesHeader">
-                        <TextBlock Text="Preferences" PointerPressed="InputElement_OnPointerPressed"
-                                   Foreground="{Binding Foreground}" />
-                        <TextBlock Text="{Binding SelectedCategory}" Cursor="Arrow" />
-                    </StackPanel>
-                </DockPanel>
-                <StackPanel IsVisible="{Binding IsMainVisible}">
-                    <preferences:Category Content="File Manager" Description="Change File Manager options."
-                                          IconSource="{DynamicResource FoldersSvg}"
-                                          Command="{Binding SwitchCategory}"
-                                          CommandParameter="FileManager" />
-                    <preferences:Category Content="FullScreen"
-                                          Description="Hide some UI elements when the app is in fullscreen."
-                                          IconSource="{DynamicResource ArrowsOutSvg}"
-                                          Command="{Binding SwitchCategory}"
-                                          CommandParameter="FullScreen" />
-                    <preferences:Category Content="General"
-                                          Description="Change your app preferences."
-                                          IconSource="{DynamicResource GearSvg}"
-                                          Command="{Binding SwitchCategory}"
-                                          CommandParameter="General" />
-                    <preferences:Category Content="HotKeys/Keybindings"
-                                          Description="Change default keybindings."
-                                          IconSource="{DynamicResource KeyboardSvg}"
-                                          Command="{Binding SwitchCategory}"
-                                          CommandParameter="HotKeys" />
-                    <preferences:Category Content="Image Preview"
-                                          Description="Change the Image Preview default behaviours."
-                                          IconSource="{DynamicResource PictureInPictureSvg}"
-                                          Command="{Binding SwitchCategory}"
-                                          CommandParameter="ImagePreview" />
-                    <preferences:Category Content="Status Bar"
-                                          Description="Change the Status Bar preferences. (Auto-Hide,Delay)"
-                                          IconSource="{DynamicResource BarricadeSvg}"
-                                          Command="{Binding SwitchCategory}"
-                                          CommandParameter="StatusBar" />
-                    <preferences:Category Content="Tabs" Description="Change Tabs preferences."
-                                          IconSource="{DynamicResource TabsSvg}"
-                                          Command="{Binding SwitchCategory}"
-                                          CommandParameter="Tabs" />
+    <ScrollViewer>
+        <StackPanel>
+            <!-- Header -->
+            <StackPanel Classes="preferencesHeader">
+                <Border CornerRadius="50" ClipToBounds="True" Classes="preferencesLogo">
+                    <Image
+                        Source="/Resources/Icons/logo.png"
+                        RenderOptions.BitmapInterpolationMode="HighQuality" />
+                </Border>
+                <StackPanel Classes="preferencesPath">
+                    <TextBlock Text="Preferences" PointerPressed="InputElement_OnPointerPressed"
+                               Foreground="{Binding Foreground}" Cursor="Hand" />
+                    <TextBlock Text="{Binding SelectedCategory}" />
                 </StackPanel>
-                <preferences:FileManager DataContext="{Binding FileManagerPreferencesViewModel}" />
-                <preferences:FullScreen DataContext="{Binding FullScreenPreferencesViewModel}" />
-                <preferences:General DataContext="{Binding GeneralPreferencesViewModel}" />
-                <preferences:HotKeys DataContext="{Binding HotKeysPreferencesViewModel}" />
-                <preferences:ImagePreview DataContext="{Binding ImagePreviewPreferencesViewModel}" />
-                <preferences:StatusBar DataContext="{Binding StatusBarPreferencesViewModel}" />
-                <preferences:Tabs DataContext="{Binding TabsPreferencesViewModel}" />
+
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+            <!-- Category -->
+            <StackPanel IsVisible="{Binding IsMainVisible}">
+                <preferences:Category Content="File Manager" Description="Change File Manager options."
+                                      Command="{Binding SwitchCategory}"
+                                      IconSource="{DynamicResource Folders}"
+                                      CommandParameter="FileManager">
+                </preferences:Category>
+                <preferences:Category Content="FullScreen"
+                                      Description="Hide some UI elements when the app is in fullscreen."
+                                      IconSource="{DynamicResource ArrowsOut}"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="FullScreen" />
+                <preferences:Category Content="General"
+                                      Description="Change your app preferences."
+                                      IconSource="{DynamicResource Gear}"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="General" />
+                <preferences:Category Content="HotKeys/Keybindings"
+                                      Description="Change default keybindings."
+                                      IconSource="{DynamicResource Keyboard}"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="HotKeys" />
+                <preferences:Category Content="Image Preview"
+                                      IconSource="{DynamicResource PictureInPicture}"
+                                      Description="Change the Image Preview default behaviours."
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="ImagePreview" />
+                <preferences:Category Content="Status Bar"
+                                      IconSource="{DynamicResource Barricade}"
+                                      Description="Change the Status Bar preferences. (Auto-Hide,Delay)"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="StatusBar" />
+                <preferences:Category Content="Tabs" Description="Change Tabs preferences."
+                                      IconSource="{DynamicResource Tabs}"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="Tabs" />
+            </StackPanel>
+            <!-- Preferences -->
+            <preferences:FileManager DataContext="{Binding FileManagerPreferencesViewModel}" />
+            <preferences:FullScreen DataContext="{Binding FullScreenPreferencesViewModel}" />
+            <preferences:General DataContext="{Binding GeneralPreferencesViewModel}" />
+            <preferences:HotKeys DataContext="{Binding HotKeysPreferencesViewModel}" />
+            <preferences:ImagePreview DataContext="{Binding ImagePreviewPreferencesViewModel}" />
+            <preferences:StatusBar DataContext="{Binding StatusBarPreferencesViewModel}" />
+            <preferences:Tabs DataContext="{Binding TabsPreferencesViewModel}" />
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

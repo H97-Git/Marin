@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WaifuGallery.Factories;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels;
+using WaifuGallery.ViewModels.FileManager;
 using WaifuGallery.ViewModels.Tabs;
 using WaifuGallery.Views;
 
@@ -49,6 +50,10 @@ public class App : Application
     {
         var collection = new ServiceCollection();
         collection.AddSingleton<MainViewViewModel>();
+        collection.AddSingleton<MenuBarViewModel>();
+        collection.AddSingleton<TabsViewModel>();
+        collection.AddSingleton<FileManagerViewModel>();
+        collection.AddSingleton<StatusBarViewModel>();
         collection.AddTransient<ImageTabViewModel>();
         collection.AddTransient<PreferencesTabViewModel>();
         collection.AddSingleton<Func<TabType, TabViewModelBase>>(x => type => type switch
@@ -75,6 +80,15 @@ public class App : Application
     public static WindowState? GetWindowState() =>
         GetMainWindow()?.WindowState;
 
+    public static MainViewViewModel? GetMainViewViewModel() =>
+        ((GetMainWindow() as MainWindow)?.Content as MainView)?.DataContext as MainViewViewModel;
+
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+        SetThemeVariant(Settings.Instance.Theme);
+    }
+
     public static void ToggleFullScreen()
     {
         var mainWindow = GetMainWindow();
@@ -90,15 +104,6 @@ public class App : Application
         }
     }
 
-    public static MainViewViewModel? GetMainViewViewModel() =>
-        ((GetMainWindow() as MainWindow)?.Content as MainView)?.DataContext as MainViewViewModel;
-
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-        SetThemeVariant(Settings.Instance.Theme);
-    }
-
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -110,11 +115,12 @@ public class App : Application
             //
             // await splash.InitApp();
 
+            var collection = CreateServiceCollection();
             desktop.MainWindow = new MainWindow()
             {
                 Content = new MainView()
                 {
-                    DataContext = CreateServiceCollection().BuildServiceProvider()
+                    DataContext = collection.BuildServiceProvider()
                         .GetRequiredService<MainViewViewModel>()
                 }
             };

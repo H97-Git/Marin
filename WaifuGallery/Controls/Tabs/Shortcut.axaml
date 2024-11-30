@@ -11,31 +11,37 @@
              Margin="5">
     <Border Classes="shortCutControl"
             ToolTip.Tip="{Binding KeyCommandToolTipText}">
-        <ui:SettingsExpanderItem Content="{Binding KeyCommandText}">
-            <ui:SettingsExpanderItem.Footer>
-                <StackPanel>
-                    <ItemsControl ItemsSource="{Binding Gestures}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Content="{Binding}"
-                                        Classes="keyCommandButton"
-                                        Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).UpdateKeyCommand}"
-                                        CommandParameter="{Binding}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <Button
-                        Classes="keyCommandButton"
-                        ToolTip.Tip="Add"
-                        Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).AddKeyCommand}">
-                        <Svg Path="{DynamicResource PlusPath}" Width="18" />
-                    </Button>
+        <ui:SettingsExpanderItem>
+            <ui:SettingsExpanderItem.Content>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="{Binding KeyCommandText}" HorizontalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding Gestures}" HorizontalAlignment="Center">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Content="{Binding}"
+                                            Classes="keyCommandButton"
+                                            Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).UpdateKeyCommand}"
+                                            CommandParameter="{Binding}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button
+                            HorizontalAlignment="Center"
+                            Classes="keyCommandButton"
+                            ToolTip.Tip="Add"
+                            Command="{Binding #ShortcutControl.((viewModels:ShortcutViewModel)DataContext).AddKeyCommand}">
+                            <Label />
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
+            </ui:SettingsExpanderItem.Content>
+            <ui:SettingsExpanderItem.Footer>
             </ui:SettingsExpanderItem.Footer>
         </ui:SettingsExpanderItem>
     </Border>

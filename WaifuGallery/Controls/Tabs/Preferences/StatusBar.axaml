@@ -8,18 +8,15 @@
              x:Class="WaifuGallery.Controls.Tabs.Preferences.StatusBar"
              x:DataType="preferences:StatusBarPreferencesViewModel"
              IsVisible="{Binding IsVisible}">
-    <!-- <ui:SettingsExpander Header="Status Bar" -->
-    <!--                      Description="Auto Hide - Delay" -->
-    <!--                      IconSource="{DynamicResource BarricadeSvg}"> -->
     <StackPanel>
         <ui:SettingsExpander Header="Auto hide status bar"
-                             Description="When set to true the status bar will be hidden (after a delay)." IconSource="{DynamicResource EyeSvg}">
+                             Description="When set to true the status bar will be hidden (after a delay)." IconSource="{DynamicResource Eye}">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding AutoHideStatusBar}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Hide status bar delay"
-                                 Description="Min: 3000ms Max:10000ms" IconSource="{DynamicResource TimerSvg}">
+                                 Description="Min: 3000ms Max:10000ms" IconSource="{DynamicResource Timer}">
             <ui:SettingsExpander.Footer>
                 <NumericUpDown Value="{Binding AutoHideStatusBarDelay}" Minimum="3000" Maximum="10000"
                                Increment="500" IsEnabled="{Binding AutoHideStatusBar}" />

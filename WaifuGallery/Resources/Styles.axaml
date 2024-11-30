@@ -2,64 +2,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <Design.PreviewWith>
-        <ThemeVariantScope RequestedThemeVariant="Dark">
-            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Background="{DynamicResource Brush.Background}"
-                  Width="800" Margin="10" Classes="fileManagerToolBar">
-                <Button Grid.Column="0">
-                    <!-- <ui:SymbolIcon Symbol="OpenFolder" FontSize="16" /> -->
-                    <Svg Path="{StaticResource FolderOpenPath}" Width="18" />
-                </Button>
-                <Button Grid.Column="1" ToolTip.Tip="Create new folder">
-                    <Svg Path="{StaticResource FolderPlusPath}" Width="18" />
-                    <!-- <ui:SymbolIcon Symbol="NewFolder" FontSize="16" /> -->
-                </Button>
-                <TextBox Grid.Column="2" Text="C:\"
-                         HorizontalAlignment="Stretch"
-                         VerticalAlignment="Center" />
-                <Button Grid.Column="3"
-                        ToolTip.Tip="Go Backward">
-                    <!-- <ui:SymbolIcon Symbol="Back" FontSize="16" /> -->
-                    <Svg Path="{StaticResource CaretLeftPath}" Width="18" />
-                </Button>
-                <Button Grid.Column="4"
-                        ToolTip.Tip="Go Up">
-                    <!-- <ui:SymbolIcon Symbol="Up" FontSize="16" /> -->
-                    <Svg Path="{StaticResource ArrowBendRightUp}" Width="18" />
-                </Button>
-                <Button Grid.Column="5"
-                        ToolTip.Tip="Go Forward">
-                    <!-- <ui:SymbolIcon Symbol="Forward" FontSize="16" /> -->
-                    <Svg Path="{StaticResource CaretRightPath}" Width="18" />
-                </Button>
-            </Grid>
-        </ThemeVariantScope>
+
     </Design.PreviewWith>
-    <!-- <Style Selector="ui|SettingsExpander"> -->
-    <!--     <Setter Property="Margin" Value="5"></Setter> -->
-    <!-- </Style> -->
-    <!-- <Style Selector="Window"> -->
-    <!--     <Setter Property="Background" Value="{DynamicResource Brush.Background}" /> -->
-    <!-- </Style> -->
-    <!-- ~1~ <Style Selector="ContentPresenter"> @1@ -->
-    <!-- ~1~     <Setter Property="FontFamily" @1@ -->
-    <!-- ~1~             Value="{Binding Source={x:Static models:Settings.Instance}, Path=DefaultFont}" /> @1@ -->
-    <!-- ~1~ </Style> @1@ -->
-    <!-- ~1~ <Style Selector="ListBox#FileManagerListBox"> @1@ -->
-    <!-- ~1~     <Setter Property="Background" Value="{DynamicResource Brush.Background}" /> @1@ -->
-    <!-- ~1~ </Style> @1@ -->
-    <!-- <Style Selector="TextBox /template/ Border#PART_BorderElement"> -->
-    <!--     <Setter Property="BorderBrush" Value="Red" /> -->
-    <!--     <Setter Property="BorderThickness" Value="0,0,0,0" /> -->
-    <!-- </Style> -->
-    <Style Selector="Svg">
-        <Setter Property="Css" Value="{DynamicResource SvgCss}" />
+
+    <!-- General -->
+    <Style Selector="Image">
+        <Setter Property="ClipToBounds" Value="True" />
     </Style>
+    <!-- Menu -->
     <Style Selector="Menu">
         <Setter Property="Focusable" Value="False" />
     </Style>
     <Style Selector="MenuItem">
         <Setter Property="Focusable" Value="False" />
     </Style>
+    <Style Selector="Label.menuItemIcon">
+        <Setter Property="FontFamily" Value="{DynamicResource Phosphor}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}" />
+        <Setter Property="FontSize" Value="99" />
+    </Style>
+
+    <!-- File Control -->
     <Style Selector="Grid.fileControl">
         <Setter Property="Margin" Value="0,10,0,0" />
         <Setter Property="ToolTip.ShowDelay" Value="700" />
@@ -95,6 +58,8 @@
         <Setter Property="Margin" Value="0,10" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
+
+    <!-- Image Preview Control -->
     <Style Selector="Canvas.imagePreviewControl Grid">
         <Setter Property="ClipToBounds" Value="True" />
     </Style>
@@ -120,6 +85,8 @@
         <Setter Property="Stretch" Value="UniformToFill" />
         <Setter Property="ClipToBounds" Value="True" />
     </Style>
+
+    <!-- File Manager Control -->
     <Style Selector="Expander.fileManagerExpander">
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
@@ -130,7 +97,6 @@
     </Style>
     <Style Selector="Expander.fileManagerControl /template/ Border">
         <Setter Property="Background" Value="IndianRed" />
-        <!-- <Setter Property="Background" Value="{DynamicResource Brush.Background}" /> -->
         <Setter Property="CornerRadius" Value="4" />
     </Style>
     <Style Selector="StackPanel.fileManagerExpanderHeader">
@@ -142,15 +108,9 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="10,0,10,0" />
     </Style>
-    <Style Selector="StackPanel.fileManagerExpanderHeader Svg">
-        <Setter Property="Width" Value="24" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Margin" Value="0,0,5,0" />
-    </Style>
     <Style Selector="StackPanel.fileManagerExpanderHeader TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
-
     <Style Selector="Grid.fileManagerMainGrid">
         <Setter Property="MinWidth" Value="500" />
         <Setter Property="MinHeight" Value="500" />
@@ -158,9 +118,6 @@
     </Style>
     <Style Selector="Grid.fileManagerToolBar">
         <Setter Property="Margin" Value="5" />
-    </Style>
-    <Style Selector="Grid.fileManagerToolBar Svg">
-        <Setter Property="Width" Value="18" />
     </Style>
     <Style Selector="Grid.fileManagerToolBar Button">
         <Setter Property="Margin" Value="0,0,5,0" />
@@ -181,21 +138,14 @@
         <Setter Property="SelectionMode" Value="Multiple" />
     </Style>
     <Style Selector="Panel.fileManagerContent ListBox ScrollViewer">
-
         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
     </Style>
     <Style Selector="Panel.fileManagerContent TextBlock">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
-    <Style Selector="Label.menuItemIcon">
-        <Setter Property="FontFamily" Value="{DynamicResource Phosphor}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}" />
-        <Setter Property="FontSize" Value="99" />
-    </Style>
-    <Style Selector="Image">
-        <Setter Property="ClipToBounds" Value="True" />
-    </Style>
+
+
     <Style Selector="ListBox.previewList">
         <Setter Property="Background" Value="#7E000000" />
     </Style>
@@ -206,11 +156,39 @@
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="ClipToBounds" Value="True" />
     </Style>
-
     <Style Selector="Border.imageGridPreview Image">
         <Setter Property="ClipToBounds" Value="True" />
         <Setter Property="Height" Value="100" />
     </Style>
+
+    <!-- Preferences -->
+    <Style Selector="ui|SettingsExpander">
+        <Setter Property="Margin" Value="5" />
+    </Style>
+    
+    <Style Selector="StackPanel.preferencesHeader">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="0" />
+        <Setter Property="Margin" Value="10" />
+    </Style>
+    <Style Selector="Border.preferencesLogo">
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="CornerRadius" Value="50" />
+        <Setter Property="BorderBrush" Value="#fdebdf" />
+        <Setter Property="BorderThickness" Value="3" />
+        <Setter Property="Margin" Value="10,0,0,0" />
+    </Style>
+    <Style Selector="Border.preferencesLogo Image">
+        <Setter Property="Height" Value="90" />
+    </Style>
+    <Style Selector="StackPanel.preferencesPath">
+        <Setter Property="Margin" Value="10" />
+    </Style>
+    <Style Selector="StackPanel.preferencesPath TextBlock">
+        <Setter Property="FontSize" Value="24" />
+    </Style>
+
+    <!-- Preferences Hotkeys -->
     <Style Selector="Border.shortCutControl">
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="ClipToBounds" Value="True" />
@@ -221,24 +199,19 @@
     <Style Selector="Button.keyCommandButton StackPanel">
         <Setter Property="Margin" Value="5,0" />
     </Style>
-
-    <Style Selector="StackPanel.preferencesHeader">
-        <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="Spacing" Value="0" />
+    <Style Selector="Button.keyCommandButton Label">
+        <Setter Property="FontFamily" Value="{DynamicResource Phosphor}" />
+        <Setter Property="Content" Value="&#xe3d4;" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+    <Style Selector="Button.keyCommandButton">
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="5,0,0,0" />
     </Style>
 
-    <Style Selector="StackPanel.preferencesHeader TextBlock">
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="Margin" Value="15,0" />
-    </Style>
-
-    <Style Selector="Image.preferencesLogo">
-        <Setter Property="Height" Value="80" />
-    </Style>
-    <Style Selector="Control.margin10">
-        <Setter Property="Margin" Value="10" />
-    </Style>
+    <!-- Info Bar -->
     <Style Selector="Border.up">
         <Setter Property="RenderTransform" Value="translateY(0px)" />
         <Setter Property="Opacity" Value="1" />
@@ -247,12 +220,11 @@
         <Setter Property="RenderTransform" Value="translateY(32px)" />
         <Setter Property="Opacity" Value="0" />
     </Style>
-
     <Style Selector="ui|InfoBar.infoBar">
         <Setter Property="Height" Value="32" />
         <Setter Property="Margin" Value="1" />
         <Setter Property="IsClosable" Value="False" />
         <Setter Property="IsOpen" Value="True" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground}" />
     </Style>
 </Styles>

@@ -8,12 +8,9 @@
              x:Class="WaifuGallery.Controls.Tabs.Preferences.Tabs"
              x:DataType="preferences:TabsPreferencesViewModel"
              IsVisible="{Binding IsVisible}">
-    <!-- <ui:SettingsExpander Header="Tabs" -->
-    <!--                      IconSource="{DynamicResource TabsSvg}" -->
-    <!--                      Description="Configure Tabs behaviours"> -->
     <StackPanel>
         <ui:SettingsExpander Header="Include Preferences when cycling"
-                             IconSource="{DynamicResource RepeatSvg}"
+                             IconSource="{DynamicResource Repeat}"
                              Description="Preferences tab is always included when [Ctrl] is pressed.">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding IsSettingsTabCycled}" />
@@ -21,47 +18,26 @@
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Allow Tab settings to close"
                              Description="When set to false the preferences tab will not be closable."
-                             IconSource="{DynamicResource XSquareSvg}">
+                             IconSource="{DynamicResource XSquare}">
             <ui:SettingsExpander.Footer>
                 <CheckBox Content="" IsChecked="{Binding IsTabSettingsClosable}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Allow duplicate tabs"
                              Description="When set to false only one tab from the same folder will be allowed."
-                             IconSource="{DynamicResource CopySimpleSvg}">
+                             IconSource="{DynamicResource CopySimple}">
             <ui:SettingsExpander.Footer>
                 <CheckBox Content="" IsChecked="{Binding IsDuplicateTabsAllowed}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
         <ui:SettingsExpander Header="Loop back"
                              Description="When set to true the image will loop back when first/last image is reached."
-                             IconSource="{DynamicResource ArrowsCounterClockWiseSvg}">
+                             IconSource="{DynamicResource ArrowsCounterClockWise}">
             <ui:SettingsExpander.Footer>
                 <CheckBox IsChecked="{Binding ShouldImageLoop}" />
             </ui:SettingsExpander.Footer>
         </ui:SettingsExpander>
-        <ui:SettingsExpander Header="Open preferences at start"
-                             Description="When set to true the preferences tab will be opened at start."
-                             IconSource="{DynamicResource GearSvg}">
-            <ui:SettingsExpander.Footer>
-                <CheckBox IsChecked="{Binding ShouldOpenPreferencesOnStartUp}" />
-            </ui:SettingsExpander.Footer>
-        </ui:SettingsExpander>
-        <ui:SettingsExpander Header="Save session on exit"
-                             Description="When set to true the current session will be saved on exit."
-                             IconSource="{DynamicResource FileArrowUp}">
-            <ui:SettingsExpander.Footer>
-                <CheckBox IsChecked="{Binding ShouldSaveLastSessionOnExit}" />
-            </ui:SettingsExpander.Footer>
-        </ui:SettingsExpander>
-        <ui:SettingsExpander Header="Load last session on start"
-                             Description="When set to true the last session will be loaded on start."
-                             IconSource="{DynamicResource FileArrowDown}">
-            <ui:SettingsExpander.Footer>
-                <CheckBox IsChecked="{Binding ShouldLoadLastSessionOnStartUp}"
-                          IsEnabled="{Binding ShouldSaveLastSessionOnExit}" />
-            </ui:SettingsExpander.Footer>
-        </ui:SettingsExpander>
+        
     </StackPanel>
     <!-- </ui:SettingsExpander> -->
 </UserControl>

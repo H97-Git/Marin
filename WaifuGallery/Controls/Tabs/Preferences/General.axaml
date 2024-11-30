@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:preferences="clr-namespace:WaifuGallery.ViewModels.Tabs.Preferences"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="WaifuGallery.Controls.Tabs.Preferences.General"
@@ -10,14 +10,36 @@
              IsVisible="{Binding IsVisible}">
 
     <StackPanel>
-        <controls:SettingsExpander Header="Theme Variant"
-                                   IconSource="DarkTheme"
-                                   Description="Select the current theme variant.">
-            <controls:SettingsExpander.Footer>
+        <ui:SettingsExpander Header="Theme Variant"
+                             IconSource="DarkTheme"
+                             Description="Select the current theme variant.">
+            <ui:SettingsExpander.Footer>
                 <ComboBox SelectedItem="{Binding CurrentThemeVariant}"
                           ItemsSource="{Binding ThemesVariants}"
                           MinWidth="150" />
-            </controls:SettingsExpander.Footer>
-        </controls:SettingsExpander>
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Open preferences at start"
+                             Description="When set to true the preferences tab will be opened at start."
+                             IconSource="{DynamicResource Gear}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldOpenPreferencesOnStartUp}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Save session on exit"
+                             Description="When set to true the current session will be saved on exit."
+                             IconSource="{DynamicResource FileArrowUp}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldSaveLastSessionOnExit}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Load last session on start"
+                             Description="When set to true the last session will be loaded on start."
+                             IconSource="{DynamicResource FileArrowDown}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldLoadLastSessionOnStartUp}"
+                          IsEnabled="{Binding ShouldSaveLastSessionOnExit}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
     </StackPanel>
 </UserControl>

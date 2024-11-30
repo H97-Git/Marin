@@ -16,53 +16,63 @@
         <ContextMenu>
             <MenuItem Header="Open in ...">
                 <MenuItem.Icon>
-                    <Svg Path="{StaticResource ArrowSquareOutPath}" />
+                    <!-- arrowSquareOut  -->
+                    <Label Classes="menuItemIcon" Content="&#xe5de;" />
                 </MenuItem.Icon>
                 <MenuItem Header="Explorer" Command="{Binding  OpenInExplorer}">
                     <MenuItem.Icon>
-                        <Svg Path="{StaticResource BinocularsPath}" />
+                        <!-- binocular  -->
+                        <Label Classes="menuItemIcon" Content="&#xea64;" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Browser" Command="{Binding  OpenInBrowser}">
                     <MenuItem.Icon>
-                        <Svg Path="{StaticResource GoogleChromeLogoPath}" />
+                        <!-- googleChromeLogo  -->
+                        <Label Classes="menuItemIcon" Content="&#xe976;"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Rename" IsEnabled="False" Command="{Binding  Rename}">
                 <MenuItem.Icon>
-                    <Svg Path="{StaticResource CursorTextPath}" />
+                    <!-- cursor  -->
+                    <Label Classes="menuItemIcon" Content="&#xe7d8;"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Copy" IsEnabled="False" Command="{Binding  Copy}">
                 <MenuItem.Icon>
-                    <Svg Path="{StaticResource CopySimplePath}" />
+                    <!-- copySimple  -->
+                    <Label Classes="menuItemIcon" Content="&#xe1cc;"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Cut" IsEnabled="False" Command="{Binding Cut}">
                 <MenuItem.Icon>
-                    <Svg Path="{StaticResource ScissorsPath}" />
+                    <!-- scissors  -->
+                    <Label Classes="menuItemIcon" Content="&#xeae0;"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Paste" IsEnabled="False" Command="{Binding  Paste}">
                 <MenuItem.Icon>
-                    <Svg Path="{StaticResource CopyPath}" />
+                    <!-- copy  -->
+                    <Label Classes="menuItemIcon" Content="&#xe1ca;"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Delete" IsEnabled="False" Command="{Binding  Delete}">
                 <MenuItem.Icon>
-                    <Svg Path="{StaticResource TrashPath}" />
+                    <!-- trash  -->
+                    <Label Classes="menuItemIcon" Content="&#xe4a6;"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Extract ..." IsEnabled="False" Command="{Binding  Extract}"
                       IsVisible="{Binding IsArchive}">
                 <MenuItem.Icon>
-                    <Svg Path="{StaticResource UploadSimplePath}" />
+                    <!-- uploadSimple  -->
+                    <Label Classes="menuItemIcon" Content="&#xe4c0;"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Folder Size ?" Command="{Binding CalculateSize}" IsVisible="{Binding IsDirectory}">
                 <MenuItem.Icon>
-                    <Svg Path="{StaticResource BinaryPath}" />
+                    <!-- folderDashed  -->
+                    <Label Classes="menuItemIcon" Content="&#xe8f8;"/>
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -110,7 +120,7 @@
         <Border Grid.Row="0"
                 Classes="symbolIcon"
                 IsVisible="{Binding !IsImage}">
-            <!-- <Svg Path="{DynamicResource FoldersPath}" Width="24" VerticalAlignment="Center" HorizontalAlignment="Center"/> -->
+            <!-- <ui:FontIcon Glyph="&#xe24a;" FontSize="120" FontFamily="{DynamicResource Phosphor}" /> -->
             <ui:SymbolIcon Symbol="{Binding Symbol}" />
         </Border>
         <!-- File Name -->

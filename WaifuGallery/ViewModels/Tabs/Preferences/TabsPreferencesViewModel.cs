@@ -11,9 +11,7 @@ public class TabsPreferencesViewModel : ViewModelBase
     private bool _isSettingsTabCycled;
     private bool _isTabSettingsClosable;
     private bool _shouldImageLoop;
-    private bool _shouldLoadLastSessionOnStartUp;
-    private bool _shouldOpenPreferencesOnStartUp;
-    private bool _shouldSaveLastSessionOnExit;
+    
 
     public TabsPreferencesViewModel()
     {
@@ -21,9 +19,7 @@ public class TabsPreferencesViewModel : ViewModelBase
         IsSettingsTabCycled = Settings.Instance.TabsPreference.IsSettingsTabCycled;
         IsTabSettingsClosable = Settings.Instance.TabsPreference.IsTabSettingsClosable;
         ShouldImageLoop = Settings.Instance.TabsPreference.Loop;
-        ShouldOpenPreferencesOnStartUp = Settings.Instance.TabsPreference.OpenPreferencesOnStartup;
-        ShouldLoadLastSessionOnStartUp = Settings.Instance.TabsPreference.LoadLastSessionOnStartUp;
-        ShouldSaveLastSessionOnExit = Settings.Instance.TabsPreference.SaveLastSessionOnExit;
+        
         this.WhenAnyValue(x => x.IsDuplicateTabsAllowed)
             .Subscribe(value => Settings.Instance.TabsPreference.IsDuplicateTabsAllowed = value);
         this.WhenAnyValue(x => x.IsSettingsTabCycled)
@@ -32,12 +28,7 @@ public class TabsPreferencesViewModel : ViewModelBase
             .Subscribe(value => Settings.Instance.TabsPreference.IsTabSettingsClosable = value);
 
         this.WhenAnyValue(x => x.ShouldImageLoop).Subscribe(value => Settings.Instance.TabsPreference.Loop = value);
-        this.WhenAnyValue(x => x.ShouldOpenPreferencesOnStartUp).Subscribe(value =>
-            Settings.Instance.TabsPreference.OpenPreferencesOnStartup = value);
-        this.WhenAnyValue(x => x.ShouldSaveLastSessionOnExit)
-            .Subscribe(value => Settings.Instance.TabsPreference.SaveLastSessionOnExit = value);
-        this.WhenAnyValue(x => x.ShouldLoadLastSessionOnStartUp)
-            .Subscribe(value => Settings.Instance.TabsPreference.LoadLastSessionOnStartUp = value);
+       
     }
 
     public bool IsVisible
@@ -70,21 +61,5 @@ public class TabsPreferencesViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isTabSettingsClosable, value);
     }
 
-    public bool ShouldOpenPreferencesOnStartUp
-    {
-        get => _shouldOpenPreferencesOnStartUp;
-        set => this.RaiseAndSetIfChanged(ref _shouldOpenPreferencesOnStartUp, value);
-    }
-
-    public bool ShouldSaveLastSessionOnExit
-    {
-        get => _shouldSaveLastSessionOnExit;
-        set => this.RaiseAndSetIfChanged(ref _shouldSaveLastSessionOnExit, value);
-    }
-
-    public bool ShouldLoadLastSessionOnStartUp
-    {
-        get => _shouldLoadLastSessionOnStartUp;
-        set => this.RaiseAndSetIfChanged(ref _shouldLoadLastSessionOnStartUp, value);
-    }
+   
 }

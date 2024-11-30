@@ -3,79 +3,78 @@
                     xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
+            <FontFamily x:Key="Phosphor">avares://WaifuGallery/Resources/Fonts#Phosphor</FontFamily>
+            <FontFamily x:Key="PhosphorFill">avares://WaifuGallery/Resources/Fonts#Phosphor-Fill</FontFamily>
             <Color x:Key="Color.34">#EEEEEE</Color>
             <Color x:Key="Color.Accent">#4433FF</Color>
             <Color x:Key="Color.Background">#E2E2E2</Color>
             <Color x:Key="Color.Foreground">#0E0E0E</Color>
             <Color x:Key="Color.Red">#FFFF6059</Color>
-            <x:String x:Key="SvgCss">.svg {stroke: #000000;}</x:String>
-            <ui:ImageIconSource x:Key="AlignCenterHorizontalSvg" Source="{SvgImage SVGs/align-center-horizontal.svg}" />
-            <ui:ImageIconSource x:Key="ArrowsCounterClockWiseSvg" Source="{SvgImage SVGs/arrows-counter-clockwise.svg}" />
-            <ui:ImageIconSource x:Key="ArrowsOutCardinalSvg" Source="{SvgImage SVGs/arrows-out-cardinal.svg}" />
-            <ui:ImageIconSource x:Key="ArrowsOutSvg" Source="{SvgImage SVGs/arrows-out.svg}" />
-            <ui:ImageIconSource x:Key="BarricadeSvg" Source="{SvgImage SVGs/barricade.svg}" />
-            <ui:ImageIconSource x:Key="ClockCounterClockWiseSvg" Source="{SvgImage SVGs/clock-counter-clockwise.svg}" />
-            <ui:ImageIconSource x:Key="CopySimpleSvg" Source="{SvgImage SVGs/copy-simple.svg}" />
-            <ui:ImageIconSource x:Key="CursorSvg" Source="{SvgImage SVGs/cursor.svg}" />
-            <ui:ImageIconSource x:Key="EyeSvg" Source="{SvgImage SVGs/eye.svg}" />
-            <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/tabs.svg}" />
-            <ui:ImageIconSource x:Key="FileArchiveSvg" Source="{SvgImage SVGs/file-archive.svg}" />
-            <ui:ImageIconSource x:Key="FoldersSvg" Source="{SvgImage SVGs/folders.svg}" />
-            <ui:ImageIconSource x:Key="GearSvg" Source="{SvgImage SVGs/gear.svg}" />
-            <ui:ImageIconSource x:Key="KeyboardSvg" Source="{SvgImage SVGs/keyboard.svg}" />
-            <ui:ImageIconSource x:Key="ListBulletsSvg" Source="{SvgImage SVGs/list-bullets.svg}" />
-            <ui:ImageIconSource x:Key="PictureInPictureSvg" Source="{SvgImage SVGs/picture-in-picture.svg}" />
-            <ui:ImageIconSource x:Key="RepeatSvg" Source="{SvgImage SVGs/repeat.svg}" />
-            <ui:ImageIconSource x:Key="SubsetOfSvg" Source="{SvgImage SVGs/subset-of.svg}" />
-            <ui:ImageIconSource x:Key="TimerSvg" Source="{SvgImage SVGs/timer.svg}" />
-            <ui:ImageIconSource x:Key="WindowsLogoSvg" Source="{SvgImage SVGs/windows-logo.svg}" />
-            <ui:ImageIconSource x:Key="XSquareSvg" Source="{SvgImage SVGs/x-square.svg}" />
-            <!-- <ui:ImageIconSource x:Key="" Source="{SvgImage SVGs/.svg}" /> -->
-            <ui:ImageIconSource x:Key="SortAscendingSvg" Source="{SvgImage SVGs/sort-ascending.svg}" />
-            <ui:ImageIconSource x:Key="FolderDashedSvg" Source="{SvgImage SVGs/folder-dashed.svg}" />
-            <ui:ImageIconSource x:Key="FileArrowUp" Source="{SvgImage SVGs/file-arrow-up.svg}" />
-            <ui:ImageIconSource x:Key="FileArrowDown" Source="{SvgImage SVGs/file-arrow-down.svg}" />
+            <ui:FontIconSource x:Key="AlignCenterHorizontal" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE50A;"/>
+           <ui:FontIconSource x:Key="ArrowsCounterClockWise" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE038;"/>
+           <ui:FontIconSource x:Key="ArrowsOutCardinal" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE0A4;"/>
+           <ui:FontIconSource x:Key="ArrowsOut" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE0A2;"/>
+           <ui:FontIconSource x:Key="Barricade" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE948;"/>
+           <ui:FontIconSource x:Key="ClockCounterClockWise" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE1A0;"/>
+           <ui:FontIconSource x:Key="CopySimple" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE1CC;"/>
+           <ui:FontIconSource x:Key="Cursor" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE1DC;"/>
+           <ui:FontIconSource x:Key="Eye" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE220;"/>
+           <ui:FontIconSource x:Key="FileArchive" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xEB2A;"/>
+           <ui:FontIconSource x:Key="FileArrowDown" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE232;"/>
+           <ui:FontIconSource x:Key="FileArrowUp" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE61E;"/>
+           <ui:FontIconSource x:Key="FlyingSaucer" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xEB4A;"/>
+           <ui:FontIconSource x:Key="FolderDashed" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE8F8;"/>
+           <ui:FontIconSource x:Key="Folders" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE260;"/>
+           <ui:FontIconSource x:Key="Gear" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE270;"/>
+           <ui:FontIconSource x:Key="Keyboard" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE2D8;"/>
+           <ui:FontIconSource x:Key="ListBullets" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE2F2;"/>
+           <ui:FontIconSource x:Key="PictureInPicture" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE64C;"/>
+           <ui:FontIconSource x:Key="Repeat" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE3F6;"/>
+           <ui:FontIconSource x:Key="SortAscending" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE444;"/>
+           <ui:FontIconSource x:Key="SubsetOf" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xEDC0;"/>
+           <ui:FontIconSource x:Key="Tabs" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE778;"/>
+           <ui:FontIconSource x:Key="Timer" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE492;"/>
+           <ui:FontIconSource x:Key="WindowsLogo" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE692;"/>
+           <ui:FontIconSource x:Key="XSquare" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE4FA;"/>
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Dark">
+            
+            <FontFamily x:Key="Phosphor">avares://WaifuGallery/Resources/Fonts#Phosphor</FontFamily>
+            <FontFamily x:Key="PhosphorFill">avares://WaifuGallery/Resources/Fonts#Phosphor-Fill</FontFamily>
             <Color x:Key="Color.34">#1E1E1E</Color>
             <Color x:Key="Color.Accent">#3A3AFF</Color>
             <Color x:Key="Color.Background">#0E0E0E</Color>
             <Color x:Key="Color.Foreground">#EFEFEF</Color>
             <Color x:Key="Color.Red">#FFFF5E56</Color>
-            <x:String x:Key="SvgCss">.svg {stroke: #FFFFFF;}</x:String>
-            <!-- Variants is for the dark theme so the icons are inverted (white) -->
-            <ui:ImageIconSource x:Key="SortAscendingSvg" Source="{SvgImage SVGs/variants/sort-ascending.svg}" />
-            <ui:ImageIconSource x:Key="FolderDashedSvg" Source="{SvgImage SVGs/variants/folder-dashed.svg}" />
-            <ui:ImageIconSource x:Key="FileArrowUp" Source="{SvgImage SVGs/variants/file-arrow-up.svg}" />
-            <ui:ImageIconSource x:Key="FileArrowDown" Source="{SvgImage SVGs/variants/file-arrow-down.svg}" />
-            <ui:ImageIconSource x:Key="AlignCenterHorizontalSvg"
-                                Source="{SvgImage SVGs/variants/align-center-horizontal.svg}" />
-            <ui:ImageIconSource x:Key="ArrowsCounterClockWiseSvg"
-                                Source="{SvgImage SVGs/variants/arrows-counter-clockwise.svg}" />
-            <ui:ImageIconSource x:Key="ArrowsOutCardinalSvg" Source="{SvgImage SVGs/variants/arrows-out-cardinal.svg}" />
-            <ui:ImageIconSource x:Key="ArrowsOutSvg" Source="{SvgImage SVGs/variants/arrows-out.svg}" />
-            <ui:ImageIconSource x:Key="BarricadeSvg" Source="{SvgImage SVGs/variants/barricade.svg}" />
-            <ui:ImageIconSource x:Key="ClockCounterClockWiseSvg"
-                                Source="{SvgImage SVGs/variants/clock-counter-clockwise.svg}" />
-            <ui:ImageIconSource x:Key="CopySimpleSvg" Source="{SvgImage SVGs/variants/copy-simple.svg}" />
-            <ui:ImageIconSource x:Key="CursorSvg" Source="{SvgImage SVGs/variants/cursor.svg}" />
-            <ui:ImageIconSource x:Key="EyeSvg" Source="{SvgImage SVGs/variants/eye.svg}" />
-            <ui:ImageIconSource x:Key="TabsSvg" Source="{SvgImage SVGs/variants/tabs.svg}" />
-            <ui:ImageIconSource x:Key="FileArchiveSvg" Source="{SvgImage SVGs/variants/file-archive.svg}" />
-            <ui:ImageIconSource x:Key="FoldersSvg" Source="{SvgImage SVGs/variants/folders.svg}" />
-            <ui:ImageIconSource x:Key="GearSvg" Source="{SvgImage SVGs/variants/gear.svg}" />
-            <ui:ImageIconSource x:Key="KeyboardSvg" Source="{SvgImage SVGs/variants/keyboard.svg}" />
-            <ui:ImageIconSource x:Key="ListBulletsSvg" Source="{SvgImage SVGs/variants/list-bullets.svg}" />
-            <ui:ImageIconSource x:Key="PictureInPictureSvg" Source="{SvgImage SVGs/variants/picture-in-picture.svg}" />
-            <ui:ImageIconSource x:Key="RepeatSvg" Source="{SvgImage SVGs/variants/repeat.svg}" />
-            <ui:ImageIconSource x:Key="SubsetOfSvg" Source="{SvgImage SVGs/variants/subset-of.svg}" />
-            <ui:ImageIconSource x:Key="TimerSvg" Source="{SvgImage SVGs/variants/timer.svg}" />
-            <ui:ImageIconSource x:Key="WindowsLogoSvg" Source="{SvgImage SVGs/variants/windows-logo.svg}" />
-            <ui:ImageIconSource x:Key="XSquareSvg" Source="{SvgImage SVGs/variants/x-square.svg}" />
+           <ui:FontIconSource x:Key="AlignCenterHorizontal" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE50A;"/>
+           <ui:FontIconSource x:Key="ArrowsCounterClockWise" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE038;"/>
+           <ui:FontIconSource x:Key="ArrowsOutCardinal" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE0A4;"/>
+           <ui:FontIconSource x:Key="ArrowsOut" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE0A2;"/>
+           <ui:FontIconSource x:Key="Barricade" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE948;"/>
+           <ui:FontIconSource x:Key="ClockCounterClockWise" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE1A0;"/>
+           <ui:FontIconSource x:Key="CopySimple" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE1CC;"/>
+           <ui:FontIconSource x:Key="Cursor" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE1DC;"/>
+           <ui:FontIconSource x:Key="Eye" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE220;"/>
+           <ui:FontIconSource x:Key="FileArchive" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xEB2A;"/>
+           <ui:FontIconSource x:Key="FileArrowDown" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE232;"/>
+           <ui:FontIconSource x:Key="FileArrowUp" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE61E;"/>
+           <ui:FontIconSource x:Key="FlyingSaucer" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xEB4A;"/>
+           <ui:FontIconSource x:Key="FolderDashed" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE8F8;"/>
+           <ui:FontIconSource x:Key="Folders" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE260;"/>
+           <ui:FontIconSource x:Key="Gear" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE270;"/>
+           <ui:FontIconSource x:Key="Keyboard" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE2D8;"/>
+           <ui:FontIconSource x:Key="ListBullets" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE2F2;"/>
+           <ui:FontIconSource x:Key="PictureInPicture" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE64C;"/>
+           <ui:FontIconSource x:Key="Repeat" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE3F6;"/>
+           <ui:FontIconSource x:Key="SortAscending" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE444;"/>
+           <ui:FontIconSource x:Key="SubsetOf" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xEDC0;"/>
+           <ui:FontIconSource x:Key="Tabs" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE778;"/>
+           <ui:FontIconSource x:Key="Timer" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE492;"/>
+           <ui:FontIconSource x:Key="WindowsLogo" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE692;"/>
+           <ui:FontIconSource x:Key="XSquare" FontSize="24" FontFamily="{DynamicResource Phosphor}" Glyph="&#xE4FA;"/>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
-    <ui:ImageIconSource x:Key="FrameCornersSvg" Source="{SvgImage SVGs/frame-corners.svg}" />
     <SolidColorBrush x:Key="Brush.Error" Color="{DynamicResource Color.Red}" />
     <SolidColorBrush x:Key="Brush.Accent" Color="{DynamicResource Color.Accent}" />
     <SolidColorBrush x:Key="Brush.Foreground" Color="{DynamicResource Color.Foreground}" />
