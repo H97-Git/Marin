@@ -108,15 +108,15 @@ public class TabsViewModel : ViewModelBase
             SelectedTab = OpenTabs.Count is 1 ? OpenTabs.First() : OpenTabs.Last();
         });
 
-        if (Settings.Instance.TabsPreference.LoadLastSessionOnStartUp)
+        if (Settings.Instance.LoadLastSessionOnStartUp)
         {
             Dispatcher.UIThread.Post(() => LoadSession(new LoadSessionCommand("Last")));
         }
-
-        if (Settings.Instance.TabsPreference.OpenPreferencesOnStartup)
+        if (Settings.Instance.OpenPreferencesOnStartup)
         {
-            OpenPreferencesTab();
+            Dispatcher.UIThread.Post(OpenPreferencesTab);
         }
+
 
         MessageBus.Current.Listen<CloseAllTabsCommand>().Subscribe(_ => OpenTabs.Clear());
         MessageBus.Current.Listen<OpenFileCommand>().Subscribe(OpenFileInNewTab);

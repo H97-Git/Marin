@@ -28,7 +28,7 @@ public class MainViewViewModel : ViewModelBase
     private readonly DataObject _clipBoardDataObject = new();
     private ImageTabViewModel? ImageTabViewModel => TabsViewModel.ImageTabViewModel;
     private PreviewImageViewModel PreviewImageViewModel => FileManagerViewModel.PreviewImageViewModel;
-    private readonly TabFactory _tabFactory;
+    private readonly TabFactory? _tabFactory;
 
     #endregion
 
@@ -483,22 +483,26 @@ public class MainViewViewModel : ViewModelBase
 
     public MainViewViewModel()
     {
-        Initialize();
-    }
-
-    public MainViewViewModel(TabFactory tabFactory)
-    {
-        _tabFactory = tabFactory;
-        Initialize();
-    }
-
-    private void Initialize()
-    {
         MenuBarViewModel = new MenuBarViewModel();
-        TabsViewModel = new TabsViewModel(_tabFactory);
+        TabsViewModel = new TabsViewModel();
         FileManagerViewModel = new FileManagerViewModel();
         StatusBarViewModel = new StatusBarViewModel();
+        MessageBusSubscriptions();
+    }
 
+    public MainViewViewModel(TabFactory tabFactory, MenuBarViewModel menuBarViewModel, TabsViewModel tabsViewModel,
+        FileManagerViewModel fileManagerViewModel, StatusBarViewModel statusBarViewModel)
+    {
+        _tabFactory = tabFactory;
+        MenuBarViewModel = menuBarViewModel;
+        TabsViewModel = tabsViewModel;
+        FileManagerViewModel = fileManagerViewModel;
+        StatusBarViewModel = statusBarViewModel;
+        MessageBusSubscriptions();
+    }
+
+    private void MessageBusSubscriptions()
+    {
         MessageBus.Current.Listen<ClearCacheCommand>().Subscribe(_ => DirectoryHelper.ClearThumbnailsCache());
         MessageBus.Current.Listen<CopyCommand>().Subscribe(CopyFile);
         MessageBus.Current.Listen<CutCommand>().Subscribe(CutFile);
@@ -510,8 +514,8 @@ public class MainViewViewModel : ViewModelBase
         MessageBus.Current.Listen<OpenInFileExplorerCommand>().Subscribe(OpenInFileExplorer);
         MessageBus.Current.Listen<PasteCommand>().Subscribe(PasteFile);
         MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
-        MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
         MessageBus.Current.Listen<SaveSessionCommand>().Subscribe(NewSession);
+        MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
     }
 
     #endregion

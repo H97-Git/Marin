@@ -1,7 +1,7 @@
 <Window
     Name="MainW"
     Title="WaifuGallery"
-    Icon="/Resources/avalonia-logo.ico"
+    Icon="/Resources/Icons/logo.ico"
     Height="1000"
     Width="1880"
     MinHeight="680"

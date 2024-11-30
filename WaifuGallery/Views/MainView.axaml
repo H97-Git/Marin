@@ -19,7 +19,7 @@
     </Design.DataContext>
 
     <!-- Main Grid -->
-    <Grid RowDefinitions="Auto,*,Auto,Auto" x:Name="MainGrid">
+    <Grid RowDefinitions="Auto,*,Auto" x:Name="MainGrid">
         <!-- Menu Bar-->
         <controls:MenuBar Grid.Row="0"
                           DataContext="{Binding MenuBarViewModel}"
