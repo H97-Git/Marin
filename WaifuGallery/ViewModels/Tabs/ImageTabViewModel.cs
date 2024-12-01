@@ -81,7 +81,28 @@ public class ImageTabViewModel : TabViewModelBase
         Log.Debug("LoadImage");
         BitmapImage = new Bitmap(CurrentImagePath);
         SetTabHeaderContent();
-        MessageBus.Current.SendMessage(new FitToHeightCommand());
+        var clientSize = App.GetClientSize();
+        var imageAspectRatio = BitmapImage.Size.Width / BitmapImage.Size.Height;
+        var clientAspectRatio = clientSize?.Width / clientSize?.Height ?? 1;
+
+        if (clientSize is not null)
+        {
+            if (imageAspectRatio > clientAspectRatio)
+            {
+                // Image is in portrait.
+                MessageBus.Current.SendMessage(new FitToWidthCommand());
+            }
+            else
+            {
+                // Image is in landscape.
+                MessageBus.Current.SendMessage(new FitToHeightCommand());
+            }
+        }
+        else
+        {
+            // Default.
+            MessageBus.Current.SendMessage(new FitToHeightCommand());
+        }
     }
 
     private void SetTabHeaderContent()
@@ -247,6 +268,7 @@ public class ImageTabViewModel : TabViewModelBase
         Log.Debug("Open grid mode");
         IsGridOpen = !IsGridOpen;
     }
+
     public void CloseGrid()
     {
         Log.Debug("Close grid mode");

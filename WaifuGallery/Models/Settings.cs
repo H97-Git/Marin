@@ -125,7 +125,7 @@ public class Settings
     public static void SaveSession(string sessionName = "Last")
     {
         Log.Debug("Saving session... {SessionName}", sessionName);
-        if (App.GetMainViewViewModel()?.TabsViewModel.OpenTabs is not { } openTabs) return;
+        var openTabs = App.GetOpenTabs() ?? [];
         var list = new List<string>();
         foreach (var tab in openTabs)
         {

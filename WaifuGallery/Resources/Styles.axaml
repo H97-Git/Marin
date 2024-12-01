@@ -165,7 +165,7 @@
     <Style Selector="ui|SettingsExpander">
         <Setter Property="Margin" Value="5" />
     </Style>
-    
+
     <Style Selector="StackPanel.preferencesHeader">
         <Setter Property="Orientation" Value="Horizontal" />
         <Setter Property="Spacing" Value="0" />
@@ -186,6 +186,12 @@
     </Style>
     <Style Selector="StackPanel.preferencesPath TextBlock">
         <Setter Property="FontSize" Value="24" />
+    </Style>
+    <Style Selector="StackPanel.preferencesCategories">
+        <Setter Property="Margin" Value="10" />
+    </Style>
+    <Style Selector="StackPanel.preferences">
+        <Setter Property="Margin" Value="10" />
     </Style>
 
     <!-- Preferences Hotkeys -->

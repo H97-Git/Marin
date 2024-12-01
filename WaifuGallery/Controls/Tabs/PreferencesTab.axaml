@@ -24,7 +24,7 @@
 
             </StackPanel>
             <!-- Category -->
-            <StackPanel IsVisible="{Binding IsMainVisible}">
+            <StackPanel Classes="preferencesCategories" IsVisible="{Binding IsMainVisible}">
                 <preferences:Category Content="File Manager" Description="Change File Manager options."
                                       Command="{Binding SwitchCategory}"
                                       IconSource="{DynamicResource Folders}"
@@ -61,13 +61,15 @@
                                       CommandParameter="Tabs" />
             </StackPanel>
             <!-- Preferences -->
-            <preferences:FileManager DataContext="{Binding FileManagerPreferencesViewModel}" />
-            <preferences:FullScreen DataContext="{Binding FullScreenPreferencesViewModel}" />
-            <preferences:General DataContext="{Binding GeneralPreferencesViewModel}" />
-            <preferences:HotKeys DataContext="{Binding HotKeysPreferencesViewModel}" />
-            <preferences:ImagePreview DataContext="{Binding ImagePreviewPreferencesViewModel}" />
-            <preferences:StatusBar DataContext="{Binding StatusBarPreferencesViewModel}" />
-            <preferences:Tabs DataContext="{Binding TabsPreferencesViewModel}" />
+            <StackPanel Classes="preferences">
+                <preferences:FileManager DataContext="{Binding FileManagerPreferencesViewModel}" />
+                <preferences:FullScreen DataContext="{Binding FullScreenPreferencesViewModel}" />
+                <preferences:General DataContext="{Binding GeneralPreferencesViewModel}" />
+                <preferences:HotKeys DataContext="{Binding HotKeysPreferencesViewModel}" />
+                <preferences:ImagePreview DataContext="{Binding ImagePreviewPreferencesViewModel}" />
+                <preferences:StatusBar DataContext="{Binding StatusBarPreferencesViewModel}" />
+                <preferences:Tabs DataContext="{Binding TabsPreferencesViewModel}" />
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

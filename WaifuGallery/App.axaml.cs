@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -7,6 +8,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using WaifuGallery.Factories;
 using WaifuGallery.Models;
 using WaifuGallery.ViewModels;
@@ -80,8 +82,11 @@ public class App : Application
     public static WindowState? GetWindowState() =>
         GetMainWindow()?.WindowState;
 
-    public static MainViewViewModel? GetMainViewViewModel() =>
-        ((GetMainWindow() as MainWindow)?.Content as MainView)?.DataContext as MainViewViewModel;
+    public static Size? GetClientSize() =>
+        GetMainWindow()?.ClientSize;
+
+    public static TabViewModelBase[]? GetOpenTabs() =>
+        (((GetMainWindow() as MainWindow)?.Content as MainView)?.DataContext as MainViewViewModel)?.TabsViewModel.OpenTabs.ToArray();
 
     public override void Initialize()
     {

@@ -72,7 +72,17 @@ public class TabsViewModel : ViewModelBase
             AddImageTab(new OpenInNewTabCommand(index, imagesInPath));
         }
 
-        MessageBus.Current.SendMessage(new FitToHeightCommand());
+        var size = App.GetClientSize();
+        if (size is not null && size.Value.Height > size.Value.Width)
+        {
+            // Window is in portrait.
+            MessageBus.Current.SendMessage(new FitToWidthCommand());
+        }
+        else
+        {
+            // Window is in landscape.
+            MessageBus.Current.SendMessage(new FitToHeightCommand());
+        }
     }
 
     #endregion
@@ -112,6 +122,7 @@ public class TabsViewModel : ViewModelBase
         {
             Dispatcher.UIThread.Post(() => LoadSession(new LoadSessionCommand("Last")));
         }
+
         if (Settings.Instance.OpenPreferencesOnStartup)
         {
             Dispatcher.UIThread.Post(OpenPreferencesTab);
