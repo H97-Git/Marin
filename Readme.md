@@ -1,12 +1,12 @@
-﻿# Waifu Gallery (Name Subject to Change)
+﻿# Marin
 
-Waifu Gallery is an image viewer made in C# with AvaloniaUI. This application is designed to be used efficiently with either a mouse or a keyboard, allowing for easy one-handed operation. The application features a tab-oriented interface, file exploration and management, customizable keyboard shortcuts, and more.
+Marin is an image viewer made in C# with AvaloniaUI. This application is designed to be used efficiently with either a mouse or a keyboard, allowing for easy one-handed operation. The application features a tab-oriented interface, file exploration and management, customizable keyboard shortcuts, and more.
 
 ## Features
 
 - **Tab-Oriented Interface**: Manage multiple image viewing sessions with a tabbed interface.
 - **Keyboard and Mouse Support**: Navigate and use the application with either a mouse or keyboard.
-- **File Explorer/Manager**: Browse and manage your image files directly within the application.
+- **File Explorer / Manager**: Browse and manage your image files directly within the application.
 - **Image Previewer**: Click and hold on a folder to preview images inside, with up to 3 levels of depth for subfolder exploration.
 - **Customizable Keyboard Shortcuts**: Set your preferred keyboard shortcuts for various actions.
 - **Hide UI Elements in Full Screen**: Focus on your images by hiding UI elements when in full-screen mode.
@@ -15,16 +15,17 @@ Waifu Gallery is an image viewer made in C# with AvaloniaUI. This application is
 
 ## Installation
 
-To run Waifu Gallery, follow these steps:
+To run Marin, follow these steps:
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/H97-Git/waifu-gallery.git
-    cd waifu-gallery
+    git clone https://github.com/H97-Git/marin.git
+    cd marin
     ```
 
 2. **Install Dependencies**:
-   Make sure you have the .NET SDK installed. You can download it from [here](https://dotnet.microsoft.com/download).
+
+   #### Make sure you have the .NET SDK installed. You can download it from [here](https://dotnet.microsoft.com/download).
 
 3. **Build the Project**:
     ```bash
@@ -42,7 +43,7 @@ To run Waifu Gallery, follow these steps:
 
 The application comes with customizable keyboard shortcuts. To configure these shortcuts, go to the settings menu and set your preferred key bindings for various actions.
 
-### File Explorer
+### File Explorer / Manager
 
 The file explorer allows you to navigate your file system and manage your image files. You can perform basic file operations such as copy, cut, paste, and delete.
 
@@ -54,7 +55,7 @@ Click and hold on a folder (or press `P`) to preview the images inside. The prev
 
 Press the fullscreen toggle button or use the keyboard shortcut to enter fullscreen mode. In fullscreen mode, UI elements are hidden to provide an unobstructed view of your images.
 
-### Session Management (Not yet implemented)
+### Session Management
 
 Your open tabs can be saved and restored later, allowing you to pick up where you left off.
 
@@ -67,8 +68,8 @@ We welcome contributions to the project. If you find any issues or have suggesti
 
 2. **Clone Your Fork**:
     ```bash
-    git clone https://github.com/H97-Git/waifu-gallery.git
-    cd waifu-gallery
+    git clone https://github.com/H97-Git/marin.git
+    cd marin 
     ```
 
 3. **Create a Branch**:

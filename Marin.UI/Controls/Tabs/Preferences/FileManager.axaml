@@ -1,0 +1,75 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:preferences="clr-namespace:Marin.UI.ViewModels.Tabs.Preferences"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Marin.UI.Controls.Tabs.Preferences.FileManager"
+             x:DataType="preferences:FileManagerPreferencesViewModel"
+             IsVisible="{Binding IsVisible}">
+    <StackPanel>
+        <ui:SettingsExpander Header="Keep last path stored"
+                             Description="When set to true the last visited path will be saved on exit."
+                             IconSource="{DynamicResource ClockCounterClockWise}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldSaveLastPathOnExit}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Compute each folder size"
+                             IconSource="{DynamicResource FolderDashed}"
+                             Description="When set to true the size of each folder will be calculated. (Not recommended use each folder context menu instead.)">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldCalculateFolderSize}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Choose extraction folder name"
+                             Description="When set to true a dialog will ask a name for the extracted archive. (When false default is used. Default: 'Extracted') "
+                             IconSource="{DynamicResource FileArchive}">
+            <ui:SettingsExpander.Footer>
+                <CheckBox IsChecked="{Binding ShouldAskExtractionFolderName}" />
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Set default sort order"
+                             Description="Set the sort order that will be used by default (at startup)."
+                             IconSource="{DynamicResource SortAscending}">
+            <ui:SettingsExpander.Footer>
+                <ComboBox SelectionChanged="SelectingItemsControl_OnSelectionChanged">
+                    <ComboBoxItem>Date Accessed</ComboBoxItem>
+                    <ComboBoxItem>Date Created</ComboBoxItem>
+                    <ComboBoxItem>Date Modified</ComboBoxItem>
+                    <ComboBoxItem>Extension</ComboBoxItem>
+                    <ComboBoxItem>Name</ComboBoxItem>
+                    <ComboBoxItem>Random</ComboBoxItem>
+                    <ComboBoxItem>Size</ComboBoxItem>
+                </ComboBox>
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+        <ui:SettingsExpander Header="Position"
+                             Description="Set the position of the file manager."
+                             IconSource="{DynamicResource AlignCenterHorizontal}">
+            <ui:SettingsExpander.Footer>
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto">
+                    <Button Width="115" Margin="5" Grid.Row="0" Grid.Column="0" Content="Top Left"
+                            CommandParameter="TL"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Width="115" Margin="5" Grid.Row="0" Grid.Column="1" Content="Top Center"
+                            CommandParameter="TC"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Width="115" Margin="5" Grid.Row="0" Grid.Column="2" Content="Top Right"
+                            CommandParameter="TR"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Width="115" Margin="5" Grid.Row="1" Grid.Column="0" Content="Bottom Left"
+                            CommandParameter="BL"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Width="115" Margin="5" Grid.Row="1" Grid.Column="1" Content="Bottom Center"
+                            CommandParameter="BC"
+                            Command="{Binding SetFileManagerPosition}" />
+                    <Button Width="115" Margin="5" Grid.Row="1" Grid.Column="2" Content="Bottom Right"
+                            CommandParameter="BR"
+                            Command="{Binding SetFileManagerPosition}" />
+                </Grid>
+            </ui:SettingsExpander.Footer>
+        </ui:SettingsExpander>
+    </StackPanel>
+</UserControl>

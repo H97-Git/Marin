@@ -1,0 +1,71 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabs="clr-namespace:Marin.UI.ViewModels.Tabs"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:controls="clr-namespace:Marin.UI.Controls.Tabs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="tabs:TabsViewModel"
+             x:Class="Marin.UI.Controls.Tabs.TabsControl"
+             x:Name="TabsUserControl">
+    <Grid RowDefinitions="Auto,*">
+        <!-- Tab Headers -->
+        <ScrollViewer Grid.Row="0"
+                      Name="LauncherTabsScroller"
+                      VerticalScrollBarVisibility="Disabled"
+                      HorizontalScrollBarVisibility="Hidden"
+                      PointerWheelChanged="ScrollTabs">
+            <ListBox Name="ImagesTabControl"
+                     ItemsSource="{Binding OpenTabs}"
+                     MaxHeight="35"
+                     SelectedItem="{Binding SelectedTab}"
+                     SelectedIndex="{Binding SelectedTabIndex}"
+                     IsVisible="{Binding IsTabHeadersVisible}"
+                     KeyDown="ImagesTabControl_OnKeyDown">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"
+                                    PointerPressed="OnPointerPressedCloseTab">
+                            <ToolTip.Tip>
+                                <StackPanel>
+                                    <TextBlock FontSize="16">Rectangle</TextBlock>
+                                    <TextBlock Text="{Binding }" />
+                                </StackPanel>
+                            </ToolTip.Tip>
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Close Tab" Command="{Binding CloseTabCommand}">
+                                        <MenuItem.Icon>
+                                            <!-- folderOpen -->
+                                            <Label Classes="menuItemIcon" Content="&#xe4f6;" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            PointerPressed="OnPointerPressedStartMoveTab"
+                            PointerMoved="OnPointerMovedOverTab"
+                            PointerReleased="OnPointerReleasedTab"
+                            Loaded="OnLoaded_SetupDragAndDrop">
+                            <TextBlock Text="{Binding Header}" />
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+        <!-- Image Tab -->
+        <Grid Grid.Row="1" IsVisible="{Binding IsImageTabVisible}">
+            <controls:ImageTab DataContext="{Binding ImageTabViewModel}" />
+        </Grid>
+        <!-- Settings Tab -->
+        <Grid Grid.Row="1" IsVisible="{Binding IsSettingsTabVisible}">
+            <controls:PreferencesTab DataContext="{Binding  TabSettingsViewModel}" />
+        </Grid>
+    </Grid>
+</UserControl>

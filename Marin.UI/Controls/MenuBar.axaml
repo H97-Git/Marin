@@ -1,0 +1,121 @@
+﻿<UserControl mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
+             x:Class="Marin.UI.Controls.MenuBar"
+             x:DataType="viewModels:MenuBarViewModel"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Marin.UI.ViewModels"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="https://github.com/avaloniaui">
+    <Menu IsOpen="{Binding IsMenuOpen, Mode=OneWayToSource}">
+        <MenuItem Header="_File">
+            <MenuItem Header="_Open file in new tab" Command="{Binding OpenFileCommand}">
+                <MenuItem.Icon>
+                    <!-- folderOpen -->
+                    <Label Classes="menuItemIcon" Content="&#xe256;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Preferences ..." Command="{Binding OpenSettingsTabCommand}">
+                <MenuItem.Icon>
+                    <!-- gear -->
+                    <Label Classes="menuItemIcon" Content="&#xe270;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Name="ExitMenuItem" Header="_Exit" Command="{Binding Exit}">
+                <MenuItem.Icon>
+                    <!-- xCircle -->
+                    <Label Classes="menuItemIcon" Content="&#xe4f8;" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_View">
+            <MenuItem Header="_Fullscreen" Command="{Binding ToggleFullScreenCommand}">
+                <MenuItem.Icon>
+                    <!-- framesCorners -->
+                    <Label Classes="menuItemIcon" Content="&#xe626;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Toggle Files Manager" Command="{Binding ToggleFileManagerCommand}">
+                <MenuItem.Icon>
+                    <!-- trayArrowUp -->
+                    <Label Classes="menuItemIcon" Content="&#xee52;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Toggle Files Manager Visibility" Command="{Binding ToggleFileManagerVisibilityCommand}">
+                <MenuItem.Icon>
+                    <!-- eye -->
+                    <Label Classes="menuItemIcon" Content="&#xe220;" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Tabs">
+            <MenuItem Header="Close All Tabs" Command="{Binding CloseAllTabsCommand }">
+                <MenuItem.Icon>
+                    <!-- backspace -->
+                    <Label Classes="menuItemIcon" Content="&#xe0AE;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Fit Width" Command="{Binding FitToWidthCommand}">
+                <MenuItem.Icon>
+                    <!-- ArrowsOutHorizontal -->
+                    <Label Classes="menuItemIcon" Content="&#xe534;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Fit Height" Command="{Binding FitToHeightCommand}">
+                <MenuItem.Icon>
+                    <!-- ArrowsOutVertical -->
+                    <Label Classes="menuItemIcon" Content="&#xe536;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Rotate Clock Wise" Command="{Binding RotateClockwiseCommand}">
+                <MenuItem.Icon>
+                    <!-- ArrowClockWise -->
+                    <Label Classes="menuItemIcon" Content="&#xe094;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Rotate Anti Clock Wise" Command="{Binding RotateAntiClockwiseCommand}">
+                <MenuItem.Icon>
+                    <!-- ArrowAntiClockWise -->
+                    <Label Classes="menuItemIcon" Content="&#xe096;" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Session">
+            <MenuItem Header="Load Last Session" Command="{Binding LoadSessionCommand}" CommandParameter="Last">
+                <MenuItem.Icon>
+                    <!-- clockCounterClockwise  -->
+                    <Label Classes="menuItemIcon" Content="&#xe1a0;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Load Sessions" ItemsSource="{Binding Sessions}">
+                <MenuItem.Icon>
+                    <!-- dataBase -->
+                    <Label Classes="menuItemIcon" Content="&#xe1de;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Save current session as ..." Command="{Binding SaveSessionCommand}">
+                <MenuItem.Icon>
+                    <!-- floppy  -->
+                    <Label Classes="menuItemIcon" Content="&#xe248;" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Debug" IsVisible="{Binding IsDebugMenuVisible}">
+            <MenuItem Header="_Clear Thumbnails cache" Command="{Binding ClearCache}">
+                <MenuItem.Icon>
+                    <!-- bugBeetle -->
+                    <Label Classes="menuItemIcon" Content="&#xe5f6;" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="_Go To Oxford pets" Command="{Binding GoToOxfordPet}">
+                <MenuItem.Icon>
+                    <!-- bug  -->
+                    <Label Classes="menuItemIcon" Content="&#xe5f4;" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </MenuItem>
+    </Menu>
+</UserControl>

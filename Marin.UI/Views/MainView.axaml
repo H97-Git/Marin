@@ -1,0 +1,67 @@
+<UserControl mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="Marin.UI.Views.MainView"
+             x:DataType="vm:MainViewViewModel"
+             xmlns:controls="clr-namespace:Marin.UI.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fileManager="clr-namespace:Marin.UI.Controls.FileManager"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabs="clr-namespace:Marin.UI.Controls.Tabs"
+             xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:vm="clr-namespace:Marin.UI.ViewModels"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:echoes="clr-namespace:Echoes;assembly=Echoes"
+             xmlns:translations="clr-namespace:Marin.Translations;assembly=Marin.Translations"
+             x:Name="MainViewControl"
+             KeyDown="MainView_OnKeyDown">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainViewViewModel />
+    </Design.DataContext>
+
+    <!-- Main Grid -->
+    <Grid RowDefinitions="Auto,*,Auto" x:Name="MainGrid">
+        <!-- Menu Bar-->
+        <controls:MenuBar Grid.Row="0"
+                          DataContext="{Binding MenuBarViewModel}"
+                          IsVisible="{Binding IsMenuBarVisible}" />
+        <!-- Main Area -->
+        <Grid Grid.Row="1" x:Name="MainArea">
+            <!-- <UniformGrid DockPanel.Dock="Bottom" Columns="3" Rows="1"> -->
+            <!--     <Button Command="{Binding SetCultureCommand}" CommandParameter="english"> -->
+            <!--         English -->
+            <!--     </Button> -->
+            <!--     <Button Command="{Binding SetCultureCommand}" CommandParameter="french"> -->
+            <!--         German -->
+            <!--     </Button> -->
+            <!-- </UniformGrid> -->
+            <!-- <TextBlock Margin="10" Background="Red" Width="200" Height="400" Text="{echoes:Translate {x:Static translations:Strings.greeting}}" /> -->
+            <!-- Tabs -->
+            <tabs:TabsControl DataContext="{Binding TabsViewModel}" />
+            <!-- File Manager -->
+            <Panel x:Name="FileManagerPanel" Background="{Binding FileManagerViewModel.FileManagerBackground}"
+                   IsVisible="{Binding FileManagerViewModel.IsFileManagerVisible}">
+                <fileManager:FileManager DataContext="{Binding FileManagerViewModel}" />
+            </Panel>
+        </Grid>
+        <Border Grid.Row="2"
+                Classes.up="{Binding  !StatusBarViewModel.IsStatusBarCollapsed}"
+                Classes.down="{Binding  StatusBarViewModel.IsStatusBarCollapsed}">
+            <ui:InfoBar x:Name="InfoBar"
+                        Classes="infoBar"
+                        IsVisible="{Binding StatusBarViewModel.IsStatusBarVisible}"
+                        Background="{Binding StatusBarViewModel.BackgroundColor}"
+                        Message="{Binding StatusBarViewModel.Message}"
+                        Severity="{Binding StatusBarViewModel.Severity}"
+                        Title="{Binding StatusBarViewModel.Title}">
+            </ui:InfoBar>
+            <Border.Transitions>
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:1" Easing="SineEaseInOut" />
+                    <DoubleTransition Property="Opacity" Duration="0:0:1" Easing="SineEaseInOut" />
+                </Transitions>
+            </Border.Transitions>
+        </Border>
+    </Grid>
+</UserControl>
