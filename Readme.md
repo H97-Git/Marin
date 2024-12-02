@@ -1,6 +1,6 @@
-﻿# Waifu Gallery (Name Subject to Change)
+﻿# Marin
 
-Waifu Gallery is an image viewer made in C# with AvaloniaUI. This application is designed to be used efficiently with either a mouse or a keyboard, allowing for easy one-handed operation. The application features a tab-oriented interface, file exploration and management, customizable keyboard shortcuts, and more.
+Marin is an image viewer made in C# with AvaloniaUI. This application is designed to be used efficiently with either a mouse or a keyboard, allowing for easy one-handed operation. The application features a tab-oriented interface, file exploration and management, customizable keyboard shortcuts, and more.
 
 ## Features
 
@@ -15,12 +15,12 @@ Waifu Gallery is an image viewer made in C# with AvaloniaUI. This application is
 
 ## Installation
 
-To run Waifu Gallery, follow these steps:
+To run Marin, follow these steps:
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/H97-Git/waifu-gallery.git
-    cd waifu-gallery
+    git clone https://github.com/H97-Git/marin.git
+    cd marin
     ```
 
 2. **Install Dependencies**:
@@ -68,8 +68,8 @@ We welcome contributions to the project. If you find any issues or have suggesti
 
 2. **Clone Your Fork**:
     ```bash
-    git clone https://github.com/H97-Git/waifu-gallery.git
-    cd waifu-gallery
+    git clone https://github.com/H97-Git/marin.git
+    cd marin 
     ```
 
 3. **Create a Branch**:

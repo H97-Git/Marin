@@ -1,0 +1,127 @@
+﻿<UserControl
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
+    x:Class="Marin.UI.Controls.FileManager.FileManager"
+    x:DataType="fileManager:FileManagerViewModel"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:fileManager="clr-namespace:Marin.UI.ViewModels.FileManager"
+    xmlns:controls="clr-namespace:Marin.UI.Controls.FileManager"
+    x:Name="FileManagerControl"
+    Margin="10,40,10,10">
+    <Design.DataContext>
+        <fileManager:FileManagerViewModel />
+    </Design.DataContext>
+    <Expander
+        Classes="fileManagerExpander"
+        HorizontalAlignment="{Binding FileManagerHorizontalAlignment }"
+        IsExpanded="{Binding IsFileManagerExpanded}"
+        IsPointerOver="{Binding IsPointerOver, Mode=OneWayToSource}"
+        IsVisible="{Binding IsFileManagerVisible}"
+        VerticalAlignment="{Binding FileManagerVerticalAlignment}">
+        <Expander.Header>
+            <StackPanel Classes="fileManagerExpanderHeader">
+                <Label Content="&#xe260;" FontFamily="{DynamicResource Phosphor}" FontSize="24" Margin="0,0,10,0" />
+                <TextBlock Text="File Manager" />
+            </StackPanel>
+        </Expander.Header>
+        <Grid Classes="fileManagerMainGrid"
+              RowDefinitions="Auto,*">
+            <!-- Tool Bar -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto"
+                  Classes="fileManagerToolBar">
+                <Button Grid.Column="0"
+                        Command="{Binding GotoPreviousDirCommand}"
+                        ToolTip.Tip="Go Backward">
+                    <Label Content="&#xe138;" FontFamily="{DynamicResource Phosphor}" />
+                </Button>
+                <Button Grid.Column="1"
+                        Command="{Binding GotoParentFolderCommand}"
+                        ToolTip.Tip="Go Up">
+                    <Label Content="&#xe01e;" FontFamily="{DynamicResource Phosphor}" />
+                </Button>
+                <Button Grid.Column="2"
+                        Command="{Binding GotoNextDirCommand}"
+                        ToolTip.Tip="Go Forward">
+                    <Label Content="&#xe13a;" FontFamily="{DynamicResource Phosphor}" />
+                </Button>
+                <TextBox Grid.Column="3"
+                         Text="{Binding CurrentPath}"
+                         IsFocused="{Binding IsSearchFocused, Mode=OneWayToSource}" />
+                <Button Grid.Column="4"
+                        Command="{Binding OpenFileCommand}"
+                        ToolTip.Tip="Open folder">
+                    <Label Content="&#xe256;" FontFamily="{DynamicResource Phosphor}" />
+                </Button>
+                <Button Grid.Column="5"
+                        Command="{Binding CreateNewFolder}"
+                        ToolTip.Tip="Create new folder">
+                    <Label Content="&#xe258;" FontFamily="{DynamicResource Phosphor}" />
+                </Button>
+                <ComboBox Grid.Column="6"
+                          SelectedIndex="{Binding SelectedSortIndex}"
+                          SelectionChanged="SelectingItemsControl_OnSelectionChanged">
+                    <ComboBoxItem>Date Accessed</ComboBoxItem>
+                    <ComboBoxItem>Date Created</ComboBoxItem>
+                    <ComboBoxItem>Date Modified</ComboBoxItem>
+                    <ComboBoxItem>Extension</ComboBoxItem>
+                    <ComboBoxItem>Name</ComboBoxItem>
+                    <ComboBoxItem>Random</ComboBoxItem>
+                    <ComboBoxItem>Size</ComboBoxItem>
+                </ComboBox>
+            </Grid>
+            <!-- ImagePreview & FileManagerListBox -->
+            <Panel Grid.Row="1"
+                   x:Name="FileManagerContent"
+                   Classes="fileManagerContent">
+                <controls:ImagePreview x:Name="ImagePreviewControl" DataContext="{Binding PreviewImageViewModel}" />
+                <!-- ListBox -->
+                <ListBox
+                    ScrollViewer.VerticalScrollBarVisibility="{Binding ScrollBarVisibility}"
+                    IsVisible="{Binding !!FilesInDir.Count}"
+                    ItemsSource="{Binding FilesInDir}"
+                    x:Name="FileManagerListBox"
+                    PointerWheelChanged="FileManagerListBox_OnPointerWheelChanged"
+                    SelectedIndex="{Binding SelectedIndex}">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Open in Explorer" Command="{Binding OpenInExplorer}">
+                                <MenuItem.Icon>
+                                    <!-- binoculars -->
+                                    <Label Classes="menuItemIcon" Content="&#xea64;" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Create new folder" Command="{Binding  CreateNewFolder}">
+                                <MenuItem.Icon>
+                                    <!-- folderPlus -->
+                                    <Label Classes="menuItemIcon" Content="&#xe258;" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Paste" Command="{Binding  Paste}">
+                                <MenuItem.Icon>
+                                    <!-- copy -->
+                                    <Label Classes="menuItemIcon" Content="&#xe1ca;" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <controls:File DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock
+                    IsVisible="{Binding !FilesInDir.Count}"
+                    Text="No folders or files found in the current directory." />
+            </Panel>
+        </Grid>
+    </Expander>
+</UserControl>

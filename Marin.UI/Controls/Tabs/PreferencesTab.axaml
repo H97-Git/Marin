@@ -1,0 +1,75 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Marin.UI.Controls.Tabs.PreferencesTab"
+             xmlns:local="clr-namespace:Marin.UI.ViewModels.Tabs"
+             xmlns:preferences="clr-namespace:Marin.UI.Controls.Tabs.Preferences"
+             x:DataType="local:PreferencesTabViewModel">
+    <ScrollViewer>
+        <StackPanel>
+            <!-- Header -->
+            <StackPanel Classes="preferencesHeader">
+                <Border CornerRadius="50" ClipToBounds="True" Classes="preferencesLogo">
+                    <Image
+                        Source="/Resources/Icons/logo.png"
+                        RenderOptions.BitmapInterpolationMode="HighQuality" />
+                </Border>
+                <StackPanel Classes="preferencesPath">
+                    <TextBlock Text="Preferences" PointerPressed="InputElement_OnPointerPressed"
+                               Foreground="{Binding Foreground}" Cursor="Hand" />
+                    <TextBlock Text="{Binding SelectedCategory}" />
+                </StackPanel>
+
+            </StackPanel>
+            <!-- Category -->
+            <StackPanel Classes="preferencesCategories" IsVisible="{Binding IsMainVisible}">
+                <preferences:Category Content="File Manager" Description="Change File Manager options."
+                                      Command="{Binding SwitchCategory}"
+                                      IconSource="{DynamicResource Folders}"
+                                      CommandParameter="FileManager">
+                </preferences:Category>
+                <preferences:Category Content="FullScreen"
+                                      Description="Hide some UI elements when the app is in fullscreen."
+                                      IconSource="{DynamicResource ArrowsOut}"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="FullScreen" />
+                <preferences:Category Content="General"
+                                      Description="Change your app preferences."
+                                      IconSource="{DynamicResource Gear}"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="General" />
+                <preferences:Category Content="HotKeys/Keybindings"
+                                      Description="Change default keybindings."
+                                      IconSource="{DynamicResource Keyboard}"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="HotKeys" />
+                <preferences:Category Content="Image Preview"
+                                      IconSource="{DynamicResource PictureInPicture}"
+                                      Description="Change the Image Preview default behaviours."
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="ImagePreview" />
+                <preferences:Category Content="Status Bar"
+                                      IconSource="{DynamicResource Barricade}"
+                                      Description="Change the Status Bar preferences. (Auto-Hide,Delay)"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="StatusBar" />
+                <preferences:Category Content="Tabs" Description="Change Tabs preferences."
+                                      IconSource="{DynamicResource Tabs}"
+                                      Command="{Binding SwitchCategory}"
+                                      CommandParameter="Tabs" />
+            </StackPanel>
+            <!-- Preferences -->
+            <StackPanel Classes="preferences">
+                <preferences:FileManager DataContext="{Binding FileManagerPreferencesViewModel}" />
+                <preferences:FullScreen DataContext="{Binding FullScreenPreferencesViewModel}" />
+                <preferences:General DataContext="{Binding GeneralPreferencesViewModel}" />
+                <preferences:HotKeys DataContext="{Binding HotKeysPreferencesViewModel}" />
+                <preferences:ImagePreview DataContext="{Binding ImagePreviewPreferencesViewModel}" />
+                <preferences:StatusBar DataContext="{Binding StatusBarPreferencesViewModel}" />
+                <preferences:Tabs DataContext="{Binding TabsPreferencesViewModel}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
