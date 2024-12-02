@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="**\*.toml"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <AdditionalFiles Include="Strings.toml"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Echoes" Version="0.1.2"/>
+        <PackageReference Include="Echoes.Generator" Version="0.1.2"/>
+    </ItemGroup>
+</Project>
+

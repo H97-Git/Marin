@@ -1,0 +1,6 @@
+[echoes_config]
+generated_class_name = "Strings"
+generated_namespace = "Marin.Translations"
+
+[translations]
+greeting = 'Welcome to Marin!'

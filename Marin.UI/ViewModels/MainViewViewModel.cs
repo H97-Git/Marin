@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Echoes;
 using FluentAvalonia.UI.Controls;
 using Marin.UI.Commands;
 using Marin.UI.Controls.Dialogs;
@@ -517,6 +518,20 @@ public class MainViewViewModel : ViewModelBase
         MessageBus.Current.Listen<RenameCommand>().Subscribe(RenameFile);
         MessageBus.Current.Listen<SaveSessionCommand>().Subscribe(NewSession);
         MessageBus.Current.Listen<ToggleFullScreenCommand>().Subscribe(_ => ToggleFullScreen());
+    }
+    
+    public void SetCultureCommand(object parameter)
+    {
+        switch (parameter)
+        {
+            case "english":
+                TranslationProvider.SetCulture(CultureInfo.GetCultureInfo("en-US"));
+                break;
+
+            case "french":
+                TranslationProvider.SetCulture(CultureInfo.GetCultureInfo("fr-FR"));
+                break;
+        }
     }
 
     #endregion

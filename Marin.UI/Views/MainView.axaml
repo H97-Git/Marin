@@ -10,6 +10,8 @@
              xmlns:vm="clr-namespace:Marin.UI.ViewModels"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns="https://github.com/avaloniaui"
+             xmlns:echoes="clr-namespace:Echoes;assembly=Echoes"
+             xmlns:translations="clr-namespace:Marin.Translations;assembly=Marin.Translations"
              x:Name="MainViewControl"
              KeyDown="MainView_OnKeyDown">
     <Design.DataContext>
@@ -25,7 +27,16 @@
                           DataContext="{Binding MenuBarViewModel}"
                           IsVisible="{Binding IsMenuBarVisible}" />
         <!-- Main Area -->
-        <Grid Grid.Row="1" Name="MainArea">
+        <Grid Grid.Row="1" x:Name="MainArea">
+            <!-- <UniformGrid DockPanel.Dock="Bottom" Columns="3" Rows="1"> -->
+            <!--     <Button Command="{Binding SetCultureCommand}" CommandParameter="english"> -->
+            <!--         English -->
+            <!--     </Button> -->
+            <!--     <Button Command="{Binding SetCultureCommand}" CommandParameter="french"> -->
+            <!--         German -->
+            <!--     </Button> -->
+            <!-- </UniformGrid> -->
+            <!-- <TextBlock Margin="10" Background="Red" Width="200" Height="400" Text="{echoes:Translate {x:Static translations:Strings.greeting}}" /> -->
             <!-- Tabs -->
             <tabs:TabsControl DataContext="{Binding TabsViewModel}" />
             <!-- File Manager -->
